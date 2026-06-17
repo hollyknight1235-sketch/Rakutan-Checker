@@ -572,12 +572,12 @@ body.classic .tc-label{font-size:11px;letter-spacing:normal;text-transform:none;
 body.classic .tc-period{background:rgba(255,255,255,.25);backdrop-filter:none;border-radius:6px;padding:1px 7px;}
 body.classic .tc-warn{background:rgba(255,80,80,.75);backdrop-filter:none;border-radius:10px;padding:1px 7px;}
 body.classic .sched-grid{gap:10px;}
-body.classic .class-card{background:linear-gradient(135deg,var(--gs),var(--ge));border-radius:16px;padding:13px 13px 11px;box-shadow:0 3px 12px rgba(102,126,234,.25);color:#fff;border:none;border-left:none;}
+body.classic .class-card{background:linear-gradient(135deg,var(--gs),var(--ge));border-radius:16px;padding:13px 13px 11px;box-shadow:0 3px 12px rgba(102,126,234,.25);color:#fff;border:none;border-left:4px solid var(--cc-color,rgba(255,255,255,.2));}
 body.classic .class-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,.35);}
-body.classic .class-card.c-danger{background:linear-gradient(135deg,#c62828,#ef5350)!important;box-shadow:0 3px 12px rgba(198,40,40,.3);}
-body.classic .class-card.c-warn{background:linear-gradient(135deg,#e65100,#fb8c00)!important;box-shadow:0 3px 12px rgba(230,81,0,.3);}
+body.classic .class-card.c-danger{background:linear-gradient(135deg,#c62828,#ef5350)!important;box-shadow:0 3px 12px rgba(198,40,40,.3);border-left-color:rgba(255,255,255,.3);}
+body.classic .class-card.c-warn{background:linear-gradient(135deg,#e65100,#fb8c00)!important;box-shadow:0 3px 12px rgba(230,81,0,.3);border-left-color:rgba(255,255,255,.3);}
 body.classic .class-card.c-withdrawn .cc-name{color:rgba(255,255,255,.6)!important;}
-body.classic .cc-period-chip{background:rgba(255,255,255,.25);color:#fff;}
+body.classic .cc-period-chip{background:var(--cc-color,rgba(255,255,255,.25));color:#fff;}
 body.classic .cc-meta{color:rgba(255,255,255,.75);}
 body.classic .cc-del{width:26px;height:26px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3);}
 body.classic .cc-del:hover{background:rgba(220,38,38,.7);color:#fff;border-color:transparent;}
@@ -1339,7 +1339,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 1.3.0 — GPA管理・休講記録・朝の通知・時間割シェア</div>
+  <div class="ver">ver 1.4.0 — 欠席段階警告・コマ別出席設定・カラー自動設定・バグ修正</div>
 </div>
 </div>
 
@@ -1953,7 +1953,7 @@ let activeTab='todo';
 function showTab(tab){
   sfx('tab');
   activeTab=tab;
-  window.scrollTo({top:0,behavior:'instant'});
+  window.scrollTo(0,0);
   document.querySelectorAll('.tab-btn').forEach((b,i)=>{
     b.classList.toggle('active',['todo','schedule','stats','calendar'][i]===tab);
   });
@@ -1967,7 +1967,10 @@ function showTab(tab){
   const sf=document.getElementById('shareFab');
   if(sf) sf.style.display=tab==='schedule'?'flex':'none';
   const qf=document.querySelector('.fab');
-  if(qf) qf.style.display=tab==='todo'?'flex':'none';
+  if(qf){
+    const onAdd=tab==='todo'&&document.getElementById('todoTabAdd').classList.contains('on');
+    qf.style.display=onAdd?'flex':'none';
+  }
   // reset scroll-hide when switching tabs
   if(sf) sf.classList.remove('fab-hidden');
   if(qf) qf.classList.remove('fab-hidden');
@@ -2265,8 +2268,8 @@ function renderSchedule(){
       const cStatus=c.status||'active';
       const sc=cStatus==='withdrawn'?'c-withdrawn':cStatus==='finalized'?'c-finalized':statusClass(s);
       const st=statusText(s);
-      const hasStatusColor=['c-danger','c-warn','c-withdrawn','c-finalized'].includes(sc);
-      const cardStyle=(!hasStatusColor&&c.color)?`--cc-color:${c.color};`:'';
+      const cardStyle=c.color?`--cc-color:${c.color};`:'';
+      const chipStyle=c.color&&cStatus!=='withdrawn'?`style="background:${c.color}"`:''
       const daySlot=c.slots?.find(s=>s.day===curDay);
       const periodLabel=c.isOnDemand?'OD':daySlot?`${daySlot.period}限`:(c.slots?.[0]?`${c.slots[0].period}限`:'?限');
       const dStr=c.isOnDemand?'オンデマンド':(c.slots||[]).map(s=>DAY_JA[s.day]+s.period+'限').join('・');
@@ -2278,7 +2281,7 @@ function renderSchedule(){
         ${examBadge}
         <div class="cc-top">
           <div class="cc-top-left">
-            <div class="cc-period-chip">${periodLabel}</div>
+            <div class="cc-period-chip" ${chipStyle}>${periodLabel}</div>
             <div class="cc-meta">${c.term} | ${dStr}</div>
           </div>
           <button class="cc-del" onclick="event.stopPropagation();deleteClassDirect(${idx})">×</button>
@@ -2328,7 +2331,7 @@ function showDetail(idx){
   curClassIdx=idx;
   const c=curClasses()[idx];
   if(!c) return;
-  window.scrollTo({top:0,behavior:'instant'});
+  window.scrollTo(0,0);
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('detailSection').classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -2839,7 +2842,7 @@ function promptDeleteClass(idx){
   if(!c) return;
   document.getElementById('delConfirmName').textContent=c.name;
   const slotList=document.getElementById('delSlotList');
-  const slots=(c.slots||[]).filter(s=>!c.isOnDemand);
+  const slots=c.isOnDemand?[]:(c.slots||[]);
   if(slots.length>1){
     document.getElementById('delConfirmTitle').textContent='どのコマを削除しますか？';
     document.getElementById('delConfirmNote').innerHTML='コマだけ削除するか、授業ごと削除するか選んでください。';
@@ -2861,7 +2864,7 @@ function promptDeleteClass(idx){
 function deleteOneSlot(classIdx, slotIdx){
   closeModal('deleteConfirmModal');
   const c=curClasses()[classIdx];
-  if(!c||!c.slots) return;
+  if(!c||!c.slots||slotIdx<0||slotIdx>=c.slots.length) return;
   c.slots.splice(slotIdx,1);
   saveData();
   sfx('delete');
@@ -2895,6 +2898,8 @@ function switchTodoTab(tab){
   document.getElementById('todoTabAdd').classList.toggle('on', tab==='add');
   document.getElementById('todoPaneList').classList.toggle('on', tab==='list');
   document.getElementById('todoPaneAdd').classList.toggle('on', tab==='add');
+  const qf=document.querySelector('.fab');
+  if(qf){ qf.style.display=tab==='add'?'flex':'none'; qf.classList.remove('fab-hidden'); }
 }
 
 function toggleDL(){
@@ -3285,7 +3290,10 @@ function openGuide(){ document.getElementById('guideModal').classList.add('activ
 // ═══════════════════════════════
 //  HELPERS
 // ═══════════════════════════════
-function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+function closeModal(id){
+  document.getElementById(id).classList.remove('active');
+  if(id==='classModal'){ _classClearImg=false; }
+}
 function readFile(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(f); }); }
 
 function renderAll(){
@@ -3804,7 +3812,7 @@ function exportICal(){
     const pad=n=>String(n).padStart(2,'0');
     return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(h)}${pad(m)}00`;
   }
-  let ical='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//楽単チェッカー//v1.3.0//JA\r\nCALSCALE:GREGORIAN\r\n';
+  let ical='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//楽単チェッカー//v1.4.0//JA\r\nCALSCALE:GREGORIAN\r\n';
   cls.forEach(c=>{
     c.slots.forEach(slot=>{
       const totalMin=7*60+(slot.period-1)*90;
@@ -3851,7 +3859,7 @@ function shareSchedule(){
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
 
   let text=`【${year}年度 時間割】\n`;
-  text+=`（楽単チェッカー ver1.3.0）\n\n`;
+  text+=`（楽単チェッカー ver1.4.0）\n\n`;
 
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
