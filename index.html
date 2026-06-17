@@ -624,6 +624,51 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
 .theme-opt.on{background:var(--card);color:var(--ac);box-shadow:0 2px 10px rgba(79,70,229,.15);}
 
 @media(max-width:440px){.container{max-width:100%;}}
+
+/* ── Feature 2: Todo filter bar ── */
+.todo-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+.tfilter-btn{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.tfilter-btn.on{border-color:var(--ac);background:var(--ac);color:#fff;}
+.tsort-sel{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;outline:none;cursor:pointer;margin-left:auto;}
+
+/* ── Feature 5: Attendance chart ── */
+.att-chart-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.att-chart-item:last-child{border-bottom:none;}
+.att-chart-name{font-size:13px;font-weight:700;flex:0 0 120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.att-chart-bar-wrap{flex:1;height:10px;background:var(--inp);border-radius:10px;overflow:hidden;}
+.att-chart-bar{height:100%;border-radius:10px;background:var(--ac);transition:width .4s ease;}
+.att-chart-bar.bar-warn{background:var(--warn);}
+.att-chart-bar.bar-danger{background:var(--danger);}
+.att-chart-pct{font-size:11px;font-weight:700;flex:0 0 38px;text-align:right;color:var(--sub);}
+
+/* ── Feature 6: Session notes ── */
+.snote-item{background:var(--inp);border-radius:10px;padding:10px 12px;margin-bottom:7px;position:relative;}
+.snote-date{font-size:11px;color:var(--sub);font-weight:700;margin-bottom:4px;}
+.snote-text{font-size:13px;color:var(--text);white-space:pre-wrap;word-break:break-all;}
+.snote-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--faint);font-size:15px;cursor:pointer;padding:2px 6px;}
+
+/* ── Feature 9: Calendar view ── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-nav{background:none;border:none;font-size:22px;color:var(--ac);cursor:pointer;padding:4px 12px;font-family:inherit;}
+.cal-month-label{font-size:17px;font-weight:800;color:var(--text);}
+.cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;color:var(--sub);margin-bottom:4px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-day{min-height:46px;padding:2px;border-radius:8px;cursor:pointer;transition:.15s;position:relative;}
+.cal-day:hover{background:var(--inp);}
+.cal-day.cal-other{opacity:.35;}
+.cal-day.cal-today{background:rgba(102,126,234,.12);}
+.cal-day.cal-selected{background:var(--ac)!important;color:#fff;}
+.cal-day-num{font-size:12px;font-weight:700;text-align:center;padding:2px 0;}
+.cal-day.cal-today .cal-day-num{color:var(--ac);}
+.cal-day.cal-selected .cal-day-num{color:#fff;}
+.cal-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;padding:1px;}
+.cal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.cal-events{margin-top:14px;background:var(--inp);border-radius:14px;padding:14px;min-height:60px;}
+.cal-ev-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.cal-ev-item:last-child{border-bottom:none;}
+.cal-ev-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cal-ev-label{font-weight:700;flex:1;}
+.cal-ev-sub{font-size:11px;color:var(--sub);}
 </style>
 </head>
 <body>
@@ -652,6 +697,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <button class="tab-btn active" onclick="showTab('todo')">📝 ToDo</button>
     <button class="tab-btn" onclick="showTab('schedule')">📅 時間割</button>
     <button class="tab-btn" onclick="showTab('stats')">📊 統計</button>
+    <button class="tab-btn" id="tabBtnCal" onclick="showTab('calendar')">📅<span>カレンダー</span></button>
   </div>
 </div>
 
@@ -672,6 +718,16 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
 
   <!-- 一覧ペイン -->
   <div class="todo-pane on" id="todoPaneList">
+    <div class="todo-filter-bar">
+      <button class="tfilter-btn on" id="tfilterAll" onclick="setTodoFilter('all')">全て</button>
+      <button class="tfilter-btn" id="tfilterActive" onclick="setTodoFilter('active')">未完了</button>
+      <button class="tfilter-btn" id="tfilterOverdue" onclick="setTodoFilter('overdue')">期限切れ</button>
+      <select class="tsort-sel" id="todoSortSel" onchange="renderTodos()">
+        <option value="deadline">期限順</option>
+        <option value="added">追加順</option>
+        <option value="class">授業別</option>
+      </select>
+    </div>
     <div class="today-card">
       <div class="tc-label">📅 今日の授業</div>
       <div id="todayClassList"><div class="tc-empty">登録済みの授業はありません</div></div>
@@ -714,7 +770,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
         <label class="fl">画像添付</label>
         <input class="fi" type="file" id="todoImage" accept="image/*">
       </div>
-      <button class="add-btn" onclick="addTodo()">＋ タスクを追加</button>
+      <button class="add-btn" id="todoAddBtn" onclick="addTodo()">＋ タスクを追加</button>
     </div>
   </div>
 </div>
@@ -810,6 +866,31 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   <div id="dangerClassStats"></div>
   <div class="sec-title">📊 全授業 出席状況</div>
   <div id="allClassStats"></div>
+
+  <div class="m-sec" style="margin-top:18px;">📊 欠席消費率（授業別）</div>
+  <div id="attChartList"></div>
+
+  <div class="m-sec" style="margin-top:18px;">🎓 卒業要件進捗</div>
+  <div id="gradReqList"></div>
+
+  <div class="m-sec" style="margin-top:18px;">📝 試験スケジュール</div>
+  <div id="examScheduleList"></div>
+</div>
+
+<!-- ── CALENDAR ── -->
+<div class="section" id="calendarSection">
+  <div class="cal-header">
+    <button class="cal-nav" onclick="shiftCalMonth(-1)">‹</button>
+    <div class="cal-month-label" id="calMonthLabel"></div>
+    <button class="cal-nav" onclick="shiftCalMonth(1)">›</button>
+  </div>
+  <div class="cal-grid-header">
+    <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="cal-events" id="calEvents">
+    <div style="text-align:center;padding:20px;color:var(--faint);font-size:13px;">日付をタップして予定を確認</div>
+  </div>
 </div>
 
 <!-- ── DETAIL ── -->
@@ -922,6 +1003,28 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     </div>
     <div id="canceledList" style="margin-top:8px;"></div>
   </div>
+
+  <!-- 補講記録 -->
+  <div class="sec-title">📚 補講記録</div>
+  <div class="info-box">
+    <div style="font-size:12px;color:var(--sub);margin-bottom:8px;">補講があった日（出席可能回数が+1されます）</div>
+    <div class="rec-row">
+      <input type="date" class="ri ri-flex" id="makeupDate">
+      <button class="rec-btn" onclick="recordMakeup()" style="background:var(--ac);">記録</button>
+    </div>
+    <div id="makeupList" style="margin-top:8px;"></div>
+  </div>
+
+  <!-- コマ日記 -->
+  <div class="sec-title">📓 コマ日記</div>
+  <div class="info-box">
+    <div class="rec-row" style="margin-bottom:8px;">
+      <input type="date" class="ri" id="snoteDate" style="flex:0 0 140px;">
+    </div>
+    <textarea id="snoteText" placeholder="今日の授業メモ..." style="width:100%;min-height:60px;padding:9px;border:1.5px solid var(--border);border-radius:10px;background:var(--inp);color:var(--text);font-family:inherit;font-size:13px;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+    <button class="rec-btn" style="background:var(--ac);width:100%;margin-top:6px;" onclick="addSessionNote()">メモを保存</button>
+    <div id="snoteList" style="margin-top:10px;"></div>
+  </div>
 </div>
 
 </div><!-- /content -->
@@ -933,6 +1036,20 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
 <button class="share-fab" id="shareFab" onclick="shareSchedule()">📤 時間割をシェア</button>
 
 <!-- ══ MODALS ══ -->
+
+<!-- Share Modal -->
+<div class="modal" id="shareModal">
+<div class="modal-sheet">
+  <div class="m-handle"></div>
+  <div class="m-title">📤 時間割をシェア</div>
+  <div id="shareQRWrap" style="text-align:center;margin:14px 0;"></div>
+  <div id="shareTextArea" style="background:var(--inp);border-radius:10px;padding:12px;font-size:12px;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;"></div>
+  <div class="btn-row" style="margin-top:14px;">
+    <button class="btn bs" onclick="closeModal('shareModal')">閉じる</button>
+    <button class="btn bp" onclick="copyShareText()">📋 コピー</button>
+  </div>
+</div>
+</div>
 
 <!-- Settings -->
 <!-- ── 削除確認モーダル ── -->
@@ -1003,6 +1120,10 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
       <div class="req-row"><input type="number" id="sPrevCredits" value="0" min="0" placeholder="0"><span>単位</span></div>
       <div style="font-size:10px;color:var(--faint);margin-top:3px;">※ 入学前・転入前・過去年度ですでに取得済みの単位を入力してください</div>
     </div>
+
+    <div class="m-sec">📅 カレンダー連携</div>
+    <button class="btn bs" style="width:100%;" onclick="exportICal()">📅 iCal形式でエクスポート（カレンダーアプリに取り込む）</button>
+    <div style="font-size:10px;color:var(--faint);margin-top:4px;">iPhone/Androidのカレンダーアプリや Google Calendarに取り込めます</div>
 
     <div class="m-sec">🗓️ 年度管理</div>
     <div class="year-list" id="yearList"></div>
@@ -1178,13 +1299,21 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <div style="margin-top:14px;">
       <button class="btn bs" style="width:100%;" onclick="openGuide()">📖 使い方ガイド</button>
     </div>
+
+    <div class="m-sec">🎓 単位区分の管理</div>
+    <div id="creditCatList"></div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <input type="text" id="newCatName" placeholder="区分名（例: 必修）" style="flex:1;padding:9px;border:1.5px solid var(--border);border-radius:10px;background:var(--inp);color:var(--text);font-family:inherit;font-size:13px;outline:none;">
+      <input type="number" id="newCatReq" placeholder="必要単位" style="width:80px;padding:9px;border:1.5px solid var(--border);border-radius:10px;background:var(--inp);color:var(--text);font-family:inherit;font-size:13px;outline:none;">
+      <button class="btn bp" style="padding:9px 14px;" onclick="addCreditCat()">追加</button>
+    </div>
   </div>
 
   <div class="btn-row" style="margin-top:20px;">
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 1.2.2 — GPA管理・休講記録・朝の通知・時間割シェア</div>
+  <div class="ver">ver 1.3.0 — GPA管理・休講記録・朝の通知・時間割シェア</div>
 </div>
 </div>
 
@@ -1228,6 +1357,11 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
       <button type="button" class="credit-chip" data-val="8"   onclick="setCreditChip(8)">8</button>
     </div>
     <input type="number" id="cCredits" step="0.5" min="0.5" value="2" placeholder="直接入力も可" oninput="syncCreditChips()" style="width:100%;padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--inp);color:var(--text);font-family:inherit;font-size:14px;outline:none;box-sizing:border-box;">
+  </div>
+  <div class="mg"><label>単位区分</label>
+    <select id="cCreditCat">
+      <option value="">未分類</option>
+    </select>
   </div>
   <div class="mg"><label>授業形式</label>
     <select id="cFormat">
@@ -1387,7 +1521,8 @@ function defSettings(){
     morningNotify:false,morningNotifyTime:'07:00',
     requiredCredits:124,prevEarnedCredits:0,
     reminderDays:[1],absenceWarningThreshold:2,
-    uiTheme:'classic'
+    uiTheme:'classic',
+    creditCategories:[]
   };
 }
 function defYear(){ return {classes:[],todos:[]}; }
@@ -1672,7 +1807,7 @@ function setUITheme(t){
 }
 function toggleDark(){
   appData.settings.darkMode=document.getElementById('sDark').checked;
-  applyDark(); saveData();
+  sfx('toggle'); applyDark(); saveData();
 }
 function toggleSound(){
   const on=document.getElementById('sSound').checked;
@@ -1701,16 +1836,92 @@ function showTab(tab){
   sfx('tab');
   activeTab=tab;
   document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['todo','schedule','stats'][i]===tab);
+    b.classList.toggle('active',['todo','schedule','stats','calendar'][i]===tab);
   });
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  const map={todo:'todoSection',schedule:'scheduleSection',stats:'statsSection',detail:'detailSection'};
-  document.getElementById(map[tab]).classList.add('active');
+  const map={todo:'todoSection',schedule:'scheduleSection',stats:'statsSection',detail:'detailSection',calendar:'calendarSection'};
+  if(map[tab]) document.getElementById(map[tab]).classList.add('active');
   if(tab==='todo'){ renderTodos(); renderTodayCard(); renderDangerBanner('todo'); }
   if(tab==='schedule'){ renderSchedule(); renderDangerBanner('sched'); }
   if(tab==='stats') renderStats();
+  if(tab==='calendar'){ calYear=new Date().getFullYear(); calMonth=new Date().getMonth(); renderCalendar(); }
   const sf=document.getElementById('shareFab');
   if(sf) sf.style.display=tab==='schedule'?'flex':'none';
+}
+
+// ═══════════════════════════════
+//  カレンダービュー (Feature 9)
+// ═══════════════════════════════
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth(), calSelected=null;
+const CAL_DAY_IDX={sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
+
+function shiftCalMonth(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+
+function renderCalendar(){
+  const MONTH_JA=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('calMonthLabel').textContent=`${calYear}年 ${MONTH_JA[calMonth]}`;
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+  const today=new Date();
+  const todayStr=today.toISOString().slice(0,10);
+
+  const evMap={};
+  function addEv(dateStr,ev){if(!evMap[dateStr])evMap[dateStr]=[];evMap[dateStr].push(ev);}
+
+  const DAY_NAMES=['sun','mon','tue','wed','thu','fri','sat'];
+  curClasses().filter(c=>!c.isOnDemand&&c.slots&&c.slots.length).forEach(c=>{
+    for(let d=1;d<=daysInMonth;d++){
+      const date=new Date(calYear,calMonth,d);
+      const dayName=DAY_NAMES[date.getDay()];
+      const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if(c.slots.some(s=>s.day===dayName)){
+        if(!(c.canceledDates||[]).includes(dateStr)){
+          addEv(dateStr,{type:'class',label:c.name,color:c.color||'var(--ac)',period:c.slots.find(s=>s.day===dayName)?.period});
+        }
+      }
+    }
+    const monthPfx=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
+    (c.canceledDates||[]).forEach(d=>{if(d.startsWith(monthPfx))addEv(d,{type:'canceled',label:`休講:${c.name}`,color:'#9ca3af'});});
+    (c.makeupDates||[]).forEach(d=>{if(d.startsWith(monthPfx))addEv(d,{type:'makeup',label:`補講:${c.name}`,color:'#059669'});});
+    if(c.examDate&&c.examDate.startsWith(monthPfx))addEv(c.examDate,{type:'exam',label:`試験:${c.name}`,color:'#dc2626'});
+  });
+  curTodos().filter(t=>t.deadline).forEach(t=>{
+    const d=t.deadline.slice(0,10);
+    const monthPfx=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
+    if(d.startsWith(monthPfx))addEv(d,{type:'todo',label:t.title,color:'#f59e0b'});
+  });
+
+  let html='';
+  for(let d=firstDay-1;d>=0;d--){
+    html+=`<div class="cal-day cal-other"><div class="cal-day-num">${daysInPrev-d}</div></div>`;
+  }
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=dateStr===todayStr;
+    const isSel=dateStr===calSelected;
+    const evs=evMap[dateStr]||[];
+    const dots=evs.slice(0,5).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('');
+    html+=`<div class="cal-day${isToday?' cal-today':''}${isSel?' cal-selected':''}" onclick="selectCalDay('${dateStr}')"><div class="cal-day-num">${d}</div><div class="cal-dots">${dots}</div></div>`;
+  }
+  const total=Math.ceil((firstDay+daysInMonth)/7)*7;
+  for(let d=1;d<=total-firstDay-daysInMonth;d++){
+    html+=`<div class="cal-day cal-other"><div class="cal-day-num">${d}</div></div>`;
+  }
+  document.getElementById('calGrid').innerHTML=html;
+  if(calSelected)renderCalEvents(calSelected,evMap[calSelected]||[]);
+}
+
+function selectCalDay(dateStr){
+  calSelected=dateStr;
+  renderCalendar();
+}
+
+function renderCalEvents(dateStr,evs){
+  const el=document.getElementById('calEvents');
+  if(!evs.length){el.innerHTML=`<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">${dateStr} の予定はありません</div>`;return;}
+  const typeLabel={class:'授業',canceled:'休講',makeup:'補講',exam:'試験',todo:'課題'};
+  el.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:8px;">${dateStr}</div>`+evs.map(ev=>`<div class="cal-ev-item"><div class="cal-ev-dot" style="background:${ev.color}"></div><div><div class="cal-ev-label">${ev.label}</div><div class="cal-ev-sub">${typeLabel[ev.type]||ev.type}${ev.period?` ${ev.period}限`:''}</div></div></div>`).join('');
 }
 
 // ═══════════════════════════════
@@ -1721,7 +1932,8 @@ function calcAbs(c){
   let base = ['前期','後期','通年'].includes(c.term) ? (sc?sc.semester:15) : (sc?sc.quarter:7);
   if(c.term==='通年') base*=2;
   const perWeek=(c.isOnDemand||!c.slots||c.slots.length===0)?1:c.slots.length;
-  const total=base*perWeek;
+  const makeupCount=(c.makeupDates||[]).length;
+  const total=base*perWeek+makeupCount;
   const maxSafe=Math.floor(total/3);
   const abs=c.absences?c.absences.length:0;
   const late=c.tardiness?c.tardiness.length:0;
@@ -1965,6 +2177,8 @@ function renderSchedule(){
 let curClassIdx=-1;
 let editingClassIdx=-1;
 let pendingReason='';
+let editingTodoIdx=-1;
+let todoFilter='all';
 
 function fmtDate(d){ if(!d) return ''; const p=d.split('-'); return `${p[1]}/${p[2]}`; }
 function daysUntil(d){ return Math.ceil((new Date(d)-new Date().setHours(0,0,0,0))/864e5); }
@@ -2035,8 +2249,12 @@ function showDetail(idx){
 
   document.getElementById('attDate').valueAsDate=new Date();
   document.getElementById('cancelDate').valueAsDate=new Date();
+  document.getElementById('makeupDate').valueAsDate=new Date();
+  document.getElementById('snoteDate').valueAsDate=new Date();
   renderAttList();
   renderCanceledList();
+  renderMakeupList();
+  renderSessionNotes();
   renderStatusArea();
   // Grade
   document.getElementById('dGradeSelect').value=c.finalGrade||'';
@@ -2134,19 +2352,71 @@ function renderStats(){
   }
 
   const ac=document.getElementById('allClassStats');
-  if(!cls.length){ ac.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">授業が登録されていません</div>'; return; }
-  ac.innerHTML=cls.map(c=>{
-    const s=calcAbs(c);
-    const pct=s.maxSafe>0?Math.min(100,Math.round(s.totalPen/s.maxSafe*100)):0;
-    const col=pct>=100?'var(--danger)':pct>=67?'var(--warn)':'var(--safe)';
-    return `<div class="csi">
-      <div style="flex:1;">
-        <div class="csi-name">${c.name}</div>
-        <div class="csi-bar-wrap" style="margin-top:5px;"><div class="csi-bar-fill" style="width:${pct}%;background:${col};"></div></div>
-      </div>
-      <div class="csi-label">${s.totalPen}/${s.maxSafe}回</div>
-    </div>`;
-  }).join('');
+  if(!cls.length){ ac.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">授業が登録されていません</div>'; }
+  else {
+    ac.innerHTML=cls.map(c=>{
+      const s=calcAbs(c);
+      const pct=s.maxSafe>0?Math.min(100,Math.round(s.totalPen/s.maxSafe*100)):0;
+      const col=pct>=100?'var(--danger)':pct>=67?'var(--warn)':'var(--safe)';
+      return `<div class="csi">
+        <div style="flex:1;">
+          <div class="csi-name">${c.name}</div>
+          <div class="csi-bar-wrap" style="margin-top:5px;"><div class="csi-bar-fill" style="width:${pct}%;background:${col};"></div></div>
+        </div>
+        <div class="csi-label">${s.totalPen}/${s.maxSafe}回</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Feature 5: Attendance chart
+  const chartEl=document.getElementById('attChartList');
+  if(chartEl){
+    const active=curClasses().filter(c=>(c.status||'active')==='active'&&!c.isOnDemand);
+    if(!active.length){chartEl.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">履修中の授業がありません</div>';}
+    else{
+      chartEl.innerHTML=active.map(c=>{
+        const s=calcAbs(c);
+        const pct=s.maxSafe>0?Math.min(100,Math.round(s.totalPen/s.maxSafe*100)):0;
+        const barCls=pct>=80?'bar-danger':pct>=50?'bar-warn':'';
+        return `<div class="att-chart-item" onclick="showDetail(${curClasses().indexOf(c)});showTab('schedule')" style="cursor:pointer;">
+          <div class="att-chart-name">${c.name}</div>
+          <div class="att-chart-bar-wrap"><div class="att-chart-bar ${barCls}" style="width:${pct}%"></div></div>
+          <div class="att-chart-pct" style="color:${pct>=80?'var(--danger)':pct>=50?'var(--warn)':'var(--sub)'}">${pct}%</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Feature 7: Graduation requirement
+  const gradEl=document.getElementById('gradReqList');
+  if(gradEl){
+    const cats=appData.settings.creditCategories||[];
+    if(!cats.length){gradEl.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">設定 → その他 で単位区分を設定してください</div>';}
+    else{
+      gradEl.innerHTML=cats.map(cat=>{
+        const earned=curClasses().filter(c=>c.creditCategory===cat.name&&c.status==='finalized'&&c.finalGrade&&c.finalGrade!=='F').reduce((s,c)=>s+Number(c.credits),0);
+        const inProgress=curClasses().filter(c=>c.creditCategory===cat.name&&(c.status||'active')==='active').reduce((s,c)=>s+Number(c.credits),0);
+        const pct=cat.required>0?Math.min(100,Math.round(earned/cat.required*100)):100;
+        return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:4px;"><span>${cat.name}</span><span style="color:var(--sub);">${earned}/${cat.required}単位</span></div><div style="background:var(--inp);border-radius:10px;height:12px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:${pct>=100?'#059669':'var(--ac)'};border-radius:10px;transition:width .4s;"></div></div><div style="font-size:11px;color:var(--faint);margin-top:3px;">履修中: ${inProgress}単位</div></div>`;
+      }).join('');
+    }
+  }
+
+  // Feature 4: Exam schedule
+  const examCls=curClasses().filter(c=>c.examDate).sort((a,b)=>new Date(a.examDate)-new Date(b.examDate));
+  const examEl=document.getElementById('examScheduleList');
+  if(examEl){
+    if(!examCls.length){examEl.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">試験日が登録されていません</div>';return;}
+    examEl.innerHTML=examCls.map(c=>{
+      const du=daysUntil(c.examDate);
+      const duTxt=du>0?`あと${du}日`:du===0?'本日！':`${Math.abs(du)}日前に終了`;
+      const duColor=du<0?'var(--faint)':du===0?'var(--danger)':du<=7?'var(--warn)':'var(--ac)';
+      return `<div class="csi" style="border-left:3px solid ${duColor};cursor:pointer;" onclick="showDetail(${curClasses().indexOf(c)});showTab('schedule')">
+        <div style="font-weight:700;font-size:14px;">${c.name}</div>
+        <div style="font-size:12px;color:var(--sub);">📅 ${c.examDate} <span style="color:${duColor};font-weight:700;">${duTxt}</span></div>
+      </div>`;
+    }).join('');
+  }
 }
 
 // ═══════════════════════════════
@@ -2215,6 +2485,7 @@ function previewImg(){
 }
 
 function openAddClass(){
+  sfx('modal');
   editingClassIdx=-1;
   document.getElementById('classModalTitle').textContent='授業を追加';
   document.getElementById('cName').value='';
@@ -2240,6 +2511,7 @@ function openAddClass(){
   document.getElementById('critList').innerHTML='';
   addCrit();
   document.getElementById('delClassBtn').style.display='none';
+  populateCreditCatSelect();
   document.getElementById('classModal').classList.add('active');
 }
 
@@ -2273,6 +2545,8 @@ function openEditClass(){
   (c.evaluation||[]).forEach(e=>addCrit(e.name,e.percentage));
   if(!c.evaluation||!c.evaluation.length) addCrit();
   document.getElementById('delClassBtn').style.display='block';
+  populateCreditCatSelect();
+  document.getElementById('cCreditCat').value=c.creditCategory||'';
   document.getElementById('classModal').classList.add('active');
 }
 
@@ -2335,7 +2609,10 @@ async function saveClass(){
     required:editingClassIdx>-1?(curClasses()[editingClassIdx].required||'選択'):'選択',
     status:editingClassIdx>-1?(curClasses()[editingClassIdx].status||'active'):'active',
     latenessPenalty:lp?parseInt(lp):null,
-    examDate:document.getElementById('cExamDate').value
+    examDate:document.getElementById('cExamDate').value,
+    creditCategory:document.getElementById('cCreditCat').value,
+    makeupDates:editingClassIdx>-1?(curClasses()[editingClassIdx].makeupDates||[]):[],
+    sessionNotes:editingClassIdx>-1?(curClasses()[editingClassIdx].sessionNotes||[]):[]
   };
   if(editingClassIdx>-1){ curClasses()[editingClassIdx]=obj; if(curClassIdx===editingClassIdx) showDetail(curClassIdx); }
   else curClasses().push(obj);
@@ -2387,6 +2664,7 @@ function toggleDL(){
   document.getElementById('todoDeadline').disabled=document.getElementById('noDeadline').checked;
 }
 function toggleChip(el){
+  sfx('toggle');
   el.classList.toggle('on');
 }
 function getSelectedReminderDays(){
@@ -2399,16 +2677,32 @@ function populateTodoClassSelect(){
   curClasses().forEach((c,i)=>{ sel.innerHTML+=`<option value="${i}">${c.name}</option>`; });
 }
 
+function setTodoFilter(f){
+  todoFilter=f;
+  document.querySelectorAll('.tfilter-btn').forEach(b=>b.classList.toggle('on',b.id==='tfilter'+f.charAt(0).toUpperCase()+f.slice(1)));
+  renderTodos();
+}
+
 function renderTodos(){
   populateTodoClassSelect();
   const list=document.getElementById('todoList');
-  const todos=curTodos();
-  todos.sort((a,b)=>{
-    if(!a.deadline) return 1; if(!b.deadline) return -1;
-    return new Date(a.deadline)-new Date(b.deadline);
-  });
+  let todos=curTodos().map((t,i)=>({...t,_origIdx:i}));
+  // Filter
+  if(todoFilter==='active') todos=todos.filter(t=>!t.completed);
+  else if(todoFilter==='overdue') todos=todos.filter(t=>!t.completed&&t.deadline&&new Date(t.deadline)<new Date());
+  // Sort
+  const sortSel=document.getElementById('todoSortSel');
+  const sortBy=sortSel?sortSel.value:'deadline';
+  if(sortBy==='deadline'){
+    todos.sort((a,b)=>{ if(!a.deadline) return 1; if(!b.deadline) return -1; return new Date(a.deadline)-new Date(b.deadline); });
+  } else if(sortBy==='added'){
+    todos.sort((a,b)=>new Date(b.addedAt||0)-new Date(a.addedAt||0));
+  } else if(sortBy==='class'){
+    todos.sort((a,b)=>{ const ca=a.linkedClass>=0?a.linkedClass:9999; const cb=b.linkedClass>=0?b.linkedClass:9999; if(ca!==cb) return ca-cb; if(!a.deadline) return 1; if(!b.deadline) return -1; return new Date(a.deadline)-new Date(b.deadline); });
+  }
   if(!todos.length){ list.innerHTML='<div style="text-align:center;padding:20px;color:var(--faint);">タスクなし</div>'; return; }
-  list.innerHTML=todos.map((t,i)=>{
+  list.innerHTML=todos.map((t)=>{
+    const i=t._origIdx;
     let cls='todo-item'; if(t.completed) cls+=' done';
     let dlTxt='<span style="color:var(--faint);">期限なし</span>';
     let cdHtml='';
@@ -2429,6 +2723,7 @@ function renderTodos(){
       <div class="t-head">
         <input type="checkbox" class="t-chk" ${t.completed?'checked':''} onchange="toggleTodo(${i},this)">
         <div class="ttl">${t.title}</div>
+        <button class="t-del" style="font-size:13px;margin-right:2px;" onclick="openEditTodo(${i})">✏️</button>
         <button class="t-del" onclick="deleteTodo(${i})">×</button>
       </div>
       <div class="t-meta">
@@ -2439,6 +2734,23 @@ function renderTodos(){
       </div>
     </li>`;
   }).join('');
+}
+
+function openEditTodo(i){
+  const t=curTodos()[i];
+  editingTodoIdx=i;
+  document.getElementById('todoTitle').value=t.title||'';
+  const noD=!t.deadline;
+  document.getElementById('noDeadline').checked=noD;
+  document.getElementById('todoDeadline').value=noD?'':t.deadline||'';
+  document.getElementById('todoDeadline').disabled=noD;
+  document.getElementById('todoDetails').value=t.details||'';
+  const sel=document.getElementById('todoClass');
+  sel.value=t.linkedClass>=0?t.linkedClass:-1;
+  const rdDays=t.reminderDays||[1];
+  document.querySelectorAll('#reminderChips .chip').forEach(c=>{ c.classList.toggle('on',rdDays.includes(parseInt(c.dataset.days))); });
+  document.getElementById('todoAddBtn').textContent='更新する';
+  switchTodoTab('add');
 }
 
 async function addTodo(){
@@ -2452,8 +2764,16 @@ async function addTodo(){
   let img=null;
   const fi=document.getElementById('todoImage');
   if(fi.files&&fi.files[0]) try{ img=await readFile(fi.files[0]); } catch(e){}
-  curTodos().push({title,deadline,details,completed:false,image:img,
-    addedAt:new Date().toISOString(),linkedClass:lc,reminderDays:rdDays,lastNotified:null});
+  if(editingTodoIdx>=0){
+    const existing=curTodos()[editingTodoIdx];
+    curTodos()[editingTodoIdx]={...existing,title,deadline,details,linkedClass:lc,reminderDays:rdDays};
+    if(img) curTodos()[editingTodoIdx].image=img;
+    editingTodoIdx=-1;
+    document.getElementById('todoAddBtn').textContent='＋ タスクを追加';
+  } else {
+    curTodos().push({title,deadline,details,completed:false,image:img,
+      addedAt:new Date().toISOString(),linkedClass:lc,reminderDays:rdDays,lastNotified:null});
+  }
   document.getElementById('todoTitle').value='';
   document.getElementById('todoDetails').value='';
   document.getElementById('todoImage').value='';
@@ -2570,6 +2890,7 @@ document.addEventListener('visibilitychange',()=>{
 //  SETTINGS MODAL
 // ═══════════════════════════════
 function openSettings(){
+  sfx('modal');
   const s=appData.settings;
   document.getElementById('sUserName').value=s.userName||'';
   document.getElementById('sDefaultTerm').value=s.defaultTerm||'1Q';
@@ -2603,9 +2924,41 @@ function openSettings(){
   applyUITheme();
   updateColorPreview();
   markActivePreset();
+  renderCreditCatList();
   document.getElementById('settingsModal').classList.add('active');
 }
 function toggleROpt(el){ el.classList.toggle('on'); }
+
+// ═══════════════════════════════
+//  単位区分管理 (Feature 7)
+// ═══════════════════════════════
+function populateCreditCatSelect(){
+  const sel=document.getElementById('cCreditCat');
+  if(!sel)return;
+  const cats=appData.settings.creditCategories||[];
+  sel.innerHTML='<option value="">未分類</option>'+cats.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+}
+function renderCreditCatList(){
+  const cats=appData.settings.creditCategories||[];
+  const el=document.getElementById('creditCatList');
+  if(!el)return;
+  el.innerHTML=cats.map((cat,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);"><span style="flex:1;font-size:13px;font-weight:700;">${cat.name}</span><span style="color:var(--sub);font-size:13px;">${cat.required}単位</span><button class="att-del" onclick="removeCreditCat(${i})">×</button></div>`).join('')||'<div style="color:var(--faint);font-size:13px;text-align:center;padding:10px;">区分なし</div>';
+}
+function addCreditCat(){
+  const name=document.getElementById('newCatName').value.trim();
+  const req=parseInt(document.getElementById('newCatReq').value)||0;
+  if(!name)return;
+  sfx('add');
+  if(!appData.settings.creditCategories)appData.settings.creditCategories=[];
+  appData.settings.creditCategories.push({name,required:req});
+  document.getElementById('newCatName').value='';
+  document.getElementById('newCatReq').value='';
+  saveData();renderCreditCatList();populateCreditCatSelect();
+}
+function removeCreditCat(i){
+  appData.settings.creditCategories.splice(i,1);
+  saveData();renderCreditCatList();populateCreditCatSelect();
+}
 
 function saveSettings(){
   const s=appData.settings;
@@ -2631,7 +2984,7 @@ function saveSettings(){
   s.prevEarnedCredits=parseInt(document.getElementById('sPrevCredits').value)||0;
   applyAnim();
   scheduleMorningNotify();
-  saveData(); applyTheme(); closeModal('settingsModal');
+  saveData(); applyTheme(); sfx('save'); closeModal('settingsModal');
   renderAll();
 }
 
@@ -3133,6 +3486,103 @@ function renderCanceledList(){
 }
 
 // ═══════════════════════════════
+//  補講記録
+// ═══════════════════════════════
+function recordMakeup(){
+  const date=document.getElementById('makeupDate').value;
+  if(!date){showToast('日付を選択してください');return;}
+  sfx('add');
+  const c=curClasses()[curClassIdx];
+  if(!c.makeupDates)c.makeupDates=[];
+  if(!c.makeupDates.includes(date))c.makeupDates.push(date);
+  saveData();showDetail(curClassIdx);
+}
+function renderMakeupList(){
+  const c=curClasses()[curClassIdx];
+  const list=document.getElementById('makeupList');
+  if(!list)return;
+  const dates=(c.makeupDates||[]).slice().sort().reverse();
+  list.innerHTML=dates.map(d=>`<div class="att-entry"><span class="att-badge" style="background:var(--ac);color:#fff;">補講</span><span class="att-date">${d}</span><button class="att-del" onclick="removeMakeup('${d}')">×</button></div>`).join('')||'<div style="text-align:center;padding:8px;color:var(--faint);font-size:12px;">記録なし</div>';
+}
+function removeMakeup(date){
+  const c=curClasses()[curClassIdx];
+  c.makeupDates=(c.makeupDates||[]).filter(d=>d!==date);
+  saveData();showDetail(curClassIdx);
+}
+
+// ═══════════════════════════════
+//  コマ日記（セッションノート）
+// ═══════════════════════════════
+function addSessionNote(){
+  const date=document.getElementById('snoteDate').value;
+  const text=document.getElementById('snoteText').value.trim();
+  if(!text){alert('メモを入力してください');return;}
+  sfx('add');
+  const c=curClasses()[curClassIdx];
+  if(!c.sessionNotes)c.sessionNotes=[];
+  c.sessionNotes.unshift({date:date||new Date().toISOString().slice(0,10),text});
+  document.getElementById('snoteText').value='';
+  saveData();renderSessionNotes();
+}
+function renderSessionNotes(){
+  const c=curClasses()[curClassIdx];
+  const el=document.getElementById('snoteList');
+  if(!el)return;
+  const notes=c.sessionNotes||[];
+  el.innerHTML=notes.length?notes.map((n,i)=>`<div class="snote-item"><div class="snote-date">${n.date}</div><div class="snote-text">${n.text}</div><button class="snote-del" onclick="removeSessionNote(${i})">×</button></div>`).join(''):'<div style="text-align:center;padding:8px;color:var(--faint);font-size:12px;">メモなし</div>';
+}
+function removeSessionNote(i){
+  const c=curClasses()[curClassIdx];
+  c.sessionNotes.splice(i,1);
+  saveData();renderSessionNotes();
+}
+
+// ═══════════════════════════════
+//  iCalエクスポート (Feature 8)
+// ═══════════════════════════════
+function exportICal(){
+  const cls=curClasses().filter(c=>!c.isOnDemand&&c.slots&&c.slots.length);
+  if(!cls.length){showToast('エクスポートする授業がありません');return;}
+  const DAY_NUM={mon:1,tue:2,wed:3,thu:4,fri:5,sat:6,sun:0};
+  const BYDAY={mon:'MO',tue:'TU',wed:'WE',thu:'TH',fri:'FR',sat:'SA',sun:'SU'};
+  function nextWeekday(dayNum){
+    const d=new Date();
+    const diff=(dayNum-d.getDay()+7)%7||7;
+    d.setDate(d.getDate()+diff);
+    return d;
+  }
+  function toICalDateLocal(d,h,m){
+    const pad=n=>String(n).padStart(2,'0');
+    return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(h)}${pad(m)}00`;
+  }
+  let ical='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//楽単チェッカー//v1.3.0//JA\r\nCALSCALE:GREGORIAN\r\n';
+  cls.forEach(c=>{
+    c.slots.forEach(slot=>{
+      const totalMin=7*60+(slot.period-1)*90;
+      const startH=Math.floor(totalMin/60);
+      const startM=totalMin%60;
+      const endTotalMin=totalMin+90;
+      const endH=Math.floor(endTotalMin/60);
+      const endM=endTotalMin%60;
+      const startDate=nextWeekday(DAY_NUM[slot.day]);
+      const endDate=new Date(startDate);
+      const uid=`${c.name.replace(/\s/g,'')}-${slot.day}-${slot.period}@rakutan`;
+      ical+=`BEGIN:VEVENT\r\nUID:${uid}\r\nSUMMARY:${c.name}\r\nLOCATION:${c.room||''}\r\nDTSTART;TZID=Asia/Tokyo:${toICalDateLocal(startDate,startH,startM)}\r\nDTEND;TZID=Asia/Tokyo:${toICalDateLocal(endDate,endH,endM)}\r\nRRULE:FREQ=WEEKLY;BYDAY=${BYDAY[slot.day]}\r\nDESCRIPTION:${c.term}${c.teacher?' 担当:'+c.teacher:''}\r\nEND:VEVENT\r\n`;
+    });
+  });
+  curClasses().filter(c=>c.examDate).forEach(c=>{
+    ical+=`BEGIN:VEVENT\r\nUID:exam-${c.name.replace(/\s/g,'')}@rakutan\r\nSUMMARY:【試験】${c.name}\r\nDTSTART;VALUE=DATE:${c.examDate.replace(/-/g,'')}\r\nDTEND;VALUE=DATE:${c.examDate.replace(/-/g,'')}\r\nEND:VEVENT\r\n`;
+  });
+  ical+='END:VCALENDAR';
+  const blob=new Blob([ical],{type:'text/calendar;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`rakutan-${appData.settings.currentYear}.ics`;
+  a.click();
+  showToast('カレンダーファイルをダウンロードしました');
+}
+
+// ═══════════════════════════════
 //  時間割シェア (⑥)
 // ═══════════════════════════════
 function shareSchedule(){
@@ -3152,7 +3602,7 @@ function shareSchedule(){
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
 
   let text=`【${year}年度 時間割】\n`;
-  text+=`（楽単チェッカー ver1.2.2）\n\n`;
+  text+=`（楽単チェッカー ver1.3.0）\n\n`;
 
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
@@ -3170,16 +3620,20 @@ function shareSchedule(){
     od.forEach(c=>{ text+=`  ${c.name}（${c.term}）\n`; });
   }
 
-  if(navigator.share){
-    navigator.share({ title:'時間割', text }).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(text).then(()=>{
-      showToast('クリップボードにコピーしました！LINEやXに貼り付けてください');
-    }).catch(()=>{
-      prompt('以下をコピーしてください', text);
-    });
-  }
+  showShareModal(text);
   sfx('add');
+}
+
+function showShareModal(text){
+  document.getElementById('shareTextArea').textContent=text;
+  const qrWrap=document.getElementById('shareQRWrap');
+  const encoded=encodeURIComponent(text.slice(0,500));
+  qrWrap.innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}" style="border-radius:8px;max-width:180px;" alt="QR" onerror="this.parentElement.innerHTML='<div style=\'color:var(--faint);font-size:12px;\'>QRコードはオンライン時のみ表示されます</div>'">`;
+  document.getElementById('shareModal').classList.add('active');
+}
+function copyShareText(){
+  const text=document.getElementById('shareTextArea').textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('コピーしました')).catch(()=>{});
 }
 
 // ═══════════════════════════════
@@ -3230,7 +3684,11 @@ function scheduleMorningNotify(){
 // ═══════════════════════════════
 //  SOUND ENGINE (Web Audio API)
 // ═══════════════════════════════
+//  サウンドエンジン v1.3
+// ═══════════════════════════════
 let _audioCtx = null;
+let _sfxFiredThisTick = false;
+
 function getACtx(){
   if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if(_audioCtx.state === 'suspended') _audioCtx.resume();
@@ -3239,8 +3697,9 @@ function getACtx(){
 
 function sfx(type){
   if(appData && appData.settings && appData.settings.soundEnabled === false) return;
+  _sfxFiredThisTick = true;
   const vol = ((appData && appData.settings && appData.settings.soundVolume != null)
-    ? appData.settings.soundVolume : 60) / 100;
+    ? appData.settings.soundVolume : 60) / 100 * 0.72;
   try{
     const ctx = getACtx();
     const master = ctx.createGain();
@@ -3248,67 +3707,100 @@ function sfx(type){
     master.connect(ctx.destination);
     const t = ctx.currentTime;
 
-    if(type === 'complete'){
-      // C5 → G5 二音チャイム
-      [[523.25, 0, 0.32], [783.99, 0.13, 0.32]].forEach(([freq, d, dur])=>{
-        const osc=ctx.createOscillator(), g=ctx.createGain();
-        osc.connect(g); g.connect(master);
-        osc.type='sine'; osc.frequency.value=freq;
-        g.gain.setValueAtTime(0, t+d);
-        g.gain.linearRampToValueAtTime(0.4, t+d+0.025);
-        g.gain.exponentialRampToValueAtTime(0.001, t+d+dur);
-        osc.start(t+d); osc.stop(t+d+dur+0.05);
-      });
-    } else if(type === 'add'){
-      // ポップ音
-      const osc=ctx.createOscillator(), g=ctx.createGain();
-      osc.connect(g); g.connect(master); osc.type='sine';
-      osc.frequency.setValueAtTime(620, t);
-      osc.frequency.exponentialRampToValueAtTime(310, t+0.13);
-      g.gain.setValueAtTime(0.35, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t+0.18);
-      osc.start(t); osc.stop(t+0.22);
-    } else if(type === 'delete'){
-      // 下降スウィープ
-      const osc=ctx.createOscillator(), g=ctx.createGain();
-      osc.connect(g); g.connect(master); osc.type='sawtooth';
-      osc.frequency.setValueAtTime(380, t);
-      osc.frequency.exponentialRampToValueAtTime(55, t+0.22);
-      g.gain.setValueAtTime(0.14, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t+0.25);
-      osc.start(t); osc.stop(t+0.28);
-    } else if(type === 'tab'){
-      // 短いウーシュ
-      const osc=ctx.createOscillator(), g=ctx.createGain();
-      osc.connect(g); g.connect(master); osc.type='sine';
-      osc.frequency.setValueAtTime(280, t);
-      osc.frequency.exponentialRampToValueAtTime(440, t+0.1);
-      g.gain.setValueAtTime(0.12, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t+0.18);
-      osc.start(t); osc.stop(t+0.2);
-    } else if(type === 'click'){
-      // ショートクリック（ノイズバースト）
-      const buf=ctx.createBuffer(1, Math.floor(ctx.sampleRate*0.04), ctx.sampleRate);
-      const d=buf.getChannelData(0);
-      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
-      const src=ctx.createBufferSource(), g=ctx.createGain();
-      src.buffer=buf; g.gain.value=0.18;
-      src.connect(g); g.connect(master);
-      src.start(t);
-    } else if(type === 'warn'){
-      // 低音アラート2連
-      [170, 190].forEach((freq, i)=>{
-        const osc=ctx.createOscillator(), g=ctx.createGain();
-        osc.connect(g); g.connect(master); osc.type='square';
-        osc.frequency.value=freq;
-        const s=t+i*0.18;
-        g.gain.setValueAtTime(0.09, s);
-        g.gain.exponentialRampToValueAtTime(0.001, s+0.16);
-        osc.start(s); osc.stop(s+0.2);
-      });
+    // ヘルパー: 1トーンを鳴らす (周波数・波形・音量・アタック・リリース・遅延・終端周波数)
+    function tone(freq, wave, amp, atk, rel, delay=0, freqEnd=null){
+      const osc = ctx.createOscillator();
+      const g   = ctx.createGain();
+      osc.connect(g); g.connect(master);
+      osc.type = wave;
+      osc.frequency.setValueAtTime(freq, t + delay);
+      if(freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, t + delay + rel * 0.8);
+      g.gain.setValueAtTime(0.0001, t + delay);
+      g.gain.linearRampToValueAtTime(amp, t + delay + atk);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + delay + rel);
+      osc.start(t + delay);
+      osc.stop(t + delay + rel + 0.04);
+    }
+
+    switch(type){
+
+      case 'click':
+      case 'ui':
+        // 柔らかいティック（正弦波2倍音）
+        tone(680, 'sine', 0.13, 0.003, 0.060);
+        tone(1360,'sine', 0.05, 0.003, 0.045);
+        break;
+
+      case 'toggle':
+        // チェックボックス・スイッチ用 — 2連クリック
+        tone(900, 'sine', 0.10, 0.002, 0.042);
+        tone(1200,'sine', 0.07, 0.002, 0.038, 0.038);
+        break;
+
+      case 'tab':
+        // メインタブ切替 — 上昇スウィープ＋倍音
+        tone(320, 'sine', 0.13, 0.006, 0.15, 0.00, 540);
+        tone(640, 'sine', 0.07, 0.006, 0.13, 0.07, 960);
+        break;
+
+      case 'modal':
+        // モーダル開閉 — 柔らかい上昇
+        tone(220, 'sine', 0.10, 0.010, 0.22, 0.00, 420);
+        tone(440, 'sine', 0.05, 0.010, 0.18, 0.06, 700);
+        break;
+
+      case 'add':
+        // 追加・保存 — メジャーアルペジオ (G4-B4-D5)
+        tone(392, 'sine', 0.20, 0.008, 0.24, 0.00);
+        tone(494, 'sine', 0.17, 0.008, 0.24, 0.10);
+        tone(587, 'sine', 0.14, 0.008, 0.28, 0.20);
+        break;
+
+      case 'save':
+        // 設定保存・確定 — 短い2音チャイム (E5-G5)
+        tone(659, 'sine', 0.17, 0.008, 0.22, 0.00);
+        tone(784, 'sine', 0.14, 0.008, 0.26, 0.11);
+        break;
+
+      case 'complete':
+        // タスク完了 — 4音上昇チャイム (C5-E5-G5-C6)
+        tone(523,  'sine', 0.20, 0.008, 0.30, 0.00);
+        tone(659,  'sine', 0.18, 0.008, 0.30, 0.13);
+        tone(784,  'sine', 0.16, 0.008, 0.30, 0.26);
+        tone(1047, 'sine', 0.13, 0.008, 0.35, 0.41);
+        break;
+
+      case 'delete':
+        // 削除 — 柔らかい下降 (正弦波)
+        tone(320, 'sine', 0.16, 0.006, 0.20, 0.00, 75);
+        tone(580, 'sine', 0.08, 0.006, 0.14, 0.00, 140);
+        break;
+
+      case 'warn':
+        // 警告 — マイナー2音パルス
+        tone(349, 'triangle', 0.18, 0.010, 0.18, 0.00);
+        tone(262, 'triangle', 0.15, 0.010, 0.20, 0.20);
+        break;
     }
   } catch(e){ console.warn('sfx:', e); }
 }
+
+// 全ボタンに自動で効果音 — 明示的に sfx() を呼んでいないボタンをフォールバック処理
+document.addEventListener('click', function(e){
+  setTimeout(function(){
+    if(!_sfxFiredThisTick){
+      const tgt = e.target.closest(
+        'button, a, label, ' +
+        '.tab-btn, .chip, .fbtn, .dbtn, .term-tab, .theme-opt, ' +
+        '.preset-btn, .credit-chip, .stab, .todo-tab, .tfilter-btn, ' +
+        '.picker-item, .class-card, .cal-day, .tt-add, .tt-cell, ' +
+        '.tt-od-chip, .vbtn, .att-del, .snote-del, .slot-del'
+      );
+      if(tgt) sfx('ui');
+    }
+    _sfxFiredThisTick = false;
+  }, 0);
+});
 
 // ─── アニメーション補助 ───
 function animOut(li, cb){
