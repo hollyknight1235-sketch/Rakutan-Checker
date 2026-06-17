@@ -1,0 +1,3517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>楽単チェッカー</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+:root{
+  --gs:#3730a3;--ge:#7c3aed;--ac:#4f46e5;
+  --text:#0f172a;--sub:#64748b;--faint:#94a3b8;
+  --bg:#eef0fb;--card:#ffffff;--inp:#f8f9ff;--border:#dde1f0;--hover:#f0f2ff;
+  --th:#f3f4ff;--period:#f5f6ff;--modal:#ffffff;
+  --warn-bg:#fffbeb;--danger-bg:#fef2f2;
+  --toggle:#e4e7f5;
+  --safe:#059669;--warn:#d97706;--danger:#dc2626;
+  --r:20px;--rs:14px;
+  --shadow:0 12px 48px rgba(55,48,163,.20);
+  --card-shadow:0 4px 20px rgba(55,48,163,.10);
+}
+body.dark{
+  --text:#f1f5f9;--sub:#94a3b8;--faint:#475569;
+  --bg:#07091a;--card:#0f1629;--inp:#151d35;--border:#1e2d45;--hover:#1a2442;
+  --th:#0d1020;--period:#0b0e1e;--modal:#0f1629;
+  --warn-bg:#1c1400;--danger-bg:#1c0000;
+  --toggle:#151d35;
+  --safe:#34d399;--warn:#fbbf24;--danger:#f87171;
+  --shadow:0 12px 48px rgba(0,0,0,.65);
+  --card-shadow:0 4px 20px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.container{max-width:440px;margin:0 auto;background:var(--card);min-height:100vh;display:flex;flex-direction:column;box-shadow:var(--shadow);}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(160deg,var(--gs) 0%,var(--ge) 100%);color:#fff;padding:max(16px,env(safe-area-inset-top)) 18px 0;}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.hdr-title h1{font-size:22px;font-weight:900;letter-spacing:-.8px;text-shadow:0 1px 8px rgba(0,0,0,.25);}
+.hdr-title .sub{font-size:11px;opacity:.7;margin-top:1px;}
+.hdr-btns{display:flex;gap:7px;}
+.icon-btn{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:.2s;backdrop-filter:blur(8px);}
+.icon-btn:hover{background:rgba(255,255,255,.25);}
+
+/* Year nav */
+.year-nav{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:5px 12px;margin-bottom:12px;}
+.yn-btn{background:none;border:none;color:rgba(255,255,255,.9);font-size:20px;cursor:pointer;line-height:1;padding:0 4px;transition:.15s;}
+.yn-btn:hover{color:#fff;transform:scale(1.2);}
+.yn-year{flex:1;text-align:center;font-size:15px;font-weight:800;letter-spacing:.5px;}
+.yn-add{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:14px;padding:3px 11px;font-size:11px;cursor:pointer;font-weight:700;transition:.2s;}
+.yn-add:hover{background:rgba(255,255,255,.28);}
+
+/* Notify btn */
+#notifyBtn{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.9);border-radius:24px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-bottom:12px;font-family:inherit;transition:.2s;backdrop-filter:blur(8px);}
+#notifyBtn.on{background:rgba(255,255,255,.95);color:var(--ac);border-color:transparent;}
+#notifyBtn.denied{opacity:.4;cursor:not-allowed;}
+
+/* Tabs */
+.tabs{display:flex;background:rgba(0,0,0,.22);border-radius:16px 16px 0 0;padding:5px 5px 0;gap:2px;backdrop-filter:blur(16px);}
+.tab-btn{flex:1;background:transparent;border:none;color:rgba(255,255,255,.6);padding:10px 4px;border-radius:12px 12px 0 0;cursor:pointer;font-size:13px;font-weight:700;transition:.2s;font-family:inherit;letter-spacing:.1px;}
+.tab-btn:hover{color:rgba(255,255,255,.9);}
+.tab-btn.active{background:var(--card);color:var(--ac);box-shadow:0 -4px 16px rgba(79,70,229,.2);}
+
+/* ── CONTENT ── */
+.content{padding:14px;flex:1;background:var(--card);}
+.section{display:none;}.section.active{display:block;}
+
+/* ── DANGER BANNER ── */
+.danger-banner{background:var(--danger-bg);border:1.5px solid #ffcdd2;border-radius:var(--rs);padding:10px 13px;margin-bottom:12px;cursor:pointer;}
+body.dark .danger-banner{border-color:#5a0000;}
+.db-title{font-size:13px;font-weight:700;color:var(--danger);margin-bottom:3px;}
+.db-item{font-size:12px;color:var(--danger);margin-left:6px;}
+
+/* ── TODAY CARD ── */
+.today-card{background:linear-gradient(160deg,#1e1b4b 0%,#3730a3 50%,#6d28d9 100%);color:#fff;border-radius:var(--r);padding:15px 17px;margin-bottom:14px;box-shadow:0 6px 24px rgba(55,48,163,.28);}
+.tc-label{font-size:10px;opacity:.75;font-weight:800;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;}
+.tc-empty{font-size:13px;opacity:.65;}
+.tc-item{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:5px;}
+.tc-item:last-child{margin-bottom:0;}
+.tc-period{background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap;}
+.tc-name{font-weight:700;flex:1;}
+.tc-warn{background:rgba(220,38,38,.75);backdrop-filter:blur(4px);border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;}
+
+/* ── TODO ── */
+.todo-tab-bar{display:flex;gap:2px;background:var(--inp);border-radius:14px;padding:3px;margin-bottom:14px;}
+.todo-tab{flex:1;border:none;background:transparent;color:var(--sub);font-size:13px;font-weight:700;padding:10px 4px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s;}
+.todo-tab.on{background:var(--card);color:var(--ac);box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.todo-pane{display:none;}
+.todo-pane.on{display:block;}
+.todo-add-area{background:var(--inp);padding:14px;border-radius:var(--r);margin-bottom:14px;}
+.fl{display:block;font-size:11px;color:var(--sub);margin-bottom:4px;font-weight:700;}
+.fi{width:100%;padding:9px 11px;border:2px solid var(--border);border-radius:8px;font-size:14px;background:var(--card);color:var(--text);font-family:inherit;}
+.fi:focus{outline:none;border-color:var(--ac);}
+.ft{min-height:55px;resize:vertical;}
+.fr{margin-bottom:10px;}
+.deadline-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.deadline-row span{font-size:11px;font-weight:700;color:var(--sub);flex:1;}
+.deadline-row label{font-size:12px;display:flex;align-items:center;gap:3px;cursor:pointer;color:var(--sub);}
+
+/* Reminder chips */
+.reminder-label{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:5px;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:20px;padding:4px 11px;font-size:11px;cursor:pointer;transition:.2s;font-family:inherit;}
+.chip.on{border-color:var(--ac);background:var(--ac);color:#fff;}
+
+.add-btn{background:var(--ac);color:#fff;border:none;padding:12px;border-radius:10px;cursor:pointer;font-weight:700;width:100%;margin-top:8px;font-size:14px;font-family:inherit;transition:opacity .2s;}
+.add-btn:hover{opacity:.88;}
+.add-btn.g{background:#2e9e56;}
+
+.todo-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.todo-item{background:var(--inp);padding:12px 13px;border-radius:var(--rs);border-left:3px solid transparent;transition:.2s;}
+.todo-item.urgent{border-left-color:#e07b00;background:var(--warn-bg);}
+.todo-item.overdue{border-left-color:#d32f2f;background:var(--danger-bg);}
+.todo-item.done{opacity:.5;}
+.todo-item.done .ttl{text-decoration:line-through;}
+.t-head{display:flex;align-items:flex-start;gap:8px;}
+.t-chk{width:20px;height:20px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--ac);}
+.ttl{flex:1;font-weight:700;font-size:15px;}
+.t-del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:18px;line-height:1;padding:0 2px;}
+.t-del:hover{color:var(--danger);}
+.t-meta{margin-left:28px;margin-top:4px;}
+.t-dl{font-size:12px;color:var(--sub);}
+.t-class-tag{display:inline-block;background:var(--ac);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-bottom:3px;}
+.t-detail{font-size:12px;color:var(--sub);line-height:1.5;margin-top:2px;}
+.t-img{max-width:100%;border-radius:8px;margin-top:8px;}
+.countdown{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:5px;}
+.cd-ok{background:#e8f5e9;color:#1b5e20;}
+.cd-warn{background:#fff3e0;color:#bf360c;}
+.cd-danger{background:#ffebee;color:#b71c1c;}
+body.dark .cd-ok{background:#1a3a1a;color:#81c784;}
+body.dark .cd-warn{background:#3a2000;color:#ffb74d;}
+body.dark .cd-danger{background:#3a0000;color:#ef9a9a;}
+
+/* ── SCHEDULE ── */
+.filter-group{margin-bottom:10px;}
+.fg-label{font-size:10px;font-weight:700;color:var(--faint);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;}
+.filter-row{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;margin-bottom:5px;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fbtn{padding:7px 14px;border:2px solid var(--border);background:var(--card);border-radius:24px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;transition:.2s;color:var(--sub);font-family:inherit;font-weight:700;}
+.fbtn:hover{border-color:var(--ac);color:var(--ac);}
+.fbtn.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 12px rgba(79,70,229,.35);}
+/* Term-type tabs */
+.term-tabs{display:flex;gap:0;background:var(--toggle);border-radius:14px;padding:3px;margin-bottom:12px;}
+.term-tab{flex:1;border:none;padding:9px 4px;border-radius:11px;font-size:12px;cursor:pointer;font-weight:700;color:var(--sub);background:transparent;transition:.2s;font-family:inherit;line-height:1.2;}
+.term-tab.on{background:var(--card);color:var(--ac);box-shadow:0 2px 10px rgba(79,70,229,.15);}
+.sub-filter-note{font-size:12px;color:var(--sub);background:var(--inp);border-radius:12px;padding:9px 13px;margin-bottom:10px;}
+.view-toggle{display:flex;background:var(--toggle);border-radius:14px;padding:3px;margin-bottom:12px;}
+.vbtn{flex:1;border:none;padding:8px;border-radius:11px;font-size:12px;cursor:pointer;font-weight:700;color:var(--sub);background:transparent;transition:.2s;font-family:inherit;}
+.vbtn.on{background:var(--card);color:var(--ac);box-shadow:0 2px 10px rgba(79,70,229,.15);}
+.day-row{display:flex;gap:4px;overflow-x:auto;padding-bottom:3px;margin-bottom:12px;scrollbar-width:none;}
+.day-row::-webkit-scrollbar{display:none;}
+.dbtn{padding:7px 13px;border:2px solid var(--border);background:var(--card);border-radius:24px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;transition:.2s;color:var(--sub);font-weight:700;font-family:inherit;}
+.dbtn:hover{border-color:var(--ac);color:var(--ac);}
+.dbtn.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 12px rgba(79,70,229,.3);}
+.dbtn.today-day:not(.on){border-color:var(--ac);color:var(--ac);}
+
+/* Class cards */
+.sched-grid{display:flex;flex-direction:column;gap:10px;}
+.class-card{
+  background:var(--card);color:var(--text);
+  border-radius:var(--r);padding:14px 14px 12px 17px;
+  cursor:pointer;position:relative;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:var(--card-shadow);
+  border:1.5px solid var(--border);
+  border-left:5px solid var(--cc-color, var(--ac));
+}
+.class-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(55,48,163,.13);}
+.class-card.c-danger{--cc-color:#dc2626;background:#fef9f9;border-color:#fecaca;border-left-color:#dc2626;}
+.class-card.c-warn{--cc-color:#d97706;background:#fffdf5;border-color:#fde68a;border-left-color:#d97706;}
+.class-card.c-withdrawn{--cc-color:#9ca3af;opacity:.62;}
+.class-card.c-finalized{--cc-color:#059669;}
+body.dark .class-card.c-danger{background:#1a0505;border-color:#7f1d1d;}
+body.dark .class-card.c-warn{background:#1a0e00;border-color:#78350f;}
+.cc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px;gap:6px;}
+.cc-top-left{flex:1;min-width:0;}
+.cc-period-chip{display:inline-flex;align-items:center;background:var(--cc-color,var(--ac));color:#fff;border-radius:8px;padding:2px 9px;font-size:11px;font-weight:800;margin-bottom:5px;letter-spacing:.3px;}
+.class-card.c-withdrawn .cc-period-chip{background:#9ca3af;}
+.cc-meta{font-size:11px;color:var(--sub);font-weight:600;}
+.cc-del{background:var(--inp);color:var(--faint);border:1.5px solid var(--border);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;margin-top:2px;}
+.cc-del:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
+.cc-name{font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px;line-height:1.25;letter-spacing:-.3px;word-break:break-all;}
+.cc-room{font-size:12px;color:var(--sub);margin-bottom:9px;}
+.cc-bottom{display:flex;align-items:center;gap:8px;}
+.cc-badge{background:rgba(79,70,229,.1);color:var(--ac);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;white-space:nowrap;}
+.cc-badge.b-danger{background:rgba(220,38,38,.12);color:#dc2626;}
+.class-card.c-warn .cc-badge{background:rgba(217,119,6,.12);color:#d97706;}
+.class-card.c-withdrawn .cc-badge{background:var(--inp);color:var(--faint);}
+.class-card.c-finalized .cc-badge{background:rgba(5,150,105,.1);color:#059669;}
+.cc-bar-wrap{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.cc-bar{height:100%;background:linear-gradient(90deg,var(--gs),var(--ge));border-radius:3px;transition:width .4s;}
+.cc-bar.bar-danger{background:linear-gradient(90deg,#991b1b,#dc2626);}
+.cc-rating{font-size:10px;color:var(--sub);margin-top:4px;}
+.cc-exam{position:absolute;top:12px;right:40px;background:var(--inp);color:var(--sub);border:1.5px solid var(--border);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;}
+
+/* Timetable */
+.tt-wrap{overflow-x:auto;margin:0 -4px;padding:0 4px;padding-bottom:6px;border-radius:16px;}
+.timetable{border-collapse:separate;border-spacing:2px;width:max-content;min-width:100%;}
+.timetable th,.timetable td{text-align:center;padding:2px;font-size:10px;}
+.timetable th{background:var(--th);height:28px;color:var(--sub);min-width:46px;position:sticky;top:0;z-index:10;border-radius:8px;font-weight:800;}
+.timetable th:first-child{min-width:22px;position:sticky;left:0;z-index:20;background:var(--th);}
+.timetable td{height:58px;vertical-align:top;min-width:46px;}
+.tt-period{background:var(--period);color:var(--faint);font-weight:800;font-size:11px;width:22px;min-width:22px;vertical-align:middle!important;position:sticky;left:0;z-index:10;border-radius:8px;}
+.tt-cell{height:100%;background:var(--cc-color,linear-gradient(145deg,var(--gs),var(--ge)));color:#fff;border-radius:10px;padding:4px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;cursor:pointer;font-size:9px;line-height:1.25;box-shadow:0 2px 8px rgba(55,48,163,.3);transition:transform .15s;}
+.tt-cell:hover{transform:scale(1.04);}
+.tt-cell.tt-danger{background:linear-gradient(145deg,#991b1b,#ef4444)!important;box-shadow:0 2px 8px rgba(153,27,27,.35);}
+.tt-cell.tt-warn{background:linear-gradient(145deg,#92400e,#f59e0b)!important;box-shadow:0 2px 8px rgba(146,64,14,.35);}
+.tt-wrap::-webkit-scrollbar{height:5px;}
+.tt-wrap::-webkit-scrollbar-track{background:var(--toggle);border-radius:3px;}
+.tt-wrap::-webkit-scrollbar-thumb{background:var(--ac);border-radius:3px;opacity:.5;}
+.od-section{margin-top:16px;display:none;}
+.tt-section{margin-bottom:22px;}
+.tt-section-label{font-size:13px;font-weight:800;color:var(--ac);padding:6px 4px 8px;letter-spacing:.04em;}
+.tt-section-empty{text-align:center;padding:14px 0;color:var(--faint);font-size:13px;}
+.od-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.od-card{background:linear-gradient(145deg,var(--gs),var(--ge));color:#fff;border-radius:14px;padding:10px;cursor:pointer;font-size:12px;box-shadow:0 3px 12px rgba(55,48,163,.25);}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--inp);border-radius:var(--r);padding:16px 14px;text-align:center;border:1.5px solid var(--border);transition:.2s;}
+.stat-card:hover{border-color:var(--ac);box-shadow:0 4px 16px rgba(79,70,229,.12);}
+.sv{font-size:32px;font-weight:900;color:var(--ac);line-height:1;margin-bottom:5px;letter-spacing:-1px;}
+.sl{font-size:11px;color:var(--sub);font-weight:600;}
+.sv.s-danger{color:var(--danger);}
+.sv.s-safe{color:var(--safe);}
+.sec-title{font-size:12px;font-weight:800;color:var(--ac);margin:18px 0 9px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.6px;}
+.csi{background:var(--inp);border-radius:var(--rs);padding:12px 14px;margin-bottom:7px;display:flex;align-items:center;gap:10px;border:1.5px solid transparent;transition:.2s;}
+.csi:hover{border-color:var(--border);}
+.csi-name{flex:1;font-size:13px;font-weight:700;}
+.csi-bar-wrap{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.csi-bar-fill{height:100%;border-radius:3px;transition:width .4s;}
+.csi-label{font-size:11px;color:var(--sub);min-width:56px;text-align:right;font-weight:600;}
+
+/* ── DETAIL ── */
+.detail-hdr{background:linear-gradient(160deg,#1e1b4b 0%,#3730a3 50%,#6d28d9 100%);color:#fff;border-radius:var(--r);padding:20px 18px 18px;margin-bottom:14px;box-shadow:0 6px 28px rgba(55,48,163,.3);}
+.d-name{font-size:23px;font-weight:900;margin-bottom:7px;letter-spacing:-.5px;text-shadow:0 1px 6px rgba(0,0,0,.2);}
+.d-info{font-size:12px;opacity:.88;line-height:1.9;}
+.d-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.lbtn{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:24px;padding:5px 13px;font-size:11px;text-decoration:none;cursor:pointer;transition:.2s;font-family:inherit;font-weight:700;backdrop-filter:blur(6px);}
+.lbtn:hover{background:rgba(255,255,255,.32);}
+.info-box{background:var(--inp);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1.5px solid var(--border);}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.ir:last-child{border-bottom:none;}
+.il{color:var(--sub);font-weight:700;font-size:12px;}
+.rem-display{text-align:center;padding:18px 0 14px;}
+.rem-num{font-size:38px;font-weight:900;line-height:1;margin-bottom:3px;}
+.rem-num.safe{color:var(--safe);}
+.rem-num.warn{color:var(--warn);}
+.rem-num.danger{color:var(--danger);}
+.rem-lbl{font-size:12px;color:var(--sub);}
+.abs-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:8px 0;}
+.abs-bar-fill{height:100%;border-radius:4px;transition:width .5s;background:linear-gradient(90deg,var(--gs),var(--ge));}
+.abs-bar-fill.bw{background:linear-gradient(90deg,#f57c00,#ffc107);}
+.abs-bar-fill.bd{background:linear-gradient(90deg,#c62828,#ef5350);}
+.rec-row{display:flex;gap:7px;margin-top:11px;align-items:center;flex-wrap:wrap;}
+.ri{padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);font-family:inherit;}
+.ri:focus{outline:none;border-color:var(--ac);}
+.ri.ri-flex{flex:1;min-width:80px;}
+.rec-btn{background:var(--ac);color:#fff;border:none;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;white-space:nowrap;font-family:inherit;}
+.qr-row{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.qr-btn{background:var(--toggle);border:1px solid var(--border);color:var(--sub);border-radius:20px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;transition:.2s;}
+.qr-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac);}
+.att-list{margin-top:8px;max-height:160px;overflow-y:auto;}
+.att-entry{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;gap:7px;}
+.att-entry:last-child{border-bottom:none;}
+.att-badge{border-radius:10px;padding:1px 8px;font-size:10px;font-weight:700;flex-shrink:0;}
+.ab-absent{background:#ffebee;color:#b71c1c;}
+.ab-late{background:#fff3e0;color:#e65100;}
+body.dark .ab-absent{background:#3a0000;color:#ef9a9a;}
+body.dark .ab-late{background:#3a2000;color:#ffb74d;}
+.att-date{flex:1;}
+.att-reason{font-size:11px;color:var(--faint);}
+.att-del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:16px;transition:.2s;}
+.att-del:hover{color:var(--danger);}
+.eval-box{background:#e3f2fd;border-radius:var(--rs);padding:13px;}
+body.dark .eval-box{background:#1a2a3a;}
+.eval-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px;color:#222;}
+body.dark .eval-item{color:var(--text);}
+.eval-item:last-child{margin-bottom:0;}
+.eval-bar{width:100%;height:15px;background:#ddd;border-radius:7px;overflow:hidden;margin-top:3px;}
+body.dark .eval-bar{background:#2a3a4a;}
+.eval-fill{height:100%;background:linear-gradient(90deg,var(--gs),var(--ge));display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;}
+.exam-box{background:linear-gradient(135deg,#e8eaf6,#fce4ec);border-radius:var(--rs);padding:12px 14px;display:flex;align-items:center;gap:10px;}
+body.dark .exam-box{background:linear-gradient(135deg,#1a1a3a,#2a1a2e);}
+.exam-icon{font-size:26px;}
+.exam-date-txt{font-size:14px;font-weight:700;}
+.exam-cd-txt{font-size:12px;color:var(--sub);margin-top:2px;}
+
+/* ── MODALS (bottom sheet) ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(7,9,26,.6);backdrop-filter:blur(6px);z-index:1000;align-items:flex-end;justify-content:center;}
+.modal.active{display:flex;}
+.modal-sheet{background:var(--modal);border-radius:28px 28px 0 0;width:100%;max-width:440px;max-height:93vh;overflow-y:auto;padding:18px 20px calc(24px + env(safe-area-inset-bottom));animation:slideUp .24s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -8px 40px rgba(55,48,163,.18);}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.m-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.m-title{font-size:19px;font-weight:900;color:var(--ac);margin-bottom:16px;letter-spacing:-.4px;}
+.mg{margin-bottom:14px;}
+.mg label{display:block;font-size:11px;font-weight:700;color:var(--sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.mg input,.mg select,.mg textarea{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:12px;font-size:14px;background:var(--inp);color:var(--text);font-family:inherit;transition:border-color .2s;}
+.mg input:focus,.mg select:focus,.mg textarea:focus{outline:none;border-color:var(--ac);background:var(--card);}
+.mg input[type=checkbox]{width:auto;margin-right:5px;transform:scale(1.2);}
+.mg input[type=color]{height:40px;padding:2px;cursor:pointer;}
+.mg textarea{min-height:65px;resize:vertical;}
+.m-sec{font-size:10px;font-weight:800;color:var(--faint);margin-top:18px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.8px;}
+.day-cbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;}
+.dcb-item{display:flex;align-items:center;gap:4px;}
+.dcb-item label{font-weight:normal;font-size:13px;margin-bottom:0;}
+.btn-row{display:flex;gap:8px;margin-top:16px;}
+.btn{padding:12px;border-radius:14px;border:none;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;transition:.2s;}
+.btn:hover{opacity:.88;}
+.bp{background:linear-gradient(135deg,var(--gs),var(--ge));color:#fff;flex:1;box-shadow:0 4px 16px rgba(55,48,163,.3);}
+.bs{background:var(--toggle);color:var(--sub);flex:1;}
+.bd-btn{background:linear-gradient(135deg,#991b1b,#dc2626);color:#fff;width:100%;margin-top:10px;padding:13px;border-radius:14px;border:none;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit;box-shadow:0 4px 16px rgba(220,38,38,.3);}
+.crit-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.crit-row input[type=text]{flex:2;}
+.crit-row input[type=number]{flex:1;}
+.crit-rm{background:#dc2626;color:#fff;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;flex-shrink:0;}
+.img-pre{max-width:100%;max-height:160px;border-radius:12px;margin-top:7px;display:none;}
+.switch{position:relative;display:inline-block;width:48px;height:26px;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;inset:0;background:var(--border);transition:.3s;border-radius:34px;}
+.slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;bottom:3px;background:#fff;transition:.3s;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+input:checked+.slider{background:var(--ac);}
+input:checked+.slider:before{transform:translateX(22px);}
+.sw-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;}
+.sw-lbl{font-size:14px;font-weight:700;}
+.file-row{display:flex;gap:8px;}
+.file-row .btn{flex:1;}
+.ver{text-align:center;color:var(--faint);font-size:11px;margin-top:20px;}
+/* ── Settings tabs ── */
+.settings-sticky{position:sticky;top:0;z-index:10;background:var(--modal);padding-bottom:2px;}
+.stab-bar{display:flex;gap:2px;background:var(--inp);border-radius:14px;padding:3px;margin-bottom:14px;}
+.stab{flex:1;border:none;background:transparent;color:var(--sub);font-size:11px;font-weight:700;padding:8px 2px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s;line-height:1.25;}
+.stab.on{background:var(--card);color:var(--ac);box-shadow:0 2px 8px rgba(0,0,0,.09);}
+.stab-pane{display:none;}
+.stab-pane.on{display:block;}
+/* ── Color presets ── */
+.preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.preset-btn{background:var(--inp);border:2px solid var(--border);border-radius:12px;padding:8px 4px 6px;cursor:pointer;transition:.18s;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;}
+.preset-btn:hover{border-color:var(--ac);}
+.preset-btn.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac);}
+.preset-swatch{width:100%;height:22px;border-radius:7px;}
+.preset-name{font-size:10px;font-weight:700;color:var(--sub);}
+.preset-btn.on .preset-name{color:var(--ac);}
+/* ── Custom color pickers ── */
+.color-pick-row{display:flex;gap:10px;margin-top:10px;}
+.color-pick-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
+.cpi-swatch{width:100%;height:52px;border-radius:14px;cursor:pointer;border:2px solid var(--border);transition:.18s;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.cpi-swatch:hover{transform:scale(1.05);box-shadow:0 4px 14px rgba(0,0,0,.16);}
+.cpi-swatch:active{transform:scale(.97);}
+.cpi-label{font-size:11px;font-weight:800;color:var(--text);}
+.cpi-sub{font-size:10px;color:var(--faint);}
+.color-pick-item input[type=color]{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;}
+.sync-accent-row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--sub);cursor:pointer;padding:2px 0;}
+/* ── Color preview ── */
+.color-preview{background:var(--inp);border-radius:16px;padding:12px;border:1.5px solid var(--border);margin-top:10px;}
+.cpv-hdr{border-radius:10px;padding:10px 14px;font-size:13px;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-.2px;}
+.cpv-row{display:flex;gap:10px;margin-bottom:10px;}
+.cpv-row>div{flex:1;min-width:0;}
+.cpv-label{font-size:10px;color:var(--faint);font-weight:700;margin-bottom:5px;letter-spacing:.3px;text-transform:uppercase;}
+.cpv-card-classic{border-radius:10px;padding:10px;color:#fff;}
+.cpv-card-modern{background:var(--card);border-radius:10px;padding:10px;border:1.5px solid var(--border);border-left:4px solid #667eea;}
+.cpv-chip{display:inline-block;color:#fff;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:800;}
+.cpv-cname{font-size:12px;font-weight:800;}
+.cpv-cmeta{font-size:10px;opacity:.75;margin-top:2px;}
+.cpv-footer{display:flex;gap:8px;align-items:center;}
+.cpv-btn{flex:1;color:#fff;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;text-align:center;}
+.cpv-badge{border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;white-space:nowrap;}
+/* ── Slot rows (授業コマ) ── */
+.slot-row{display:flex;gap:7px;align-items:center;margin-bottom:7px;}
+.slot-row select{flex:1;padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--inp);color:var(--text);font-family:inherit;font-size:14px;outline:none;}
+.slot-row select:focus{border-color:var(--ac);}
+.slot-del{background:var(--inp);border:1.5px solid var(--border);color:var(--faint);width:36px;height:40px;border-radius:10px;cursor:pointer;font-size:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.slot-del:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
+/* ── Credit chips ── */
+.credit-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;}
+.credit-chip{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;}
+.credit-chip.on{border-color:var(--ac);background:var(--ac);color:#fff;}
+/* ── Class Picker ── */
+.picker-new-btn{display:flex;align-items:center;gap:10px;width:100%;background:linear-gradient(135deg,var(--gs),var(--ge));color:#fff;border:none;border-radius:16px;padding:14px 16px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.15s;margin-bottom:14px;}
+.picker-new-btn:hover{opacity:.9;}
+.picker-search{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;background:var(--inp);color:var(--text);font-family:inherit;margin-bottom:10px;outline:none;}
+.picker-search:focus{border-color:var(--ac);}
+.picker-list{display:flex;flex-direction:column;gap:7px;max-height:55vh;overflow-y:auto;}
+.picker-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--inp);border-radius:14px;cursor:pointer;transition:.15s;border:1.5px solid var(--border);}
+.picker-item:hover{background:var(--hover);border-color:var(--ac);}
+.pi-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0;}
+.pi-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.pi-info{flex:1;min-width:0;}
+.pi-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pi-meta{font-size:11px;color:var(--sub);margin-top:2px;}
+.pi-badge{display:inline-block;font-size:10px;border-radius:8px;padding:1px 6px;margin-left:5px;vertical-align:middle;}
+.pi-arrow{font-size:18px;color:var(--faint);flex-shrink:0;margin-left:8px;}
+.picker-empty{text-align:center;color:var(--faint);padding:24px 0;font-size:13px;}
+/* ── Backup card ── */
+.backup-card{background:linear-gradient(135deg,rgba(255,100,100,.08),rgba(255,160,0,.08));border:2px solid rgba(255,120,50,.35);border-radius:14px;padding:16px;margin-bottom:4px;}
+.backup-warn{font-size:12px;font-weight:700;color:#e57c00;line-height:1.6;margin-bottom:10px;}
+.backup-date-row{font-size:12px;color:var(--sub);margin-bottom:12px;}
+.backup-date-val{font-weight:700;color:var(--text);}
+.backup-date-val.stale{color:#e53935;}
+.backup-main-btn{width:100%;padding:13px;font-size:15px;font-weight:700;margin-bottom:8px;}
+.year-list{display:flex;flex-direction:column;gap:6px;}
+.yi{display:flex;align-items:center;background:var(--inp);border-radius:10px;padding:9px 12px;gap:8px;}
+.yi-lbl{flex:1;font-weight:700;font-size:14px;}
+.yi-badge{font-size:10px;background:var(--ac);color:#fff;border-radius:10px;padding:2px 8px;}
+.yi-btn{background:none;border:1px solid var(--border);color:var(--sub);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit;}
+.guide-sec{padding:11px 0;border-bottom:1px solid var(--border);}
+.guide-sec:last-child{border-bottom:none;}
+.guide-sec h3{font-size:14px;color:var(--ac);margin-bottom:5px;}
+.guide-sec p,.guide-sec li{font-size:13px;line-height:1.7;color:var(--sub);}
+.guide-sec ul{padding-left:16px;margin-top:4px;}
+.reminder-opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.r-opt{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:20px;padding:4px 11px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;}
+.r-opt.on{border-color:var(--ac);background:var(--ac);color:#fff;}
+/* ── FAB ── */
+.fab{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));right:18px;z-index:500;
+  background:linear-gradient(145deg,var(--gs),var(--ge));color:#fff;border:none;
+  border-radius:32px;padding:14px 22px;font-size:14px;font-weight:900;cursor:pointer;
+  box-shadow:0 6px 28px rgba(55,48,163,.55);display:flex;align-items:center;gap:7px;
+  transition:transform .18s,box-shadow .18s;font-family:inherit;letter-spacing:.3px;}
+.fab:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(55,48,163,.65);}
+.fab:active{transform:scale(.94);}
+
+/* ── Quick Add Modal ── */
+.qa-class-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.qa-class-btn{border:2px solid var(--border);background:var(--inp);color:var(--text);
+  border-radius:20px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:.18s;max-width:100%;word-break:break-all;}
+.qa-class-btn.sel{color:#fff;border-color:transparent;}
+.qa-class-btn.no-class{border-style:dashed;}
+.qa-class-btn.no-class.sel{background:var(--faint);border-color:transparent;}
+.dl-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
+.dl-btn{border:1.5px solid var(--border);background:var(--card);color:var(--sub);
+  border-radius:20px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:.18s;flex-shrink:0;}
+.dl-btn.sel{border-color:var(--ac);background:var(--ac);color:#fff;}
+.qa-big-add{width:100%;margin-top:16px;padding:15px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--gs),var(--ge));color:#fff;font-size:16px;
+  font-weight:900;cursor:pointer;font-family:inherit;transition:opacity .2s;}
+.qa-big-add:hover{opacity:.88;}
+@keyframes toastIn{from{transform:translateX(-50%) translateY(10px);opacity:0;}to{transform:translateX(-50%);opacity:1;}}
+
+/* ── ANIMATIONS ── */
+@keyframes todoIn{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes todoOutAnim{0%{opacity:1;transform:none;max-height:200px;margin-bottom:8px}100%{opacity:0;transform:translateX(32px) scale(.93);max-height:0;margin-bottom:0;padding-top:0;padding-bottom:0}}
+@keyframes checkBounce{0%{transform:scale(1)}35%{transform:scale(1.5) rotate(-10deg)}70%{transform:scale(.85)}100%{transform:scale(1)}}
+@keyframes fabGlow{0%,100%{box-shadow:0 6px 28px rgba(55,48,163,.55)}50%{box-shadow:0 10px 40px rgba(55,48,163,.85),0 0 0 12px rgba(55,48,163,.12)}}
+@keyframes sectionIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes dangerShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes numPop{0%{transform:scale(1)}50%{transform:scale(1.18);color:var(--ac)}100%{transform:scale(1)}}
+
+body:not(.no-anim) #todoList .todo-item{animation:todoIn .2s ease both}
+body:not(.no-anim) .section.active{animation:sectionIn .22s ease}
+body:not(.no-anim) .fab{animation:fabGlow 2.5s ease-in-out infinite}
+body:not(.no-anim) .danger-banner.shake{animation:dangerShake .4s ease}
+
+/* volume slider */
+.vol-row{display:flex;align-items:center;gap:10px;margin-top:6px;}
+.vol-row input[type=range]{flex:1;accent-color:var(--ac);}
+.vol-val{font-size:12px;color:var(--sub);min-width:30px;text-align:right;}
+
+/* ── GPA / CREDITS ── */
+.gpa-hero{background:linear-gradient(160deg,#1e1b4b 0%,#3730a3 50%,#6d28d9 100%);color:#fff;border-radius:var(--r);padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;gap:18px;box-shadow:0 8px 32px rgba(55,48,163,.32);}
+.gpa-num{font-size:46px;font-weight:900;letter-spacing:-3px;line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.25);}
+.gpa-sub{font-size:11px;opacity:.8;margin-top:3px;font-weight:700;letter-spacing:.5px;}
+.gpa-right{flex:1;}
+.gpa-credit-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px;opacity:.9;font-weight:600;}
+.gpa-prog{background:rgba(255,255,255,.22);border-radius:6px;height:8px;overflow:hidden;}
+.gpa-prog-fill{height:100%;background:linear-gradient(90deg,rgba(255,255,255,.8),#fff);border-radius:6px;transition:width .6s cubic-bezier(.34,1.2,.64,1);}
+.grade-breakdown{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.grade-chip{border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;text-align:center;min-width:44px;}
+.gc-s{background:#e8f5e9;color:#2e7d32;}.gc-a{background:#e3f2fd;color:#1565c0;}
+.gc-b{background:#fff8e1;color:#e65100;}.gc-c{background:#f3e5f5;color:#6a1b9a;}.gc-f{background:#ffebee;color:#c62828;}
+
+/* ── CANCELED CLASS BADGE ── */
+.canceled-badge{background:#9e9e9e;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;}
+.canceled-entry{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.canceled-entry:last-child{border-bottom:none;}
+.cancel-del{background:none;border:none;color:var(--faint);font-size:15px;cursor:pointer;margin-left:auto;padding:0 4px;}
+
+/* ── SHARE BTN ── */
+.share-fab{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:18px;z-index:499;
+  background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;border:none;
+  border-radius:28px;padding:13px 18px;font-size:13px;font-weight:900;cursor:pointer;
+  box-shadow:0 4px 18px rgba(17,153,142,.45);display:none;align-items:center;gap:7px;
+  transition:transform .18s,box-shadow .18s;font-family:inherit;}
+.share-fab:hover{transform:translateY(-2px);box-shadow:0 7px 24px rgba(17,153,142,.6);}
+body:not(.no-anim) .share-fab{animation:fabGlow 2.5s ease-in-out infinite;}
+
+/* ── CREDIT INPUT ROW ── */
+.req-row{display:flex;align-items:center;gap:8px;margin-top:4px;}
+.req-row input{flex:1;padding:8px 11px;border:2px solid var(--border);border-radius:8px;font-size:14px;background:var(--card);color:var(--text);font-family:inherit;}
+.req-row span{font-size:13px;color:var(--sub);}
+
+/* ── TABLE: 空コマ追加ボタン ── */
+.tt-add{width:100%;min-height:42px;display:flex;align-items:center;justify-content:center;
+  color:var(--border);font-size:22px;cursor:pointer;border-radius:4px;transition:.15s;}
+.tt-add:hover{color:var(--ac);background:rgba(102,126,234,.1);}
+/* OD行（8限下） */
+.tt-od-row>td{vertical-align:top;padding:4px 3px!important;}
+.tt-od-row .tt-period{font-size:9px;line-height:1.3;color:var(--faint);}
+.tt-od-cell{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:4px 2px;}
+.tt-od-chip{border-radius:14px;padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--gs),var(--ge));white-space:nowrap;}
+.tt-od-chip.wd{opacity:.4;text-decoration:line-through;}
+.tt-od-inline-add{display:inline-flex;width:28px;height:28px;flex-shrink:0;border-radius:8px;font-size:14px;}
+.tt-od-add{border:1.5px dashed var(--ac);background:transparent;color:var(--ac);
+  border-radius:14px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
+/* GPA hero 内クイック編集 */
+.prev-cr-input{width:52px;padding:2px 6px;border:1.5px solid rgba(255,255,255,.5);
+  border-radius:6px;font-size:13px;font-weight:700;background:rgba(255,255,255,.18);
+  color:#fff;text-align:center;font-family:inherit;}
+.prev-cr-input:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.28);}
+
+/* ── STATUS: 履修取り消し・確定 ── */
+.class-card.c-withdrawn{opacity:.5;position:relative;}
+.class-card.c-withdrawn .cc-name{text-decoration:line-through;color:var(--sub)!important;}
+.class-card.c-withdrawn::after{content:'取消';position:absolute;top:10px;right:36px;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;}
+.class-card.c-finalized::after{content:'✓ 確定';position:absolute;top:10px;right:36px;background:rgba(5,150,105,.85);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;}
+.tt-cell.tt-withdrawn{text-decoration:line-through;opacity:.4;background:var(--border)!important;box-shadow:none!important;}
+.od-card.od-withdrawn{opacity:.4;text-decoration:line-through;}
+
+/* ステータスアクションエリア */
+.status-area{border-radius:var(--rs);padding:14px 16px;margin-bottom:14px;border:2px solid var(--border);}
+.status-area.st-active{border-color:var(--ac);background:rgba(79,70,229,.06);}
+.status-area.st-finalized{border-color:var(--safe);background:rgba(5,150,105,.07);}
+.status-area.st-withdrawn{border-color:#9e9e9e;background:rgba(158,158,158,.06);}
+.status-title{font-size:13px;font-weight:700;margin-bottom:12px;}
+.status-btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.status-btn-row button{flex:1;min-width:120px;}
+.btn-finalize{background:linear-gradient(135deg,#059669,#34d399);border:none;color:#fff;border-radius:14px;padding:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s;box-shadow:0 4px 14px rgba(5,150,105,.35);}
+.btn-finalize:hover{opacity:.88;}
+.btn-withdraw{background:none;border:2px solid #9ca3af;color:#9ca3af;border-radius:14px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;}
+.btn-withdraw:hover{background:#9ca3af;color:#fff;}
+.btn-undo{background:none;border:2px solid var(--border);color:var(--sub);border-radius:14px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* ═══════════ CLASSIC THEME (v1.2.0スタイル) ═══════════ */
+body.classic{--r:16px;--rs:10px;--shadow:0 4px 24px rgba(102,126,234,.14);--card-shadow:0 2px 10px rgba(0,0,0,.07);}
+body.classic.dark{--shadow:0 4px 24px rgba(0,0,0,.4);--card-shadow:0 2px 10px rgba(0,0,0,.4);}
+/* Header */
+body.classic .hdr{background:linear-gradient(135deg,var(--gs),var(--ge));padding:max(14px,env(safe-area-inset-top)) 16px 0;}
+body.classic .hdr-title h1{font-size:20px;letter-spacing:-.5px;text-shadow:none;}
+body.classic .icon-btn{width:34px;height:34px;backdrop-filter:none;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);}
+body.classic .year-nav{background:rgba(0,0,0,.15);backdrop-filter:none;border:none;border-radius:20px;padding:4px 10px;margin-bottom:10px;}
+body.classic .yn-btn{font-size:18px;}body.classic .yn-btn:hover{transform:none;}
+body.classic .yn-add{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);border-radius:12px;padding:2px 10px;font-weight:normal;}
+body.classic #notifyBtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;font-weight:normal;backdrop-filter:none;font-size:12px;}
+body.classic #notifyBtn.on{background:#fff;}
+body.classic .tabs{background:rgba(0,0,0,.3);border-radius:12px 12px 0 0;padding:5px 5px 0;gap:3px;backdrop-filter:none;}
+body.classic .tab-btn{color:rgba(255,255,255,.85);padding:9px 6px;border-radius:10px 10px 0 0;background:rgba(255,255,255,.1);}
+body.classic .tab-btn:hover{color:#fff;background:rgba(255,255,255,.2);}
+body.classic .tab-btn.active,body.classic .tab-btn.active:hover{background:var(--card);color:var(--ac);box-shadow:none;}
+/* Cards */
+body.classic .today-card{background:linear-gradient(135deg,var(--gs),var(--ge));padding:13px 15px;box-shadow:none;}
+body.classic .tc-label{font-size:11px;letter-spacing:normal;text-transform:none;}
+body.classic .tc-period{background:rgba(255,255,255,.25);backdrop-filter:none;border-radius:6px;padding:1px 7px;}
+body.classic .tc-warn{background:rgba(255,80,80,.75);backdrop-filter:none;border-radius:10px;padding:1px 7px;}
+body.classic .sched-grid{gap:10px;}
+body.classic .class-card{background:linear-gradient(135deg,var(--gs),var(--ge));border-radius:16px;padding:13px 13px 11px;box-shadow:0 3px 12px rgba(102,126,234,.25);color:#fff;border:none;border-left:none;}
+body.classic .class-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,.35);}
+body.classic .class-card.c-danger{background:linear-gradient(135deg,#c62828,#ef5350)!important;box-shadow:0 3px 12px rgba(198,40,40,.3);}
+body.classic .class-card.c-warn{background:linear-gradient(135deg,#e65100,#fb8c00)!important;box-shadow:0 3px 12px rgba(230,81,0,.3);}
+body.classic .class-card.c-withdrawn .cc-name{color:rgba(255,255,255,.6)!important;}
+body.classic .cc-period-chip{background:rgba(255,255,255,.25);color:#fff;}
+body.classic .cc-meta{color:rgba(255,255,255,.75);}
+body.classic .cc-del{width:26px;height:26px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3);}
+body.classic .cc-del:hover{background:rgba(220,38,38,.7);color:#fff;border-color:transparent;}
+body.classic .cc-name{font-size:17px;letter-spacing:normal;}
+body.classic .cc-badge{border-radius:20px;backdrop-filter:none;padding:3px 10px;}
+body.classic .cc-exam{top:10px;right:38px;border-radius:10px;color:#333;}
+body.classic .class-card.c-withdrawn::after{top:8px;right:32px;border-radius:10px;background:#9e9e9e;backdrop-filter:none;}
+body.classic .class-card.c-finalized::after{top:8px;right:32px;border-radius:10px;background:#2e9e56;backdrop-filter:none;content:'✓';}
+/* Filters & day buttons */
+body.classic .fbtn{border-radius:20px;padding:6px 13px;}body.classic .fbtn.on{box-shadow:none;}
+body.classic .term-tabs{border-radius:12px;}body.classic .term-tab{border-radius:9px;}body.classic .term-tab.on{box-shadow:0 2px 6px rgba(0,0,0,.12);}
+body.classic .view-toggle{border-radius:10px;}body.classic .vbtn{border-radius:8px;}body.classic .vbtn.on{box-shadow:0 2px 5px rgba(0,0,0,.1);}
+body.classic .dbtn{border-radius:8px;padding:6px 11px;}body.classic .dbtn.on{box-shadow:none;}
+/* Timetable */
+body.classic .timetable{border-collapse:collapse;border-spacing:0;}
+body.classic .timetable th{border:1px solid var(--border);border-radius:0;font-weight:normal;}
+body.classic .timetable td{border:1px solid var(--border);}
+body.classic .tt-period{border-radius:0;font-size:10px;}
+body.classic .tt-cell{border-radius:4px;box-shadow:none;background:linear-gradient(135deg,var(--gs),var(--ge));}
+body.classic .tt-cell:hover{transform:none;}
+body.classic .tt-cell.tt-danger{background:linear-gradient(135deg,#c62828,#ef5350)!important;}
+body.classic .tt-cell.tt-warn{background:linear-gradient(135deg,#e65100,#fb8c00)!important;}
+body.classic .od-card{border-radius:10px;box-shadow:none;background:linear-gradient(135deg,var(--gs),var(--ge));}
+/* Detail */
+body.classic .detail-hdr{background:linear-gradient(135deg,var(--gs),var(--ge));border-radius:16px;padding:18px;box-shadow:none;}
+body.classic .d-name{font-size:21px;letter-spacing:normal;text-shadow:none;}
+body.classic .lbtn{border-radius:20px;backdrop-filter:none;font-weight:normal;}
+body.classic .info-box{border-radius:16px;border:none;}
+body.classic .ir{padding:6px 0;}
+/* Modal */
+body.classic .modal{background:rgba(0,0,0,.5);backdrop-filter:none;}
+body.classic .modal-sheet{border-radius:20px 20px 0 0;padding:16px 18px calc(20px + env(safe-area-inset-bottom));animation:slideUpClassic .22s ease;box-shadow:none;}
+@keyframes slideUpClassic{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+body.classic .m-sec{letter-spacing:.5px;font-size:11px;}
+body.classic .mg label{text-transform:none;letter-spacing:normal;font-size:11px;}
+body.classic .mg input,.body.classic .mg select,.body.classic .mg textarea{border-radius:8px;padding:9px 11px;}
+body.classic .btn{border-radius:10px;padding:11px;}
+body.classic .bp{background:var(--ac);box-shadow:none;}
+body.classic .bd-btn{background:#d32f2f;border-radius:10px;box-shadow:none;}
+body.classic .crit-rm{border-radius:6px;background:#d32f2f;}
+/* Stats / GPA */
+body.classic .stat-card{border:none;}body.classic .stat-card:hover{box-shadow:none;border-color:transparent;}
+body.classic .sv{font-size:30px;letter-spacing:normal;}
+body.classic .sec-title{font-size:13px;text-transform:none;letter-spacing:normal;}
+body.classic .csi{border:none;}body.classic .csi:hover{border-color:transparent;}
+body.classic .gpa-hero{background:linear-gradient(135deg,var(--gs),var(--ge));border-radius:16px;padding:16px 18px;box-shadow:none;}
+body.classic .gpa-num{font-size:42px;letter-spacing:-2px;}
+body.classic .gpa-prog-fill{background:#fff;transition:width .5s;}
+/* Status buttons */
+body.classic .status-area{border-radius:10px;}
+body.classic .btn-finalize{border-radius:10px;background:linear-gradient(135deg,#2e9e56,#38d97e);box-shadow:none;}
+body.classic .btn-withdraw{border-radius:10px;}body.classic .btn-undo{border-radius:10px;}
+/* FAB */
+body.classic .fab{border-radius:28px;padding:13px 20px;box-shadow:0 4px 20px rgba(102,126,234,.5);}
+body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
+
+/* ─ テーマ切り替えUI ─ */
+.theme-switch{display:flex;gap:0;background:var(--toggle);border-radius:14px;padding:3px;margin-bottom:4px;}
+.theme-opt{flex:1;border:none;padding:10px 8px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;color:var(--sub);background:transparent;transition:.2s;font-family:inherit;line-height:1.2;}
+.theme-opt.on{background:var(--card);color:var(--ac);box-shadow:0 2px 10px rgba(79,70,229,.15);}
+
+@media(max-width:440px){.container{max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="container">
+<!-- ══ HEADER ══ -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-title">
+      <h1>楽単チェッカー</h1>
+      <div class="sub" id="hdrSub">単位管理をスマートに</div>
+    </div>
+    <div class="hdr-btns" style="align-items:center;">
+      <button class="icon-btn" onclick="openSettings()" title="設定">⚙️</button>
+    </div>
+  </div>
+  <div class="year-nav">
+    <button class="yn-btn" onclick="prevYear()">‹</button>
+    <div class="yn-year" id="yearDisplay">2026年度</div>
+    <button class="yn-btn" onclick="nextYear()">›</button>
+    <button class="yn-add" onclick="addYearPrompt()">＋年度追加</button>
+  </div>
+  <div style="display:flex;justify-content:center;margin-bottom:2px;">
+    <button id="notifyBtn" onclick="toggleNotify()">🔕 通知: OFF</button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('todo')">📝 ToDo</button>
+    <button class="tab-btn" onclick="showTab('schedule')">📅 時間割</button>
+    <button class="tab-btn" onclick="showTab('stats')">📊 統計</button>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="content">
+
+<!-- ── TODO ── -->
+<div class="section active" id="todoSection">
+  <div id="dangerBannerTodo" class="danger-banner" style="display:none" onclick="showTab('schedule')">
+    <div class="db-title">⚠️ 落単危険の授業があります！</div>
+    <div id="dangerListTodo"></div>
+  </div>
+
+  <div class="todo-tab-bar">
+    <button class="todo-tab on" id="todoTabList" onclick="switchTodoTab('list')">📋 タスク一覧</button>
+    <button class="todo-tab" id="todoTabAdd" onclick="switchTodoTab('add')">＋ タスクを追加</button>
+  </div>
+
+  <!-- 一覧ペイン -->
+  <div class="todo-pane on" id="todoPaneList">
+    <div class="today-card">
+      <div class="tc-label">📅 今日の授業</div>
+      <div id="todayClassList"><div class="tc-empty">登録済みの授業はありません</div></div>
+    </div>
+    <ul class="todo-list" id="todoList"></ul>
+  </div>
+
+  <!-- 追加ペイン -->
+  <div class="todo-pane" id="todoPaneAdd">
+    <div class="todo-add-area">
+      <div class="fr">
+        <label class="fl">タスク名 *</label>
+        <input class="fi" type="text" id="todoTitle" placeholder="例: レポート提出">
+      </div>
+      <div class="fr">
+        <div class="deadline-row">
+          <span>提出期限</span>
+          <label><input type="checkbox" id="noDeadline" onchange="toggleDL()"> 期限なし</label>
+        </div>
+        <input class="fi" type="datetime-local" id="todoDeadline">
+      </div>
+      <div class="fr">
+        <div class="reminder-label">🔔 リマインド</div>
+        <div class="chips" id="reminderChips">
+          <button class="chip" data-days="7" onclick="toggleChip(this)">1週間前</button>
+          <button class="chip" data-days="3" onclick="toggleChip(this)">3日前</button>
+          <button class="chip on" data-days="1" onclick="toggleChip(this)">前日</button>
+          <button class="chip" data-days="0" onclick="toggleChip(this)">当日朝</button>
+        </div>
+      </div>
+      <div class="fr">
+        <label class="fl">関連授業</label>
+        <select class="fi" id="todoClass"></select>
+      </div>
+      <div class="fr">
+        <label class="fl">詳細メモ</label>
+        <textarea class="fi ft" id="todoDetails" placeholder="内容・注意事項など..."></textarea>
+      </div>
+      <div class="fr">
+        <label class="fl">画像添付</label>
+        <input class="fi" type="file" id="todoImage" accept="image/*">
+      </div>
+      <button class="add-btn" onclick="addTodo()">＋ タスクを追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCHEDULE ── -->
+<div class="section" id="scheduleSection">
+  <div id="dangerBannerSched" class="danger-banner" style="display:none">
+    <div class="db-title">⚠️ 落単危険！すぐに確認してください</div>
+    <div id="dangerListSched"></div>
+  </div>
+  <button class="add-btn g" onclick="openAddClassFromList()" style="margin-bottom:13px;">＋ 授業を追加</button>
+  <!-- ① 開講形式タブ -->
+  <div class="term-tabs">
+    <button class="term-tab on" onclick="setTermType('quarter')">📐 クォーター制</button>
+    <button class="term-tab" onclick="setTermType('semester')">📅 前期／後期</button>
+    <button class="term-tab" onclick="setTermType('annual')">🔄 通年</button>
+  </div>
+  <!-- ② クォーター用サブフィルター -->
+  <div id="subQ" class="filter-group">
+    <div class="fg-label">クォーター選択</div>
+    <div class="filter-row" id="quarterBtns">
+      <button class="fbtn on" onclick="setQuarter('all_q')">全て</button>
+      <button class="fbtn" onclick="setQuarter('1Q')">1Q</button>
+      <button class="fbtn" onclick="setQuarter('2Q')">2Q</button>
+      <button class="fbtn" onclick="setQuarter('3Q')">3Q</button>
+      <button class="fbtn" onclick="setQuarter('4Q')">4Q</button>
+    </div>
+  </div>
+  <!-- ③ 前期/後期用サブフィルター -->
+  <div id="subS" class="filter-group" style="display:none">
+    <div class="fg-label">学期選択</div>
+    <div class="filter-row" id="semesterBtns">
+      <button class="fbtn on" onclick="setQuarter('all_s')">両方</button>
+      <button class="fbtn" onclick="setQuarter('前期')">前期</button>
+      <button class="fbtn" onclick="setQuarter('後期')">後期</button>
+    </div>
+  </div>
+  <!-- ④ 通年（サブフィルター不要） -->
+  <div id="subA" style="display:none">
+    <div class="sub-filter-note">🔄 通年開講の授業を表示しています</div>
+  </div>
+  <div class="view-toggle">
+    <button class="vbtn on" id="vBtnList" onclick="setView('list')">リスト表示</button>
+    <button class="vbtn" id="vBtnTable" onclick="setView('table')">時間割表</button>
+  </div>
+  <!-- List view -->
+  <div id="listView">
+    <div class="day-row" id="dayBtns">
+      <button class="dbtn on" onclick="setDay('mon')">月</button>
+      <button class="dbtn" onclick="setDay('tue')">火</button>
+      <button class="dbtn" onclick="setDay('wed')">水</button>
+      <button class="dbtn" onclick="setDay('thu')">木</button>
+      <button class="dbtn" onclick="setDay('fri')">金</button>
+      <button class="dbtn" onclick="setDay('sat')">土</button>
+      <button class="dbtn" onclick="setDay('sun')">日</button>
+      <button class="dbtn" onclick="setDay('od')">オンデマンド</button>
+    </div>
+    <div class="sched-grid" id="schedGrid"></div>
+  </div>
+  <!-- Table view -->
+  <div id="tableView" style="display:none;">
+    <div id="ttContainer"></div>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="section" id="statsSection">
+  <!-- GPA Hero -->
+  <div class="gpa-hero" id="gpaHero">
+    <div>
+      <div class="gpa-num" id="gpaNum">--</div>
+      <div class="gpa-sub">GPA</div>
+    </div>
+    <div class="gpa-right">
+      <div class="gpa-credit-row">
+        <span>取得済み単位</span><span id="gpaCreditEarned">0</span>
+      </div>
+      <div class="gpa-credit-row" style="align-items:center;">
+        <span style="font-size:10px;opacity:.85;">うち過去取得</span>
+        <input class="prev-cr-input" type="number" id="prevCreditsQuick" min="0" value="0"
+          onchange="savePrevCredits(this.value)" onclick="this.select()" title="アプリ使用前に取得済みの単位数">
+      </div>
+      <div class="gpa-credit-row">
+        <span>卒業必要</span><span id="gpaCreditReq">124</span>
+      </div>
+      <div class="gpa-prog"><div class="gpa-prog-fill" id="gpaProgFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="grade-breakdown" id="gradeBreakdown"></div>
+
+  <div class="stats-grid" id="statsGrid"></div>
+  <div class="sec-title">⚠️ 落単危険科目</div>
+  <div id="dangerClassStats"></div>
+  <div class="sec-title">📊 全授業 出席状況</div>
+  <div id="allClassStats"></div>
+</div>
+
+<!-- ── DETAIL ── -->
+<div class="section" id="detailSection">
+  <div style="display:flex;gap:8px;margin-bottom:13px;">
+    <button class="btn bs" onclick="showTab('schedule')" style="flex:0 0 auto;padding:8px 16px;">← 戻る</button>
+    <button class="btn bp" onclick="openEditClass()" style="flex:0 0 auto;padding:8px 16px;">✏️ 編集</button>
+    <button class="btn" onclick="promptDeleteClass(curClassIdx)" style="flex:0 0 auto;padding:8px 14px;background:none;border:2px solid #e53935;color:#e53935;border-radius:10px;font-family:inherit;font-weight:700;cursor:pointer;font-size:13px;">🗑️ 削除</button>
+  </div>
+  <div class="detail-hdr">
+    <div class="d-name" id="dName"></div>
+    <div class="d-info" id="dInfo"></div>
+    <div class="d-links" id="dLinks"></div>
+  </div>
+
+  <!-- 履修ステータス -->
+  <div id="statusArea"></div>
+
+  <div class="sec-title" style="margin-top:0;">📋 出席状況</div>
+  <div class="info-box">
+    <div style="background:#e3f2fd;padding:9px 11px;border-radius:8px;font-size:12px;color:#1565c0;margin-bottom:10px;" id="absNotice"></div>
+    <div class="rem-display">
+      <div class="rem-num safe" id="remNum">--</div>
+      <div class="rem-lbl" id="remLbl">残り欠席可能</div>
+    </div>
+    <div class="abs-bar"><div class="abs-bar-fill" id="absBarFill" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-bottom:10px;">
+      <span>安全</span><span>限界</span>
+    </div>
+    <div class="ir"><span class="il">欠席回数</span><span id="dAbs">0回</span></div>
+    <div class="ir"><span class="il">遅刻回数</span><span id="dLate">0回</span></div>
+    <div class="ir"><span class="il">遅刻→欠席換算</span><span id="dLateConv">0回</span></div>
+    <div class="ir" style="border-top:2px solid var(--border);margin-top:8px;padding-top:8px;">
+      <span class="il" style="font-size:14px;">欠席換算合計</span>
+      <span id="dTotal" style="font-size:15px;font-weight:700;">0回</span>
+    </div>
+    <div style="margin-top:13px;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:5px;">📝 出欠を記録</div>
+    <div class="rec-row">
+      <input type="date" class="ri ri-flex" id="attDate">
+      <select class="ri" id="attType">
+        <option value="absent">欠席</option>
+        <option value="late">遅刻</option>
+      </select>
+      <button class="rec-btn" onclick="addAtt()">記録</button>
+    </div>
+    <div class="qr-row">
+      <button class="qr-btn" onclick="setReason('寝坊')">😴 寝坊</button>
+      <button class="qr-btn" onclick="setReason('体調不良')">🤒 体調不良</button>
+      <button class="qr-btn" onclick="setReason('用事')">🏃 用事</button>
+      <button class="qr-btn" onclick="setReason('サボり')">☕ サボり</button>
+    </div>
+    <input class="fi" type="text" id="attReason" placeholder="理由（任意）" style="margin-top:7px;font-size:13px;">
+    <div class="att-list" id="attList"></div>
+  </div>
+
+  <div id="examSection" style="display:none;margin-bottom:12px;">
+    <div class="sec-title" style="margin-top:0;">📅 試験</div>
+    <div class="exam-box">
+      <div class="exam-icon">📝</div>
+      <div class="exam-text">
+        <div class="exam-date-txt" id="examDateTxt"></div>
+        <div class="exam-cd-txt" id="examCdTxt"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title">📊 評価基準</div>
+  <div class="eval-box" id="evalBox"></div>
+
+  <div class="sec-title">📖 授業概要</div>
+  <div class="info-box">
+    <p style="font-size:14px;line-height:1.7;" id="dSummary">--</p>
+    <div id="dImgWrap" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- 最終成績 -->
+  <div class="sec-title">🎓 最終成績</div>
+  <div class="info-box" style="padding:12px 14px;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:11px;color:var(--sub);margin-bottom:4px;">成績</div>
+        <select id="dGradeSelect" onchange="saveGrade()" style="padding:7px 10px;border:2px solid var(--border);border-radius:8px;font-size:15px;font-weight:700;background:var(--card);color:var(--text);font-family:inherit;">
+          <option value="">-- 未確定 --</option>
+          <option value="S">S（秀）</option>
+          <option value="A">A（優）</option>
+          <option value="B">B（良）</option>
+          <option value="C">C（可）</option>
+          <option value="F">F（不可）</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--sub);margin-bottom:4px;">科目区分</div>
+        <select id="dRequiredSelect" onchange="saveRequired()" style="padding:7px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);font-family:inherit;">
+          <option value="選択">選択</option>
+          <option value="必修">必修</option>
+          <option value="自由選択">自由選択</option>
+        </select>
+      </div>
+      <div id="dGpaPoint" style="font-size:26px;font-weight:900;color:var(--ac);align-self:flex-end;"></div>
+    </div>
+  </div>
+
+  <!-- 休講記録 -->
+  <div class="sec-title">🏫 休講記録</div>
+  <div class="info-box">
+    <div style="font-size:12px;color:var(--sub);margin-bottom:8px;">授業が休講だった日（出欠回数には影響しません）</div>
+    <div class="rec-row">
+      <input type="date" class="ri ri-flex" id="cancelDate">
+      <button class="rec-btn" onclick="recordCanceled()" style="background:#9e9e9e;">記録</button>
+    </div>
+    <div id="canceledList" style="margin-top:8px;"></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /container -->
+
+<!-- ⚡ FAB: クイック課題追加 -->
+<button class="fab" onclick="openQuickAdd()">⚡ 課題を追加</button>
+<!-- 📤 シェアFAB -->
+<button class="share-fab" id="shareFab" onclick="shareSchedule()">📤 時間割をシェア</button>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Settings -->
+<!-- ── 削除確認モーダル ── -->
+<div class="modal" id="deleteConfirmModal">
+<div class="modal-sheet" style="max-width:360px;margin:auto;">
+  <div class="m-handle"></div>
+  <div style="text-align:center;padding:18px 0 14px;">
+    <div style="font-size:36px;">🗑️</div>
+    <div style="font-size:17px;font-weight:700;margin-top:10px;">この授業を削除しますか？</div>
+    <div style="font-size:14px;font-weight:700;color:var(--ac);margin-top:8px;word-break:break-all;" id="delConfirmName"></div>
+    <div style="font-size:12px;color:var(--faint);margin-top:10px;line-height:1.7;">出席・成績データも含めて完全に削除されます。<br>この操作は<b>元に戻せません</b>。</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:9px;padding-top:6px;">
+    <button class="btn bs" style="padding:14px;font-size:15px;font-weight:700;order:1;" onclick="closeModal('deleteConfirmModal')">← キャンセル（残す）</button>
+    <button class="btn" style="background:#e53935;color:#fff;border:none;padding:11px;font-size:13px;border-radius:10px;cursor:pointer;font-family:inherit;order:2;" onclick="confirmDeleteClass()">削除する</button>
+  </div>
+</div>
+</div>
+
+<div class="modal" id="settingsModal">
+<div class="modal-sheet">
+  <div class="settings-sticky">
+    <div class="m-handle"></div>
+    <div class="m-title">⚙️ 設定</div>
+    <div class="stab-bar">
+      <button class="stab on" data-tab="basic" onclick="switchSettingsTab('basic')">🔧 基本</button>
+      <button class="stab" data-tab="color" onclick="switchSettingsTab('color')">🎨 カラー</button>
+      <button class="stab" data-tab="notify" onclick="switchSettingsTab('notify')">🔔 通知</button>
+      <button class="stab" data-tab="other" onclick="switchSettingsTab('other')">🗂 その他</button>
+    </div>
+  </div>
+
+  <!-- ── 基本 tab ── -->
+  <div class="stab-pane on" id="stabBasic">
+    <div class="m-sec">🎨 UIテーマ</div>
+    <div class="theme-switch">
+      <button class="theme-opt" id="themeOptClassic" onclick="setUITheme('classic')">🎨 クラシック</button>
+      <button class="theme-opt" id="themeOptModern" onclick="setUITheme('modern')">✨ モダン</button>
+    </div>
+
+    <div class="m-sec">💾 データのバックアップ（重要）</div>
+    <div class="backup-card">
+      <div class="backup-warn">⚠️ スマホの故障・機種変更・ブラウザのデータ消去によって、授業・成績・課題のデータが全て失われる可能性があります。定期的にバックアップを保存してください。</div>
+      <div class="backup-date-row">最終バックアップ：<span class="backup-date-val" id="backupLastDate">未実施</span></div>
+      <button class="btn bp backup-main-btn" onclick="exportData()">📤 今すぐバックアップを保存する</button>
+      <button class="btn bs" onclick="document.getElementById('importFile2').click()" style="width:100%;">📥 バックアップから復元</button>
+      <input type="file" id="importFile2" style="display:none" accept=".json" onchange="importData(this)">
+    </div>
+
+    <div class="m-sec">基本設定</div>
+    <div class="mg"><label>ユーザー名</label><input type="text" id="sUserName" placeholder="未設定"></div>
+    <div class="mg"><label>デフォルト開講期</label>
+      <select id="sDefaultTerm">
+        <option value="1Q">1Q</option><option value="2Q">2Q</option>
+        <option value="3Q">3Q</option><option value="4Q">4Q</option>
+        <option value="前期">前期</option><option value="後期">後期</option><option value="通年">通年</option>
+      </select>
+    </div>
+    <div class="mg"><label>1Qあたり授業回数</label><input type="number" id="sQCount" value="7"></div>
+    <div class="mg"><label>半期(前期・後期)授業回数</label><input type="number" id="sSCount" value="15"></div>
+    <div class="mg"><label>デフォルト遅刻換算（何回遅刻で1欠席）</label><input type="number" id="sLatePen" value="3" min="1"></div>
+
+    <div class="m-sec">🎓 卒業管理</div>
+    <div class="mg"><label>卒業必要単位数</label>
+      <div class="req-row"><input type="number" id="sReqCredits" value="124" min="0"><span>単位</span></div>
+    </div>
+    <div class="mg"><label>このアプリ使用前に取得済みの単位数</label>
+      <div class="req-row"><input type="number" id="sPrevCredits" value="0" min="0" placeholder="0"><span>単位</span></div>
+      <div style="font-size:10px;color:var(--faint);margin-top:3px;">※ 入学前・転入前・過去年度ですでに取得済みの単位を入力してください</div>
+    </div>
+
+    <div class="m-sec">🗓️ 年度管理</div>
+    <div class="year-list" id="yearList"></div>
+    <button class="btn bp" style="margin-top:8px;width:100%;" onclick="addYearFromSettings()">＋ 新しい年度を追加</button>
+    <div style="font-size:11px;color:var(--faint);margin-top:5px;">過去の年度は保存されたまま残ります</div>
+  </div>
+
+  <!-- ── カラー tab ── -->
+  <div class="stab-pane" id="stabColor">
+    <div class="m-sec">🎨 カラープリセット</div>
+    <div class="preset-grid">
+      <button class="preset-btn" data-preset="indigo" onclick="applyPreset('indigo')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+        <div class="preset-name">インディゴ</div>
+      </button>
+      <button class="preset-btn" data-preset="deep" onclick="applyPreset('deep')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#3730a3,#7c3aed)"></div>
+        <div class="preset-name">ディープ</div>
+      </button>
+      <button class="preset-btn" data-preset="sunset" onclick="applyPreset('sunset')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#f7971e,#f5576c)"></div>
+        <div class="preset-name">サンセット</div>
+      </button>
+      <button class="preset-btn" data-preset="ocean" onclick="applyPreset('ocean')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#1a6fe3,#06b6d4)"></div>
+        <div class="preset-name">オーシャン</div>
+      </button>
+      <button class="preset-btn" data-preset="rose" onclick="applyPreset('rose')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#ec4899,#f43f5e)"></div>
+        <div class="preset-name">ローズ</div>
+      </button>
+      <button class="preset-btn" data-preset="forest" onclick="applyPreset('forest')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#059669,#34d399)"></div>
+        <div class="preset-name">フォレスト</div>
+      </button>
+      <button class="preset-btn" data-preset="slate" onclick="applyPreset('slate')">
+        <div class="preset-swatch" style="background:linear-gradient(135deg,#475569,#334155)"></div>
+        <div class="preset-name">スレート</div>
+      </button>
+    </div>
+
+    <div class="m-sec" style="margin-top:18px;">✏️ カスタムカラー</div>
+    <div class="color-pick-row">
+      <div class="color-pick-item">
+        <div class="cpi-swatch" id="cpSwatchStart" onclick="document.getElementById('sBgStart').click()"></div>
+        <div class="cpi-label">カラー1</div>
+        <div class="cpi-sub">グラデ開始</div>
+        <input type="color" id="sBgStart" oninput="onColorInput('start')">
+      </div>
+      <div class="color-pick-item">
+        <div class="cpi-swatch" id="cpSwatchEnd" onclick="document.getElementById('sBgEnd').click()"></div>
+        <div class="cpi-label">カラー2</div>
+        <div class="cpi-sub">グラデ終了</div>
+        <input type="color" id="sBgEnd" oninput="onColorInput('end')">
+      </div>
+      <div class="color-pick-item">
+        <div class="cpi-swatch" id="cpSwatchAccent" onclick="document.getElementById('sAccent').click()"></div>
+        <div class="cpi-label">アクセント</div>
+        <div class="cpi-sub">ボタン・タグ</div>
+        <input type="color" id="sAccent" oninput="onColorInput('accent')">
+      </div>
+    </div>
+    <label class="sync-accent-row">
+      <input type="checkbox" id="sSyncAccent" onchange="onColorInput('start')">
+      <span>アクセントをカラー1に合わせる</span>
+    </label>
+
+    <div class="m-sec" style="margin-top:18px;">👁 プレビュー</div>
+    <div class="color-preview" id="colorPreview">
+      <div class="cpv-hdr" id="cpvHdr">楽単チェッカー</div>
+      <div class="cpv-row">
+        <div>
+          <div class="cpv-label">クラシック</div>
+          <div class="cpv-card-classic" id="cpvCardClassic">
+            <div class="cpv-cname">経済学概論</div>
+            <div class="cpv-cmeta">月・水 2限</div>
+          </div>
+        </div>
+        <div>
+          <div class="cpv-label">モダン</div>
+          <div class="cpv-card-modern" id="cpvCardModern">
+            <div class="cpv-chip" id="cpvChip">2限</div>
+            <div class="cpv-cname" style="font-size:11px;font-weight:800;color:var(--text);margin-top:3px;">経済学概論</div>
+          </div>
+        </div>
+      </div>
+      <div class="cpv-footer">
+        <div class="cpv-btn" id="cpvBtn">保存する</div>
+        <div class="cpv-badge" id="cpvBadge">残3欠席</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn bp" style="flex:1;" onclick="applyColorNow(this)">✅ 今すぐ適用</button>
+      <button class="btn bs" style="flex:0 0 auto;" onclick="resetColors(this)">↩ リセット</button>
+    </div>
+
+    <div class="m-sec" style="margin-top:18px;">🌙 表示設定</div>
+    <div class="sw-row"><span class="sw-lbl">ダークモード</span>
+      <label class="switch"><input type="checkbox" id="sDark" onchange="toggleDark()"><span class="slider"></span></label>
+    </div>
+    <div class="sw-row"><span class="sw-lbl">✨ アニメーション</span>
+      <label class="switch"><input type="checkbox" id="sAnim" onchange="toggleAnim()"><span class="slider"></span></label>
+    </div>
+    <div class="sw-row"><span class="sw-lbl">🎵 効果音</span>
+      <label class="switch"><input type="checkbox" id="sSound" onchange="toggleSound()"><span class="slider"></span></label>
+    </div>
+    <div class="mg" id="sVolumeRow">
+      <label>音量</label>
+      <div class="vol-row">
+        <input type="range" id="sVolume" min="0" max="100" value="60" oninput="document.getElementById('sVolVal').textContent=this.value+'%'">
+        <span class="vol-val" id="sVolVal">60%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 通知 tab ── -->
+  <div class="stab-pane" id="stabNotify">
+    <div class="m-sec">🌅 朝の授業サマリー通知</div>
+    <div class="sw-row"><span class="sw-lbl">朝の授業サマリー通知</span>
+      <label class="switch"><input type="checkbox" id="sMorning" onchange="document.getElementById('sMorningTimeRow').style.opacity=this.checked?'1':'.4'"><span class="slider"></span></label>
+    </div>
+    <div class="mg" id="sMorningTimeRow" style="margin-top:4px;">
+      <label>通知時刻</label>
+      <input type="time" id="sMorningTime" value="07:00" style="padding:8px;border:2px solid var(--border);border-radius:8px;font-size:14px;background:var(--card);color:var(--text);">
+    </div>
+
+    <div class="m-sec">📅 課題リマインド</div>
+    <div class="mg"><label>リマインドタイミング（複数選択可）</label>
+      <div class="reminder-opts" id="sReminderOpts">
+        <button class="r-opt" data-days="7" onclick="toggleROpt(this)">1週間前</button>
+        <button class="r-opt" data-days="3" onclick="toggleROpt(this)">3日前</button>
+        <button class="r-opt" data-days="1" onclick="toggleROpt(this)">前日</button>
+        <button class="r-opt" data-days="0" onclick="toggleROpt(this)">当日朝</button>
+      </div>
+    </div>
+    <div class="mg"><label>欠席警告タイミング（残りN回以下で通知）</label>
+      <input type="number" id="sAbsWarn" value="2" min="0">
+    </div>
+  </div>
+
+  <!-- ── その他 tab ── -->
+  <div class="stab-pane" id="stabOther">
+    <div class="m-sec">🗂 データ管理</div>
+    <button class="bd-btn" onclick="resetData()">⚠️ 全データを初期化</button>
+
+    <div class="m-sec">📅 Google Calendar 連携</div>
+    <div style="font-size:12px;color:var(--sub);margin-bottom:10px;line-height:1.7;">
+      Google ClassroomやCalendarの予定・課題をToDoに取り込めます。
+    </div>
+    <div style="background:var(--inp);border-radius:var(--rs);padding:11px 13px;margin-bottom:12px;font-size:12px;line-height:1.9;color:var(--sub);">
+      <b style="color:var(--text);">カレンダーURLの取得方法</b><br>
+      ① <a href="https://calendar.google.com" target="_blank" style="color:var(--ac);">calendar.google.com</a> を開く<br>
+      ② 左の授業カレンダー名の「︙」→「設定と共有」<br>
+      ③「カレンダーの統合」→「シークレットアドレス（iCal形式）」をコピー
+    </div>
+    <div class="mg">
+      <label>カレンダーURL（iCal形式）</label>
+      <input type="text" id="gcalUrl" placeholder="https://calendar.google.com/calendar/ical/..." style="font-size:12px;">
+    </div>
+    <div class="btn-row" style="margin-top:0;">
+      <button class="btn bp" onclick="syncGcal(this)">🔄 同期する</button>
+      <button class="btn bs" onclick="saveGcalUrl()">URLを保存</button>
+    </div>
+    <div id="gcalSyncStatus" style="font-size:11px;color:var(--faint);margin-top:4px;text-align:center;min-height:16px;"></div>
+    <div style="text-align:center;font-size:12px;color:var(--faint);margin:10px 0;">— または —</div>
+    <button class="btn bs" style="width:100%;" onclick="document.getElementById('icsFile').click()">
+      📂 .ics ファイルをインポート
+    </button>
+    <input type="file" id="icsFile" style="display:none" accept=".ics,.ical" onchange="importICSFile(this)">
+    <div style="font-size:11px;color:var(--faint);margin-top:5px;text-align:center;">
+      GoogleカレンダーのPC版 → 設定 → 「カレンダーをエクスポート」でも入手できます
+    </div>
+    <div style="margin-top:14px;">
+      <button class="btn bs" style="width:100%;" onclick="openGuide()">📖 使い方ガイド</button>
+    </div>
+  </div>
+
+  <div class="btn-row" style="margin-top:20px;">
+    <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
+    <button class="btn bp" onclick="saveSettings()">保存</button>
+  </div>
+  <div class="ver">ver 1.2.2 — GPA管理・休講記録・朝の通知・時間割シェア</div>
+</div>
+</div>
+
+<!-- Class Modal -->
+<div class="modal" id="classModal">
+<div class="modal-sheet">
+  <div class="m-handle"></div>
+  <div class="m-title" id="classModalTitle">授業を追加</div>
+
+  <div class="mg"><label>授業名 *</label><input type="text" id="cName" placeholder="例: 経済学概論"></div>
+  <div class="mg">
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+      <input type="checkbox" id="cOnDemand" onchange="toggleOD()">
+      <span style="color:var(--ac);font-weight:700;">オンデマンド（時間割なし）</span>
+    </label>
+  </div>
+
+  <div class="m-sec">スケジュール</div>
+  <div class="mg" id="cSlotGrp">
+    <label>授業コマ</label>
+    <div id="cSlotList"></div>
+    <button type="button" class="btn bs" style="width:100%;margin-top:4px;" onclick="addSlotRow()">＋ コマを追加</button>
+  </div>
+  <div class="mg"><label>開講期</label>
+    <select id="cTerm">
+      <option value="1Q">1Q</option><option value="2Q">2Q</option>
+      <option value="3Q">3Q</option><option value="4Q">4Q</option>
+      <option value="前期">前期</option><option value="後期">後期</option><option value="通年">通年</option>
+    </select>
+  </div>
+
+  <div class="m-sec">授業情報</div>
+  <div class="mg"><label>単位数</label>
+    <div class="credit-chips">
+      <button type="button" class="credit-chip" data-val="0.5" onclick="setCreditChip(0.5)">0.5</button>
+      <button type="button" class="credit-chip" data-val="1"   onclick="setCreditChip(1)">1</button>
+      <button type="button" class="credit-chip on" data-val="2" onclick="setCreditChip(2)">2</button>
+      <button type="button" class="credit-chip" data-val="3"   onclick="setCreditChip(3)">3</button>
+      <button type="button" class="credit-chip" data-val="4"   onclick="setCreditChip(4)">4</button>
+      <button type="button" class="credit-chip" data-val="6"   onclick="setCreditChip(6)">6</button>
+      <button type="button" class="credit-chip" data-val="8"   onclick="setCreditChip(8)">8</button>
+    </div>
+    <input type="number" id="cCredits" step="0.5" min="0.5" value="2" placeholder="直接入力も可" oninput="syncCreditChips()" style="width:100%;padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--inp);color:var(--text);font-family:inherit;font-size:14px;outline:none;box-sizing:border-box;">
+  </div>
+  <div class="mg"><label>授業形式</label>
+    <select id="cFormat">
+      <option value="">未設定</option>
+      <optgroup label="▸ 授業種別">
+        <option value="講義">講義</option>
+        <option value="演習">演習</option>
+        <option value="実習">実習</option>
+        <option value="実験">実験・実技</option>
+        <option value="ゼミ">ゼミ・卒業研究</option>
+        <option value="集中講義">集中講義</option>
+        <option value="体育">体育・スポーツ</option>
+        <option value="外国語">外国語</option>
+      </optgroup>
+      <optgroup label="▸ 受講方法">
+        <option value="対面">対面</option>
+        <option value="オンライン">オンライン（遠隔）</option>
+        <option value="ハイブリッド">ハイブリッド（対面＋遠隔）</option>
+        <option value="オンデマンド配信">オンデマンド配信</option>
+      </optgroup>
+    </select>
+  </div>
+  <div class="mg"><label>遅刻換算（何回遅刻で1欠席？）</label>
+    <input type="number" id="cLatePen" placeholder="空欄=デフォルト設定を使用" min="1">
+    <div style="font-size:10px;color:var(--faint);margin-top:3px;">※ここで授業ごとに個別設定できます</div>
+  </div>
+  <div class="mg"><label>試験日</label><input type="date" id="cExamDate"></div>
+  <div class="mg"><label>教室</label><input type="text" id="cRoom" placeholder="例: A301"></div>
+  <div class="mg"><label>担当教員</label><input type="text" id="cTeacher" placeholder="例: 山田 太郎"></div>
+
+  <div class="m-sec">リンク・連絡先</div>
+  <div class="mg"><label>関連URL（シラバス・ポータル等）</label><input type="url" id="cUrl" placeholder="https://..."></div>
+  <div class="mg"><label>LINEグループURL</label><input type="url" id="cLine" placeholder="https://line.me/R/ti/g/..."></div>
+  <div class="mg"><label>教員メールアドレス</label><input type="email" id="cEmail" placeholder="teacher@univ.ac.jp"></div>
+
+  <div class="m-sec">見た目・詳細</div>
+  <div class="mg"><label>カード色</label><input type="color" id="cColor" style="width:100%;"></div>
+  <div class="mg"><label>関連画像</label><input type="file" id="cImage" accept="image/*" onchange="previewImg()">
+    <img class="img-pre" id="cImgPre" alt="preview"></div>
+  <div class="mg"><label>授業概要・メモ</label><textarea id="cSummary" placeholder="授業の特徴・注意点など..."></textarea></div>
+
+  <div class="m-sec">評価基準</div>
+  <div id="critList"></div>
+  <button class="btn bs" style="width:100%;margin-top:6px;" onclick="addCrit()">＋ 項目を追加</button>
+
+  <button class="bd-btn" id="delClassBtn" onclick="deleteClass()" style="display:none;margin-top:14px;">この授業を削除</button>
+  <div class="btn-row">
+    <button class="btn bs" onclick="closeModal('classModal')">キャンセル</button>
+    <button class="btn bp" onclick="saveClass()">保存</button>
+  </div>
+</div>
+</div>
+
+<!-- ⚡ Quick Add Modal -->
+<div class="modal" id="quickAddModal">
+<div class="modal-sheet">
+  <div class="m-handle"></div>
+  <div class="m-title">⚡ 課題をクイック追加</div>
+
+  <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:8px;">📚 授業を選択</div>
+  <div class="qa-class-grid" id="qaClassGrid"></div>
+
+  <div class="mg">
+    <label>課題名 *</label>
+    <input class="fi" type="text" id="qaTodoTitle" placeholder="例: レポート・小テスト対策・予習"
+      onkeydown="if(event.key==='Enter') addQuickTodo()">
+  </div>
+
+  <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;">📅 提出期限</div>
+  <div class="dl-row" id="dlBtns">
+    <button class="dl-btn" data-d="0"  onclick="setQaDL(0)">今日</button>
+    <button class="dl-btn sel" data-d="1"  onclick="setQaDL(1)">明日</button>
+    <button class="dl-btn" data-d="3"  onclick="setQaDL(3)">3日後</button>
+    <button class="dl-btn" data-d="7"  onclick="setQaDL(7)">1週間後</button>
+    <button class="dl-btn" data-d="-1" onclick="setQaDL(-1)">期限なし</button>
+  </div>
+  <input class="fi" type="datetime-local" id="qaDLCustom" style="margin-top:8px;"
+    oninput="onQaDLCustomChange()">
+
+  <div style="font-size:12px;font-weight:700;color:var(--sub);margin:12px 0 6px;">🔔 リマインド</div>
+  <div class="chips" id="qaChips">
+    <button class="chip" data-days="7" onclick="toggleChip(this)">1週間前</button>
+    <button class="chip" data-days="3" onclick="toggleChip(this)">3日前</button>
+    <button class="chip on" data-days="1" onclick="toggleChip(this)">前日</button>
+    <button class="chip" data-days="0" onclick="toggleChip(this)">当日朝</button>
+  </div>
+
+  <button class="qa-big-add" onclick="addQuickTodo()">＋ 追加する</button>
+  <button class="btn bs" style="width:100%;margin-top:8px;" onclick="closeModal('quickAddModal')">キャンセル</button>
+</div>
+</div>
+
+<!-- Class Picker Modal -->
+<div class="modal" id="classPickerModal">
+<div class="modal-sheet">
+  <div class="m-handle"></div>
+  <div class="m-title" id="classPickerTitle">📅 授業を追加</div>
+  <button class="picker-new-btn" onclick="pickerNewClass()">
+    <span style="font-size:20px;">＋</span>
+    <span>新しい科目を作成</span>
+  </button>
+  <div class="m-sec" style="margin-top:0;margin-bottom:8px;">既存の科目から選択</div>
+  <input class="picker-search" type="text" id="pickerSearch" placeholder="科目名で検索..." oninput="renderClassPicker()">
+  <div class="picker-list" id="pickerList"></div>
+  <button class="btn bs" style="width:100%;margin-top:12px;" onclick="closeModal('classPickerModal')">キャンセル</button>
+</div>
+</div>
+
+<!-- Guide Modal -->
+<div class="modal" id="guideModal">
+<div class="modal-sheet">
+  <div class="m-handle"></div>
+  <div class="m-title">📖 使い方ガイド</div>
+  <div class="guide-sec">
+    <h3>⚠️ 更新時の注意</h3>
+    <ul><li>初回はシークレットモードで開き「ホーム画面に追加」してください</li>
+    <li>通常モードでは古いキャッシュが残る場合があります</li></ul>
+  </div>
+  <div class="guide-sec">
+    <h3>📅 時間割タブ</h3>
+    <ul><li>年度ごとに授業データを管理。ヘッダーの「‹ 2026年度 ›」で切り替えられます</li>
+    <li>クォーター・前期後期フィルタでまとめて表示</li>
+    <li>授業カードをタップ→出欠記録・詳細確認</li>
+    <li><strong>遅刻換算は授業ごとに設定可能</strong>（授業編集画面）</li></ul>
+  </div>
+  <div class="guide-sec">
+    <h3>📝 ToDoタブ</h3>
+    <ul><li>期限・リマインドタイミング・関連授業を設定できます</li>
+    <li>期限が近づくと赤・黄色で強調表示</li>
+    <li>今日の授業サマリーをToDoタブ上部に表示します</li></ul>
+  </div>
+  <div class="guide-sec">
+    <h3>📊 統計タブ</h3>
+    <ul><li>取得見込み単位数・危険科目・全授業の出席状況を確認</li></ul>
+  </div>
+  <button class="btn bp" style="width:100%;margin-top:12px;" onclick="closeModal('guideModal')">閉じる</button>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════
+//  DATA
+// ═══════════════════════════════
+const KEY = 'rakutan_v3';
+const OLD_KEY = 'rakutan_checker_data_v2';
+const DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
+const DAY_JA = {mon:'月',tue:'火',wed:'水',thu:'木',fri:'金',sat:'土',sun:'日'};
+
+function defSettings(){
+  return {
+    userName:'',currentYear:new Date().getFullYear().toString(),
+    defaultTerm:'1Q',notifyIntervalHours:24,
+    classCounts:{quarter:7,semester:15},latenessPenalty:3,
+    theme:{bgStart:'#667eea',bgEnd:'#764ba2',accent:'#667eea'},
+    darkMode:false,
+    soundEnabled:true,soundVolume:60,animEnabled:true,
+    morningNotify:false,morningNotifyTime:'07:00',
+    requiredCredits:124,prevEarnedCredits:0,
+    reminderDays:[1],absenceWarningThreshold:2,
+    uiTheme:'classic'
+  };
+}
+function defYear(){ return {classes:[],todos:[]}; }
+
+let appData;
+function initData(){
+  const saved = localStorage.getItem(KEY);
+  if(saved){
+    appData = JSON.parse(saved);
+    const ds = defSettings();
+    for(const k in ds){ if(appData.settings[k]===undefined) appData.settings[k]=ds[k]; }
+    const cy = appData.settings.currentYear;
+    if(!appData.years[cy]) appData.years[cy]=defYear();
+  } else {
+    const old = localStorage.getItem(OLD_KEY);
+    const cy = new Date().getFullYear().toString();
+    appData = {settings:defSettings(),years:{}};
+    if(old){
+      const o = JSON.parse(old);
+      appData.years[cy]={classes:o.classes||[],todos:o.todos||[]};
+      if(o.settings){
+        Object.assign(appData.settings,o.settings);
+        appData.settings.currentYear=cy;
+        appData.settings.reminderDays=[1];
+        appData.settings.absenceWarningThreshold=2;
+      }
+    } else {
+      appData.years[cy]=sampleData();
+    }
+    appData.settings.currentYear=cy;
+  }
+  // 旧形式(days[]+period) → 新形式(slots[])へ移行
+  Object.values(appData.years).forEach(yr=>{
+    (yr.classes||[]).forEach(c=>{
+      if(!c.slots){
+        c.slots=c.isOnDemand?[]:(c.days||[]).map(d=>({day:d,period:c.period||1}));
+      }
+    });
+  });
+}
+
+function sampleData(){
+  const in3d = new Date(Date.now()+3*864e5).toISOString().slice(0,16);
+  return {
+    classes:[
+      {name:'マクロ経済学',isOnDemand:false,term:'1Q',period:1,credits:2,room:'A301',
+       teacher:'山田 太郎',summary:'出席重視。期末テスト80%。',email:'',relatedUrl:'',lineUrl:'',
+       color:'#667eea',image:null,days:['mon'],
+       evaluation:[{name:'期末テスト',percentage:80},{name:'出席',percentage:20}],
+       absences:[],tardiness:[],latenessPenalty:null,examDate:''},
+      {name:'英語コミュニケーション',isOnDemand:false,term:'1Q',period:2,credits:1,room:'Language Lab',
+       teacher:'Smith',summary:'英会話の実践。',email:'',relatedUrl:'',lineUrl:'',
+       color:'#f6a5c0',image:null,days:['tue'],
+       evaluation:[{name:'平常点',percentage:100}],
+       absences:[],tardiness:[],latenessPenalty:2,examDate:''},
+      {name:'情報リテラシー',isOnDemand:true,term:'前期',period:1,credits:2,room:'',
+       teacher:'',summary:'動画視聴+課題提出',email:'',relatedUrl:'',lineUrl:'',
+       color:'#48c6ef',image:null,days:[],
+       evaluation:[{name:'課題',percentage:100}],
+       absences:[],tardiness:[],latenessPenalty:null,examDate:''}
+    ],
+    todos:[
+      {title:'マクロ経済学 レポート',deadline:in3d,details:'第3回の内容をまとめる。2000字以内。',
+       completed:false,image:null,addedAt:new Date().toISOString(),
+       linkedClass:0,reminderDays:[1,3],lastNotified:null}
+    ]
+  };
+}
+
+function saveData(){
+  try{ localStorage.setItem(KEY,JSON.stringify(appData)); }
+  catch(e){ alert('保存容量超過。画像を減らしてください。'); }
+}
+
+function resetData(){
+  if(confirm('全データを初期化（サンプルデータに戻す）しますか？')) {
+    localStorage.removeItem(KEY); location.reload();
+  }
+}
+
+// active year shortcuts
+function getYear(y){ return appData.years[y||appData.settings.currentYear]; }
+function curClasses(){ return getYear().classes; }
+function curTodos(){ return getYear().todos; }
+
+// ═══════════════════════════════
+//  YEAR MANAGEMENT
+// ═══════════════════════════════
+let currentYear;
+function syncYear(){ currentYear=appData.settings.currentYear; }
+
+function renderYearNav(){
+  document.getElementById('yearDisplay').textContent = currentYear+'年度';
+}
+
+function getYearsSorted(){
+  return Object.keys(appData.years).map(Number).sort((a,b)=>a-b).map(String);
+}
+
+function switchYear(y){
+  if(!appData.years[y]) appData.years[y]=defYear();
+  appData.settings.currentYear=y;
+  currentYear=y;
+  saveData();
+  renderYearNav();
+  renderAll();
+}
+
+function prevYear(){
+  const ys=getYearsSorted();
+  const i=ys.indexOf(currentYear);
+  if(i>0) switchYear(ys[i-1]);
+  else { if(confirm((parseInt(currentYear)-1)+'年度を追加しますか？')) addYear(String(parseInt(currentYear)-1)); }
+}
+function nextYear(){
+  const ys=getYearsSorted();
+  const i=ys.indexOf(currentYear);
+  if(i<ys.length-1) switchYear(ys[i+1]);
+  else { if(confirm((parseInt(currentYear)+1)+'年度を追加しますか？')) addYear(String(parseInt(currentYear)+1)); }
+}
+
+function addYearPrompt(){
+  const y=prompt('追加する年度を入力してください（例: 2027）');
+  if(y && /^\d{4}$/.test(y)) addYear(y);
+  else if(y) alert('4桁の年を入力してください');
+}
+function addYear(y){
+  if(!appData.years[y]) appData.years[y]=defYear();
+  switchYear(y);
+}
+function addYearFromSettings(){
+  const y=prompt('追加する年度（例: 2027）');
+  if(y && /^\d{4}$/.test(y)){ addYear(y); renderSettingsYearList(); }
+}
+
+function renderSettingsYearList(){
+  const c = document.getElementById('yearList');
+  c.innerHTML='';
+  getYearsSorted().forEach(y=>{
+    const isCur = y===currentYear;
+    c.innerHTML+=`<div class="yi">
+      <div class="yi-lbl">${y}年度${isCur?'':''}</div>
+      ${isCur?'<span class="yi-badge">現在</span>':''}
+      ${!isCur?`<button class="yi-btn" onclick="switchYear('${y}');closeModal('settingsModal');renderSettingsYearList()">切替</button>`:''}
+      ${!isCur?`<button class="yi-btn" onclick="copyYearData('${y}')">コピー</button>`:''}
+      ${!isCur?`<button class="yi-btn" style="color:var(--danger);" onclick="deleteYear('${y}')">削除</button>`:''}
+    </div>`;
+  });
+}
+
+function copyYearData(fromY){
+  if(!confirm(`${fromY}年度の授業データを現在の${currentYear}年度にコピーしますか？\n（ToDoはコピーしません。出欠記録はリセットされます）`)) return;
+  const src = appData.years[fromY].classes;
+  const copied = src.map(c=>({...c,absences:[],tardiness:[]}));
+  getYear().classes = copied;
+  saveData(); renderAll();
+  alert(`${fromY}年度から${copied.length}科目をコピーしました`);
+}
+
+function deleteYear(y){
+  if(!confirm(`${y}年度のデータを削除しますか？この操作は取り消せません。`)) return;
+  delete appData.years[y];
+  saveData(); renderSettingsYearList();
+}
+
+// ═══════════════════════════════
+//  THEME
+// ═══════════════════════════════
+function applyTheme(){
+  const r=document.body.style;
+  const t=appData.settings.theme;
+  r.setProperty('--gs',t.bgStart);
+  r.setProperty('--ge',t.bgEnd);
+  r.setProperty('--ac',t.accent);
+  updateHdrSub();
+}
+
+const COLOR_PRESETS={
+  indigo: {bgStart:'#667eea',bgEnd:'#764ba2',accent:'#667eea',name:'インディゴ'},
+  deep:   {bgStart:'#3730a3',bgEnd:'#7c3aed',accent:'#4f46e5',name:'ディープ'},
+  sunset: {bgStart:'#f7971e',bgEnd:'#f5576c',accent:'#f43f5e',name:'サンセット'},
+  ocean:  {bgStart:'#1a6fe3',bgEnd:'#06b6d4',accent:'#0284c7',name:'オーシャン'},
+  rose:   {bgStart:'#ec4899',bgEnd:'#f43f5e',accent:'#e11d48',name:'ローズ'},
+  forest: {bgStart:'#059669',bgEnd:'#34d399',accent:'#059669',name:'フォレスト'},
+  slate:  {bgStart:'#475569',bgEnd:'#334155',accent:'#64748b',name:'スレート'},
+};
+
+function applyPreset(key){
+  const p=COLOR_PRESETS[key]; if(!p) return;
+  document.getElementById('sBgStart').value=p.bgStart;
+  document.getElementById('sBgEnd').value=p.bgEnd;
+  document.getElementById('sAccent').value=p.accent;
+  document.getElementById('sSyncAccent').checked=false;
+  updateColorPreview();
+  markActivePreset();
+  sfx('click');
+}
+
+function onColorInput(which){
+  if(which==='start'&&document.getElementById('sSyncAccent').checked){
+    document.getElementById('sAccent').value=document.getElementById('sBgStart').value;
+  }
+  updateColorPreview();
+  markActivePreset();
+}
+
+function updateColorPreview(){
+  const gs=document.getElementById('sBgStart')?.value;
+  const ge=document.getElementById('sBgEnd')?.value;
+  const ac=document.getElementById('sAccent')?.value;
+  if(!gs) return;
+  const ss=document.getElementById('cpSwatchStart');
+  const se=document.getElementById('cpSwatchEnd');
+  const sa=document.getElementById('cpSwatchAccent');
+  if(ss) ss.style.background=gs;
+  if(se) se.style.background=ge;
+  if(sa) sa.style.background=ac;
+  const grad=`linear-gradient(135deg,${gs},${ge})`;
+  const hdr=document.getElementById('cpvHdr'); if(hdr) hdr.style.background=grad;
+  const cc=document.getElementById('cpvCardClassic'); if(cc) cc.style.background=grad;
+  const cm=document.getElementById('cpvCardModern'); if(cm) cm.style.borderLeftColor=ac;
+  const chip=document.getElementById('cpvChip'); if(chip) chip.style.background=ac;
+  const btn=document.getElementById('cpvBtn'); if(btn) btn.style.background=grad;
+  const badge=document.getElementById('cpvBadge'); if(badge){
+    badge.style.background=ac+'28'; badge.style.color=ac;
+  }
+}
+
+function markActivePreset(){
+  const gs=document.getElementById('sBgStart')?.value;
+  const ge=document.getElementById('sBgEnd')?.value;
+  const ac=document.getElementById('sAccent')?.value;
+  if(!gs) return;
+  document.querySelectorAll('.preset-btn').forEach(b=>{
+    const p=COLOR_PRESETS[b.dataset.preset]; if(!p) return;
+    b.classList.toggle('on',p.bgStart===gs&&p.bgEnd===ge&&p.accent===ac);
+  });
+}
+
+function applyColorNow(btn){
+  const s=appData.settings;
+  s.theme.bgStart=document.getElementById('sBgStart').value;
+  s.theme.bgEnd=document.getElementById('sBgEnd').value;
+  s.theme.accent=document.getElementById('sAccent').value;
+  saveData(); applyTheme(); sfx('click');
+  if(btn){ const orig=btn.textContent; btn.textContent='✓ 適用しました'; setTimeout(()=>btn.textContent=orig,1600); }
+}
+
+function resetColors(btn){
+  const d=defSettings().theme;
+  document.getElementById('sBgStart').value=d.bgStart;
+  document.getElementById('sBgEnd').value=d.bgEnd;
+  document.getElementById('sAccent').value=d.accent;
+  document.getElementById('sSyncAccent').checked=false;
+  updateColorPreview();
+  markActivePreset();
+  const s=appData.settings;
+  s.theme.bgStart=d.bgStart; s.theme.bgEnd=d.bgEnd; s.theme.accent=d.accent;
+  saveData(); applyTheme(); sfx('click');
+  if(btn){ const orig=btn.textContent; btn.textContent='✓ リセット完了'; setTimeout(()=>btn.textContent=orig,1600); }
+}
+
+function switchSettingsTab(t){
+  document.querySelectorAll('.stab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  const paneId='stab'+t.charAt(0).toUpperCase()+t.slice(1);
+  document.querySelectorAll('.stab-pane').forEach(p=>p.classList.toggle('on',p.id===paneId));
+}
+function applyDark(){
+  document.body.classList.toggle('dark',appData.settings.darkMode);
+}
+function applyUITheme(){
+  const t=appData.settings.uiTheme||'classic';
+  document.body.classList.toggle('classic',t==='classic');
+  const ec=document.getElementById('themeOptClassic');
+  const em=document.getElementById('themeOptModern');
+  if(ec) ec.classList.toggle('on',t==='classic');
+  if(em) em.classList.toggle('on',t==='modern');
+}
+function setUITheme(t){
+  appData.settings.uiTheme=t;
+  saveData(); applyUITheme(); sfx('click');
+}
+function toggleDark(){
+  appData.settings.darkMode=document.getElementById('sDark').checked;
+  applyDark(); saveData();
+}
+function toggleSound(){
+  const on=document.getElementById('sSound').checked;
+  document.getElementById('sVolumeRow').style.opacity=on?'1':'.4';
+  if(on){ appData.settings.soundEnabled=true; sfx('click'); }
+  else appData.settings.soundEnabled=false;
+  saveData();
+}
+function toggleAnim(){
+  appData.settings.animEnabled=document.getElementById('sAnim').checked;
+  applyAnim(); saveData();
+}
+function applyAnim(){
+  document.body.classList.toggle('no-anim',!appData.settings.animEnabled);
+}
+function updateHdrSub(){
+  const n=appData.settings.userName;
+  document.getElementById('hdrSub').textContent=n?`${n}さんの単位管理`:'単位管理をスマートに';
+}
+
+// ═══════════════════════════════
+//  TABS
+// ═══════════════════════════════
+let activeTab='todo';
+function showTab(tab){
+  sfx('tab');
+  activeTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['todo','schedule','stats'][i]===tab);
+  });
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const map={todo:'todoSection',schedule:'scheduleSection',stats:'statsSection',detail:'detailSection'};
+  document.getElementById(map[tab]).classList.add('active');
+  if(tab==='todo'){ renderTodos(); renderTodayCard(); renderDangerBanner('todo'); }
+  if(tab==='schedule'){ renderSchedule(); renderDangerBanner('sched'); }
+  if(tab==='stats') renderStats();
+  const sf=document.getElementById('shareFab');
+  if(sf) sf.style.display=tab==='schedule'?'flex':'none';
+}
+
+// ═══════════════════════════════
+//  ABSENCE CALCULATION
+// ═══════════════════════════════
+function calcAbs(c){
+  const sc=appData.settings.classCounts;
+  let base = ['前期','後期','通年'].includes(c.term) ? (sc?sc.semester:15) : (sc?sc.quarter:7);
+  if(c.term==='通年') base*=2;
+  const perWeek=(c.isOnDemand||!c.slots||c.slots.length===0)?1:c.slots.length;
+  const total=base*perWeek;
+  const maxSafe=Math.floor(total/3);
+  const abs=c.absences?c.absences.length:0;
+  const late=c.tardiness?c.tardiness.length:0;
+  const pen=c.latenessPenalty?parseInt(c.latenessPenalty):(appData.settings.latenessPenalty||3);
+  const lateConv=Math.floor(late/pen);
+  const totalPen=abs+lateConv;
+  const remaining=maxSafe-totalPen;
+  const lateBuffer=(pen-1)-(late%pen);
+  return {total,maxSafe,abs,late,lateConv,totalPen,remaining,lateBuffer,perWeek,pen};
+}
+
+// ═══════════════════════════════
+//  TODAY CARD
+// ═══════════════════════════════
+function renderTodayCard(){
+  const todayDay=DAYS[new Date().getDay()];
+  const todayClasses=curClasses().filter(c=>!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===todayDay)&&(c.status||'active')!=='withdrawn');
+  todayClasses.sort((a,b)=>(a.slots.find(s=>s.day===todayDay)?.period||0)-(b.slots.find(s=>s.day===todayDay)?.period||0));
+  const el=document.getElementById('todayClassList');
+  if(!todayClasses.length){ el.innerHTML='<div class="tc-empty">今日は授業なし🎉</div>'; return; }
+  const todayStr=new Date().toISOString().slice(0,10);
+  el.innerHTML=todayClasses.map(c=>{
+    const s=calcAbs(c);
+    const isCanceled=(c.canceledDates||[]).includes(todayStr);
+    const todayPeriod=c.slots.find(sl=>sl.day===todayDay)?.period||'?';
+    const warnHtml=!isCanceled&&s.remaining<=1?`<span class="tc-warn">残${s.remaining}欠席</span>`:'';
+    const canceledHtml=isCanceled?'<span class="canceled-badge">休講</span>':'';
+    return `<div class="tc-item" style="${isCanceled?'opacity:.5':''}"><span class="tc-period">${todayPeriod}限</span><span class="tc-name">${c.name}${canceledHtml}</span>${warnHtml}</div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+//  DANGER BANNER
+// ═══════════════════════════════
+function renderDangerBanner(type){
+  const danger=curClasses().filter(c=>calcAbs(c).remaining<0);
+  const warn=curClasses().filter(c=>{ const s=calcAbs(c); return s.remaining>=0&&s.remaining<=appData.settings.absenceWarningThreshold; });
+  const sfxId=type==='todo'?'Todo':'Sched';
+  const banner=document.getElementById('dangerBanner'+sfxId);
+  const list=document.getElementById('dangerList'+sfxId);
+  if(!danger.length&&!warn.length){ banner.style.display='none'; return; }
+  const wasHidden=banner.style.display==='none'||!banner.style.display;
+  banner.style.display='block';
+  if(wasHidden&&danger.length){
+    sfx('warn');
+    if(appData.settings.animEnabled!==false){
+      banner.classList.remove('shake');
+      requestAnimationFrame(()=>{ banner.classList.add('shake'); setTimeout(()=>banner.classList.remove('shake'),450); });
+    }
+  }
+  const items=[
+    ...danger.map(c=>`<div class="db-item">🚨 ${c.name}：落単確定</div>`),
+    ...warn.map(c=>{ const s=calcAbs(c); return `<div class="db-item">⚠️ ${c.name}：残り${s.remaining}回`+(s.remaining===0?'（次で落単！）':'')+'</div>'; })
+  ];
+  list.innerHTML=items.join('');
+}
+
+// ═══════════════════════════════
+//  SCHEDULE
+// ═══════════════════════════════
+let curQuarter='all_q', curDay='mon', curView='list', curTermType='quarter';
+
+function setTermType(type){
+  curTermType=type;
+  document.querySelectorAll('.term-tab').forEach((b,i)=>{
+    b.classList.toggle('on',['quarter','semester','annual'][i]===type);
+  });
+  document.getElementById('subQ').style.display=type==='quarter'?'':'none';
+  document.getElementById('subS').style.display=type==='semester'?'':'none';
+  document.getElementById('subA').style.display=type==='annual'?'':'none';
+  if(type==='quarter'){
+    curQuarter='all_q';
+    document.querySelectorAll('#quarterBtns .fbtn').forEach((b,i)=>b.classList.toggle('on',i===0));
+  } else if(type==='semester'){
+    curQuarter='all_s';
+    document.querySelectorAll('#semesterBtns .fbtn').forEach((b,i)=>b.classList.toggle('on',i===0));
+  } else {
+    curQuarter='通年';
+  }
+  renderSchedule();
+}
+
+function setQuarter(q){
+  curQuarter=q;
+  const isQ=['all_q','1Q','2Q','3Q','4Q'].includes(q);
+  const group=isQ?'#quarterBtns .fbtn':'#semesterBtns .fbtn';
+  document.querySelectorAll(group).forEach(b=>{
+    const oc=b.getAttribute('onclick')||'';
+    b.classList.toggle('on',oc.includes(`'${q}'`));
+  });
+  renderSchedule();
+}
+function setDay(d){
+  curDay=d;
+  document.querySelectorAll('#dayBtns .dbtn').forEach(b=>{
+    const oc=b.getAttribute('onclick');
+    b.classList.toggle('on',oc&&oc.includes(`'${d}'`));
+  });
+  renderSchedule();
+}
+function setView(v){
+  curView=v;
+  document.getElementById('vBtnList').classList.toggle('on',v==='list');
+  document.getElementById('vBtnTable').classList.toggle('on',v==='table');
+  document.getElementById('listView').style.display=v==='list'?'':'none';
+  document.getElementById('tableView').style.display=v==='table'?'':'none';
+  renderSchedule();
+}
+
+function filterClasses(){
+  const QUARTER_TERMS=['1Q','2Q','3Q','4Q'];
+  const SEM_TERMS=['前期','後期'];
+  return curClasses().filter(c=>{
+    if(curTermType==='annual') return c.term==='通年';
+    if(curTermType==='semester'){
+      if(!SEM_TERMS.includes(c.term)) return false;
+      if(curQuarter==='all_s') return true;
+      return c.term===curQuarter;
+    }
+    // quarter
+    if(!QUARTER_TERMS.includes(c.term)) return false;
+    if(curQuarter==='all_q') return true;
+    return c.term===curQuarter;
+  });
+}
+
+function statusClass(s){
+  if(s.remaining<0) return 'c-danger';
+  if(s.remaining===0) return 'c-warn';
+  return '';
+}
+function statusText(s){
+  if(s.remaining<0) return '🚨 落単確定';
+  return `残${s.remaining}欠席 ${s.lateBuffer}遅刻`;
+}
+
+const DAYS_TT=['mon','tue','wed','thu','fri','sat','sun'];
+
+function buildTimetableSection(label, classes, allCls){
+  const thead=`<thead><tr><th></th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th><th>日</th></tr></thead>`;
+  let rows='';
+  for(let p=1;p<=8;p++){
+    let row=`<tr><td class="tt-period">${p}</td>`;
+    DAYS_TT.forEach(day=>{
+      const found=classes.find(c=>!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===day&&s.period==p));
+      if(found){
+        const idx=allCls.indexOf(found);
+        const s=calcAbs(found);
+        const fStatus=found.status||'active';
+        const tc=fStatus==='withdrawn'?'tt-withdrawn':s.remaining<0?'tt-danger':s.remaining===0?'tt-warn':'';
+        const ttStyle=(found.color&&fStatus!=='withdrawn')?`--cc-color:${found.color};`:'';
+        row+=`<td onclick="showDetail(${idx})"><div class="tt-cell ${tc}" style="${ttStyle}">${found.name}</div></td>`;
+      } else {
+        const termArg=label?`,'${label}'`:'';
+        row+=`<td><div class="tt-add" onclick="openAddClassAt('${day}',${p}${termArg})">＋</div></td>`;
+      }
+    });
+    row+=`</tr>`;
+    rows+=row;
+  }
+  const odCls=classes.filter(c=>c.isOnDemand);
+  const odChips=odCls.map(c=>{
+    const idx=allCls.indexOf(c);
+    const wd=(c.status||'active')==='withdrawn';
+    return `<div class="tt-od-chip${wd?' wd':''}" onclick="showDetail(${idx})">${c.name}</div>`;
+  }).join('');
+  const termArg=label?`,'${label}'`:'';
+  const odCell=odCls.length
+    ?`<div class="tt-od-cell">${odChips}<div class="tt-add tt-od-inline-add" onclick="openAddODClass()">＋</div></div>`
+    :`<div class="tt-add" style="height:100%;min-height:44px;" onclick="openAddODClass()">＋</div>`;
+  rows+=`<tr class="tt-od-row"><td class="tt-period">OD</td><td colspan="7">${odCell}</td></tr>`;
+  const labelHtml=label?`<div class="tt-section-label">📅 ${label}</div>`:'';
+  return `<div class="tt-section">${labelHtml}<div class="tt-wrap"><table class="timetable">${thead}<tbody>${rows}</tbody></table></div></div>`;
+}
+
+function renderSchedule(){
+  const target=filterClasses();
+  const todayKey=DAYS[new Date().getDay()];
+
+  if(curView==='list'){
+    const grid=document.getElementById('schedGrid');
+    let list=curDay==='od'?target.filter(c=>c.isOnDemand):target.filter(c=>!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===curDay));
+    list.sort((a,b)=>(a.slots?.find(s=>s.day===curDay)?.period||0)-(b.slots?.find(s=>s.day===curDay)?.period||0));
+    if(!list.length){ grid.innerHTML='<div style="text-align:center;padding:24px;color:var(--faint);">授業がありません</div>'; return; }
+    grid.innerHTML=list.map(c=>{
+      const idx=curClasses().indexOf(c);
+      const s=calcAbs(c);
+      const cStatus=c.status||'active';
+      const sc=cStatus==='withdrawn'?'c-withdrawn':cStatus==='finalized'?'c-finalized':statusClass(s);
+      const st=statusText(s);
+      const hasStatusColor=['c-danger','c-warn','c-withdrawn','c-finalized'].includes(sc);
+      const cardStyle=(!hasStatusColor&&c.color)?`--cc-color:${c.color};`:'';
+      const daySlot=c.slots?.find(s=>s.day===curDay);
+      const periodLabel=c.isOnDemand?'OD':daySlot?`${daySlot.period}限`:(c.slots?.[0]?`${c.slots[0].period}限`:'?限');
+      const dStr=c.isOnDemand?'オンデマンド':(c.slots||[]).map(s=>DAY_JA[s.day]+s.period+'限').join('・');
+      const fill=s.maxSafe>0?Math.min(100,Math.round(s.totalPen/s.maxSafe*100)):100;
+      const barDanger=fill>=80?'bar-danger':'';
+      const examBadge=c.examDate?`<span class="cc-exam">📝${fmtDate(c.examDate)}</span>`:'';
+      const bottomBadge=cStatus==='withdrawn'?'履修取り消し':cStatus==='finalized'?(c.finalGrade==='F'?'落単確定':`${c.finalGrade}・${c.credits}単位確定`):st;
+      return `<div class="class-card ${sc}" style="${cardStyle}" onclick="showDetail(${idx})">
+        ${examBadge}
+        <div class="cc-top">
+          <div class="cc-top-left">
+            <div class="cc-period-chip">${periodLabel}</div>
+            <div class="cc-meta">${c.term} | ${dStr}</div>
+          </div>
+          <button class="cc-del" onclick="event.stopPropagation();deleteClassDirect(${idx})">×</button>
+        </div>
+        <div class="cc-name">${c.name}</div>
+        <div class="cc-room">${c.room||''}</div>
+        <div class="cc-bottom">
+          <span class="cc-badge${cStatus==='withdrawn'?'':s.remaining<0?' b-danger':''}">${bottomBadge}</span>
+          ${cStatus==='active'?`<div class="cc-bar-wrap"><div class="cc-bar ${barDanger}" style="width:${fill}%"></div></div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    const allCls=curClasses();
+    const isAll=curQuarter==='all_q'||curQuarter==='all_s';
+    let sections;
+    if(isAll){
+      const terms=curTermType==='semester'?['前期','後期']:['1Q','2Q','3Q','4Q'];
+      sections=terms.map(term=>({label:term,classes:allCls.filter(c=>c.term===term)}));
+    } else {
+      sections=[{label:null,classes:target}];
+    }
+    document.getElementById('ttContainer').innerHTML=sections.map(({label,classes})=>buildTimetableSection(label,classes,allCls)).join('');
+  }
+
+  // Today highlight on day buttons
+  document.querySelectorAll('#dayBtns .dbtn').forEach(b=>{
+    const oc=b.getAttribute('onclick')||'';
+    const isToday=oc.includes(`'${todayKey}'`);
+    b.classList.toggle('today-day',isToday);
+  });
+}
+
+// ═══════════════════════════════
+//  DETAIL
+// ═══════════════════════════════
+let curClassIdx=-1;
+let editingClassIdx=-1;
+let pendingReason='';
+
+function fmtDate(d){ if(!d) return ''; const p=d.split('-'); return `${p[1]}/${p[2]}`; }
+function daysUntil(d){ return Math.ceil((new Date(d)-new Date().setHours(0,0,0,0))/864e5); }
+
+function showDetail(idx){
+  curClassIdx=idx;
+  const c=curClasses()[idx];
+  if(!c) return;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('detailSection').classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+
+  const s=calcAbs(c);
+  document.getElementById('dName').textContent=c.name;
+  const dStr=c.isOnDemand?'オンデマンド':((c.slots||[]).map(s=>DAY_JA[s.day]+s.period+'限').join('・')+`（週${s.perWeek}回）`);
+  const fmtTag=c.format?` <span style="display:inline-block;background:var(--ac);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;vertical-align:middle;">${c.format}</span>`:'';
+  document.getElementById('dInfo').innerHTML=`${c.term}${fmtTag} | ${dStr}<br>教室: ${c.room||'-'} / 教員: ${c.teacher||'-'}<br>単位: ${c.credits} | 遅刻換算: ${s.pen}回で1欠席`;
+
+  const links=document.getElementById('dLinks');
+  links.innerHTML='';
+  if(c.email) links.innerHTML+=`<a class="lbtn" href="mailto:${c.email}">✉️ メール</a>`;
+  if(c.relatedUrl) links.innerHTML+=`<a class="lbtn" href="${c.relatedUrl}" target="_blank">🔗 シラバス</a>`;
+  if(c.lineUrl) links.innerHTML+=`<a class="lbtn" href="${c.lineUrl}" target="_blank">💬 LINE</a>`;
+
+  // Absence stats
+  document.getElementById('dAbs').textContent=`${s.abs}回`;
+  document.getElementById('dLate').textContent=`${s.late}回`;
+  document.getElementById('dLateConv').textContent=`${s.lateConv}回`;
+  document.getElementById('dTotal').textContent=`${s.totalPen}回`;
+
+  const remEl=document.getElementById('remNum');
+  if(s.remaining<0){
+    remEl.textContent='落単確定'; remEl.className='rem-num danger';
+    document.getElementById('remLbl').textContent='欠席超過！';
+  } else {
+    remEl.textContent=`あと${s.remaining}欠席 ${s.lateBuffer}遅刻`;
+    remEl.className='rem-num '+(s.remaining===0?'warn':s.remaining<=2?'warn':'safe');
+    document.getElementById('remLbl').textContent='あとこれだけ休める';
+  }
+  const pct=s.maxSafe>0?Math.min(100,Math.round(s.totalPen/s.maxSafe*100)):100;
+  const fill=document.getElementById('absBarFill');
+  fill.style.width=pct+'%';
+  fill.className='abs-bar-fill'+(pct>=80?' bd':pct>=50?' bw':'');
+
+  document.getElementById('absNotice').textContent=c.isOnDemand
+    ?'※ オンデマンド授業：未提出課題を「欠席」として記録してください。'
+    :`${c.term}・週${s.perWeek}回：全${s.total}回中、最大${s.maxSafe}回まで欠席可能`;
+
+  // Exam
+  if(c.examDate){
+    document.getElementById('examSection').style.display='block';
+    document.getElementById('examDateTxt').textContent=`📅 試験日: ${c.examDate}`;
+    const du=daysUntil(c.examDate);
+    document.getElementById('examCdTxt').textContent=du>0?`あと ${du} 日`:du===0?'本日！':Math.abs(du)+'日前に終了';
+  } else document.getElementById('examSection').style.display='none';
+
+  // Evaluation
+  const eb=document.getElementById('evalBox');
+  eb.innerHTML=(c.evaluation||[]).map(e=>`
+    <div class="eval-item"><span>${e.name}</span><span>${e.percentage}%</span></div>
+    <div class="eval-bar"><div class="eval-fill" style="width:${e.percentage}%">${e.percentage}%</div></div>
+  `).join('');
+
+  // Summary
+  document.getElementById('dSummary').textContent=c.summary||'概要なし';
+  const imgW=document.getElementById('dImgWrap');
+  imgW.innerHTML=c.image?`<img src="${c.image}" style="max-width:100%;border-radius:8px;" alt="授業画像">`:'';
+
+  document.getElementById('attDate').valueAsDate=new Date();
+  document.getElementById('cancelDate').valueAsDate=new Date();
+  renderAttList();
+  renderCanceledList();
+  renderStatusArea();
+  // Grade
+  document.getElementById('dGradeSelect').value=c.finalGrade||'';
+  document.getElementById('dRequiredSelect').value=c.required||'選択';
+  updateGpaPoint(c.finalGrade);
+}
+
+function renderAttList(){
+  const c=curClasses()[curClassIdx];
+  const merged=[
+    ...(c.absences||[]).map(a=>({...a,type:'absent'})),
+    ...(c.tardiness||[]).map(a=>({...a,type:'late'}))
+  ].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('attList').innerHTML=merged.map(item=>`
+    <div class="att-entry">
+      <span class="att-badge ${item.type==='absent'?'ab-absent':'ab-late'}">${item.type==='absent'?'欠席':'遅刻'}</span>
+      <span class="att-date">${item.date}</span>
+      <span class="att-reason">${item.reason||''}</span>
+      <button class="att-del" onclick="removeAtt('${item.date}','${item.type}')">×</button>
+    </div>
+  `).join('')||'<div style="text-align:center;padding:12px;color:var(--faint);font-size:13px;">記録なし</div>';
+}
+
+function setReason(r){
+  pendingReason=r;
+  document.getElementById('attReason').value=r;
+}
+
+function addAtt(){
+  const date=document.getElementById('attDate').value;
+  const type=document.getElementById('attType').value;
+  const reason=document.getElementById('attReason').value.trim()||pendingReason;
+  if(!date){ alert('日付を選択してください'); return; }
+  const c=curClasses()[curClassIdx];
+  if(!c.absences) c.absences=[];
+  if(!c.tardiness) c.tardiness=[];
+  if(type==='absent') c.absences.push({date,reason});
+  else c.tardiness.push({date,reason});
+  pendingReason='';
+  document.getElementById('attReason').value='';
+  saveData(); showDetail(curClassIdx);
+  checkAbsenceAlert(c);
+}
+
+function removeAtt(date,type){
+  const c=curClasses()[curClassIdx];
+  if(type==='absent') c.absences=c.absences.filter(a=>a.date!==date);
+  else c.tardiness=c.tardiness.filter(a=>a.date!==date);
+  saveData(); showDetail(curClassIdx);
+}
+
+function checkAbsenceAlert(c){
+  if(Notification.permission!=='granted') return;
+  const s=calcAbs(c);
+  const thr=appData.settings.absenceWarningThreshold||2;
+  if(s.remaining<=thr&&s.remaining>=0){
+    sendNotification(`⚠️ 出席警告: ${c.name}`,`残り${s.remaining}回しか欠席できません！（遅刻は${s.lateBuffer}回まで）`,'abs-warn-'+c.name);
+  } else if(s.remaining<0){
+    sendNotification(`🚨 落単危険: ${c.name}`,'欠席限度を超えました！至急教授に相談を。','abs-danger-'+c.name);
+  }
+}
+
+// ═══════════════════════════════
+//  STATS
+// ═══════════════════════════════
+function renderStats(){
+  const cls=curClasses();
+  // GPA
+  renderGPASection(cls);
+  const totalCredits=cls.reduce((s,c)=>s+Number(c.credits),0);
+  const dangerCls=cls.filter(c=>calcAbs(c).remaining<0);
+  const warnCls=cls.filter(c=>{ const s=calcAbs(c); return s.remaining>=0&&s.remaining<=appData.settings.absenceWarningThreshold; });
+  const safeCls=cls.filter(c=>calcAbs(c).remaining>appData.settings.absenceWarningThreshold);
+  const safeCredits=safeCls.reduce((s,c)=>s+Number(c.credits),0);
+
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card"><div class="sv">${totalCredits}</div><div class="sl">登録単位数</div></div>
+    <div class="stat-card"><div class="sv s-safe">${safeCredits}</div><div class="sl">取得見込み単位</div></div>
+    <div class="stat-card"><div class="sv s-danger">${dangerCls.length}</div><div class="sl">落単確定科目</div></div>
+    <div class="stat-card"><div class="sv" style="color:var(--warn);">${warnCls.length}</div><div class="sl">要注意科目</div></div>
+  `;
+
+  const dc=document.getElementById('dangerClassStats');
+  if(!dangerCls.length&&!warnCls.length){
+    dc.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">危険な授業はありません🎉</div>';
+  } else {
+    dc.innerHTML=[...dangerCls,...warnCls].map((c,i)=>{
+      const s=calcAbs(c);
+      const isDanger=s.remaining<0;
+      return `<div class="csi" style="border-left:3px solid ${isDanger?'var(--danger)':'var(--warn)'}">
+        <div class="csi-name">${c.name}</div>
+        <div class="csi-label" style="color:${isDanger?'var(--danger)':'var(--warn)'};font-weight:700;">${isDanger?'落単確定':'残'+s.remaining+'回'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const ac=document.getElementById('allClassStats');
+  if(!cls.length){ ac.innerHTML='<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">授業が登録されていません</div>'; return; }
+  ac.innerHTML=cls.map(c=>{
+    const s=calcAbs(c);
+    const pct=s.maxSafe>0?Math.min(100,Math.round(s.totalPen/s.maxSafe*100)):0;
+    const col=pct>=100?'var(--danger)':pct>=67?'var(--warn)':'var(--safe)';
+    return `<div class="csi">
+      <div style="flex:1;">
+        <div class="csi-name">${c.name}</div>
+        <div class="csi-bar-wrap" style="margin-top:5px;"><div class="csi-bar-fill" style="width:${pct}%;background:${col};"></div></div>
+      </div>
+      <div class="csi-label">${s.totalPen}/${s.maxSafe}回</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+//  CLASS MODAL
+// ═══════════════════════════════
+
+const TERM_GROUPS={quarter:['1Q','2Q','3Q','4Q'],semester:['前期','後期'],annual:['通年']};
+
+function updateTermOptions(restrictToCurrentType){
+  const sel=document.getElementById('cTerm');
+  if(!sel) return;
+  const allowed=restrictToCurrentType?(TERM_GROUPS[curTermType]||Object.values(TERM_GROUPS).flat()):null;
+  Array.from(sel.options).forEach(o=>{ o.hidden=allowed?!allowed.includes(o.value):false; });
+  if(allowed&&!allowed.includes(sel.value)) sel.value=allowed[0];
+}
+
+function setCreditChip(val){
+  document.getElementById('cCredits').value=val;
+  syncCreditChips();
+}
+function syncCreditChips(){
+  const v=parseFloat(document.getElementById('cCredits').value);
+  document.querySelectorAll('.credit-chip').forEach(b=>{
+    b.classList.toggle('on', parseFloat(b.dataset.val)===v);
+  });
+}
+
+const DAY_OPTIONS=['mon','tue','wed','thu','fri','sat','sun'];
+const DAY_LABELS={mon:'月曜日',tue:'火曜日',wed:'水曜日',thu:'木曜日',fri:'金曜日',sat:'土曜日',sun:'日曜日'};
+
+function addSlotRow(day, period){
+  const dayOpts=DAY_OPTIONS.map(d=>`<option value="${d}"${d===(day||'mon')?' selected':''}>${DAY_LABELS[d]}</option>`).join('');
+  const perOpts=[1,2,3,4,5,6,7,8].map(p=>`<option value="${p}"${p==(period||1)?' selected':''}>${p}限</option>`).join('');
+  const row=document.createElement('div');
+  row.className='slot-row';
+  row.innerHTML=`<select class="slot-day">${dayOpts}</select><select class="slot-period">${perOpts}</select><button type="button" class="slot-del" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('cSlotList').appendChild(row);
+}
+
+function getSlots(){
+  return Array.from(document.querySelectorAll('#cSlotList .slot-row')).map(r=>({
+    day:r.querySelector('.slot-day').value,
+    period:parseInt(r.querySelector('.slot-period').value)
+  }));
+}
+
+function toggleOD(){
+  const od=document.getElementById('cOnDemand').checked;
+  document.getElementById('cSlotGrp').style.opacity=od?.35:1;
+  document.getElementById('cSlotGrp').style.pointerEvents=od?'none':'auto';
+}
+
+function addCrit(name='',per=''){
+  const d=document.createElement('div');
+  d.className='crit-row';
+  d.innerHTML=`<input type="text" placeholder="項目名（例:期末）" value="${name}" class="cn">
+    <input type="number" placeholder="%" value="${per}" class="cp">
+    <button class="crit-rm" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('critList').appendChild(d);
+}
+
+function previewImg(){
+  const f=document.getElementById('cImage').files[0];
+  const pre=document.getElementById('cImgPre');
+  if(f){ const r=new FileReader(); r.onload=e=>{ pre.src=e.target.result; pre.style.display='block'; }; r.readAsDataURL(f); }
+}
+
+function openAddClass(){
+  editingClassIdx=-1;
+  document.getElementById('classModalTitle').textContent='授業を追加';
+  document.getElementById('cName').value='';
+  document.getElementById('cOnDemand').checked=false; toggleOD();
+  document.getElementById('cColor').value='#667eea';
+  document.getElementById('cUrl').value='';
+  document.getElementById('cLine').value='';
+  document.getElementById('cEmail').value='';
+  document.getElementById('cImage').value='';
+  document.getElementById('cImgPre').style.display='none';
+  updateTermOptions(true);
+  const defTerm=appData.settings.defaultTerm||'1Q';
+  const allowed=TERM_GROUPS[curTermType]||TERM_GROUPS.quarter;
+  document.getElementById('cTerm').value=allowed.includes(defTerm)?defTerm:allowed[0];
+  document.getElementById('cSlotList').innerHTML=''; addSlotRow('mon',1);
+  document.getElementById('cCredits').value='2'; syncCreditChips();
+  document.getElementById('cFormat').value='';
+  document.getElementById('cLatePen').value='';
+  document.getElementById('cExamDate').value='';
+  document.getElementById('cRoom').value='';
+  document.getElementById('cTeacher').value='';
+  document.getElementById('cSummary').value='';
+  document.getElementById('critList').innerHTML='';
+  addCrit();
+  document.getElementById('delClassBtn').style.display='none';
+  document.getElementById('classModal').classList.add('active');
+}
+
+function openEditClass(){
+  if(curClassIdx<0) return;
+  editingClassIdx=curClassIdx;
+  const c=curClasses()[editingClassIdx];
+  document.getElementById('classModalTitle').textContent='授業を編集';
+  document.getElementById('cName').value=c.name;
+  document.getElementById('cOnDemand').checked=c.isOnDemand||false; toggleOD();
+  document.getElementById('cColor').value=c.color||'#667eea';
+  document.getElementById('cUrl').value=c.relatedUrl||'';
+  document.getElementById('cLine').value=c.lineUrl||'';
+  document.getElementById('cEmail').value=c.email||'';
+  document.getElementById('cImage').value='';
+  const pre=document.getElementById('cImgPre');
+  if(c.image){ pre.src=c.image; pre.style.display='block'; } else pre.style.display='none';
+  updateTermOptions(false);
+  document.getElementById('cTerm').value=c.term;
+  document.getElementById('cSlotList').innerHTML='';
+  (c.slots||[]).forEach(s=>addSlotRow(s.day,s.period));
+  if(!c.slots||!c.slots.length) addSlotRow('mon',1);
+  document.getElementById('cCredits').value=c.credits; syncCreditChips();
+  document.getElementById('cFormat').value=c.format||'';
+  document.getElementById('cLatePen').value=c.latenessPenalty||'';
+  document.getElementById('cExamDate').value=c.examDate||'';
+  document.getElementById('cRoom').value=c.room||'';
+  document.getElementById('cTeacher').value=c.teacher||'';
+  document.getElementById('cSummary').value=c.summary||'';
+  const cl=document.getElementById('critList'); cl.innerHTML='';
+  (c.evaluation||[]).forEach(e=>addCrit(e.name,e.percentage));
+  if(!c.evaluation||!c.evaluation.length) addCrit();
+  document.getElementById('delClassBtn').style.display='block';
+  document.getElementById('classModal').classList.add('active');
+}
+
+async function saveClass(){
+  const name=document.getElementById('cName').value.trim();
+  if(!name){ alert('授業名を入力してください'); return; }
+  const isOd=document.getElementById('cOnDemand').checked;
+  const slots=isOd?[]:getSlots();
+  if(!isOd&&slots.length===0){ alert('授業コマを1つ以上追加してください'); return; }
+  if(!isOd&&slots.length>0){
+    const conflicts=[];
+    slots.forEach(slot=>{
+      curClasses().forEach((c,i)=>{
+        if(i===editingClassIdx||c.isOnDemand||!c.slots) return;
+        if(c.slots.some(s=>s.day===slot.day&&s.period===slot.period)){
+          conflicts.push({className:c.name,slot});
+        }
+      });
+    });
+    if(conflicts.length){
+      const msg=conflicts.map(({className,slot})=>`・${DAY_JA[slot.day]}曜${slot.period}限：${className}`).join('\n');
+      if(!confirm(`⚠️ 時間割が重複しています\n\n${msg}\n\n上書き保存しますか？`)) return;
+      if(!confirm(`🚨 本当に上書きしますか？\n\n${msg}\n\n既存の授業コマはそのまま残ります。`)) return;
+    }
+  }
+  const evaluation=[];
+  let totalP=0;
+  document.querySelectorAll('#critList .crit-row').forEach(r=>{
+    const n=r.querySelector('.cn').value.trim();
+    const p=parseInt(r.querySelector('.cp').value)||0;
+    if(n){ evaluation.push({name:n,percentage:p}); totalP+=p; }
+  });
+  if(evaluation.length&&totalP!==100){
+    if(!confirm(`評価割合の合計が${totalP}%です。続けますか？`)) return;
+  }
+  let img=null;
+  const fi=document.getElementById('cImage');
+  if(fi.files&&fi.files[0]){
+    try{ img=await readFile(fi.files[0]); } catch(e){}
+  } else if(editingClassIdx>-1) img=curClasses()[editingClassIdx].image;
+  const lp=document.getElementById('cLatePen').value;
+  const obj={
+    name,isOnDemand:isOd,
+    term:document.getElementById('cTerm').value,
+    slots,
+    credits:parseFloat(document.getElementById('cCredits').value)||1,
+    format:document.getElementById('cFormat').value||null,
+    room:document.getElementById('cRoom').value,
+    teacher:document.getElementById('cTeacher').value,
+    summary:document.getElementById('cSummary').value,
+    email:document.getElementById('cEmail').value,
+    relatedUrl:document.getElementById('cUrl').value,
+    lineUrl:document.getElementById('cLine').value,
+    color:document.getElementById('cColor').value,
+    image:img,evaluation,
+    absences:editingClassIdx>-1?curClasses()[editingClassIdx].absences:[],
+    tardiness:editingClassIdx>-1?curClasses()[editingClassIdx].tardiness:[],
+    canceledDates:editingClassIdx>-1?(curClasses()[editingClassIdx].canceledDates||[]):[],
+    finalGrade:editingClassIdx>-1?(curClasses()[editingClassIdx].finalGrade||null):null,
+    required:editingClassIdx>-1?(curClasses()[editingClassIdx].required||'選択'):'選択',
+    status:editingClassIdx>-1?(curClasses()[editingClassIdx].status||'active'):'active',
+    latenessPenalty:lp?parseInt(lp):null,
+    examDate:document.getElementById('cExamDate').value
+  };
+  if(editingClassIdx>-1){ curClasses()[editingClassIdx]=obj; if(curClassIdx===editingClassIdx) showDetail(curClassIdx); }
+  else curClasses().push(obj);
+  saveData(); closeModal('classModal'); renderSchedule();
+  if(document.getElementById('todoSection').classList.contains('active')) populateTodoClassSelect();
+}
+
+let _pendingDeleteIdx=-1;
+
+function promptDeleteClass(idx){
+  if(idx<0) return;
+  _pendingDeleteIdx=idx;
+  const c=curClasses()[idx];
+  if(!c) return;
+  document.getElementById('delConfirmName').textContent=c.name;
+  document.getElementById('deleteConfirmModal').classList.add('active');
+}
+
+function confirmDeleteClass(){
+  const idx=_pendingDeleteIdx;
+  _pendingDeleteIdx=-1;
+  closeModal('deleteConfirmModal');
+  if(idx<0) return;
+  const wasDetail=(curClassIdx===idx);
+  curClasses().splice(idx,1);
+  saveData();
+  sfx('click');
+  if(wasDetail){ closeModal('classModal'); showTab('schedule'); }
+  else renderSchedule();
+}
+
+function deleteClass(){
+  closeModal('classModal');
+  promptDeleteClass(editingClassIdx);
+}
+function deleteClassDirect(idx){ promptDeleteClass(idx); }
+
+// ═══════════════════════════════
+//  TODO
+// ═══════════════════════════════
+function switchTodoTab(tab){
+  document.getElementById('todoTabList').classList.toggle('on', tab==='list');
+  document.getElementById('todoTabAdd').classList.toggle('on', tab==='add');
+  document.getElementById('todoPaneList').classList.toggle('on', tab==='list');
+  document.getElementById('todoPaneAdd').classList.toggle('on', tab==='add');
+}
+
+function toggleDL(){
+  document.getElementById('todoDeadline').disabled=document.getElementById('noDeadline').checked;
+}
+function toggleChip(el){
+  el.classList.toggle('on');
+}
+function getSelectedReminderDays(){
+  return [...document.querySelectorAll('#reminderChips .chip.on')].map(c=>parseInt(c.dataset.days));
+}
+
+function populateTodoClassSelect(){
+  const sel=document.getElementById('todoClass');
+  sel.innerHTML='<option value="-1">（なし）</option>';
+  curClasses().forEach((c,i)=>{ sel.innerHTML+=`<option value="${i}">${c.name}</option>`; });
+}
+
+function renderTodos(){
+  populateTodoClassSelect();
+  const list=document.getElementById('todoList');
+  const todos=curTodos();
+  todos.sort((a,b)=>{
+    if(!a.deadline) return 1; if(!b.deadline) return -1;
+    return new Date(a.deadline)-new Date(b.deadline);
+  });
+  if(!todos.length){ list.innerHTML='<div style="text-align:center;padding:20px;color:var(--faint);">タスクなし</div>'; return; }
+  list.innerHTML=todos.map((t,i)=>{
+    let cls='todo-item'; if(t.completed) cls+=' done';
+    let dlTxt='<span style="color:var(--faint);">期限なし</span>';
+    let cdHtml='';
+    if(t.deadline){
+      const diff=(new Date(t.deadline)-Date.now())/36e5;
+      dlTxt=`期限: ${t.deadline.replace('T',' ')}`;
+      if(!t.completed){
+        if(diff<0){ cls+=' overdue'; cdHtml='<span class="countdown cd-danger">期限切れ</span>'; }
+        else if(diff<24){ cls+=' overdue'; cdHtml=`<span class="countdown cd-danger">あと${Math.ceil(diff)}時間</span>`; }
+        else if(diff<72){ cls+=' urgent'; cdHtml=`<span class="countdown cd-warn">あと${Math.ceil(diff/24)}日</span>`; }
+        else { cdHtml=`<span class="countdown cd-ok">あと${Math.ceil(diff/24)}日</span>`; }
+      }
+    }
+    const cName=t.linkedClass>=0&&curClasses()[t.linkedClass]?curClasses()[t.linkedClass].name:'';
+    const cTag=cName?`<span class="t-class-tag">📚 ${cName}</span><br>`:'';
+    const img=t.image?`<img class="t-img" src="${t.image}" alt="添付">`:'';
+    return `<li class="${cls}" style="animation-delay:${i*0.04}s">
+      <div class="t-head">
+        <input type="checkbox" class="t-chk" ${t.completed?'checked':''} onchange="toggleTodo(${i},this)">
+        <div class="ttl">${t.title}</div>
+        <button class="t-del" onclick="deleteTodo(${i})">×</button>
+      </div>
+      <div class="t-meta">
+        ${cTag}
+        <div class="t-dl">${dlTxt}${cdHtml}</div>
+        ${t.details?`<div class="t-detail">${t.details}</div>`:''}
+        ${img}
+      </div>
+    </li>`;
+  }).join('');
+}
+
+async function addTodo(){
+  const title=document.getElementById('todoTitle').value.trim();
+  if(!title){ alert('タスク名を入力してください'); return; }
+  const noD=document.getElementById('noDeadline').checked;
+  const deadline=noD?null:document.getElementById('todoDeadline').value||null;
+  const details=document.getElementById('todoDetails').value;
+  const lc=parseInt(document.getElementById('todoClass').value);
+  const rdDays=getSelectedReminderDays();
+  let img=null;
+  const fi=document.getElementById('todoImage');
+  if(fi.files&&fi.files[0]) try{ img=await readFile(fi.files[0]); } catch(e){}
+  curTodos().push({title,deadline,details,completed:false,image:img,
+    addedAt:new Date().toISOString(),linkedClass:lc,reminderDays:rdDays,lastNotified:null});
+  document.getElementById('todoTitle').value='';
+  document.getElementById('todoDetails').value='';
+  document.getElementById('todoImage').value='';
+  document.getElementById('todoDeadline').value='';
+  document.getElementById('noDeadline').checked=false;
+  // reset chips to default (前日 on)
+  document.querySelectorAll('#reminderChips .chip').forEach(c=>{ c.classList.toggle('on',c.dataset.days==='1'); });
+  sfx('add');
+  saveData(); renderTodos();
+  scheduleReminderNotifications();
+  switchTodoTab('list');
+}
+
+function toggleTodo(i, chk){
+  const nowDone = !curTodos()[i].completed;
+  sfx(nowDone ? 'complete' : 'click');
+  if(chk && appData.settings.animEnabled!==false){
+    chk.style.animation='none';
+    requestAnimationFrame(()=>{ chk.style.animation='checkBounce .38s ease'; });
+    setTimeout(()=>{ curTodos()[i].completed=nowDone; saveData(); renderTodos(); }, 180);
+  } else {
+    curTodos()[i].completed=nowDone; saveData(); renderTodos();
+  }
+}
+function deleteTodo(i){
+  if(!confirm('削除しますか？')) return;
+  sfx('delete');
+  if(appData.settings.animEnabled!==false){
+    const li=document.querySelectorAll('#todoList .todo-item')[i];
+    if(li){ animOut(li,()=>{ curTodos().splice(i,1); saveData(); renderTodos(); }); return; }
+  }
+  curTodos().splice(i,1); saveData(); renderTodos();
+}
+
+// ═══════════════════════════════
+//  NOTIFICATIONS
+// ═══════════════════════════════
+function sendNotification(title,body,tag){
+  if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({type:'NOTIFY_NOW',title,body,tag});
+  } else if(Notification.permission==='granted'){
+    new Notification(title,{body,icon:'./icon.png'});
+  }
+}
+
+function toggleNotify(){
+  if(Notification.permission==='granted'){
+    sendNotification('楽単チェッカー','通知テスト：正常に動作しています','test');
+    updateNotifyBtn();
+  } else {
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){
+        if('serviceWorker' in navigator){
+          navigator.serviceWorker.ready.then(reg=>{
+            reg.showNotification('通知ON！',{body:'バックグラウンドでも通知を受け取れます',icon:'./icon.png'});
+          });
+        }
+        scheduleReminderNotifications();
+      }
+      updateNotifyBtn();
+    });
+  }
+}
+function updateNotifyBtn(){
+  const btn=document.getElementById('notifyBtn');
+  const p=Notification.permission;
+  if(p==='granted'){ btn.textContent='🔔 通知: ON'; btn.className='on'; }
+  else if(p==='denied'){ btn.textContent='🚫 通知: ブロック中'; btn.className='denied'; }
+  else { btn.textContent='🔕 通知: OFF'; btn.className=''; }
+}
+
+function scheduleReminderNotifications(){
+  if(Notification.permission!=='granted') return;
+  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller) return;
+  const now=Date.now();
+  curTodos().filter(t=>!t.completed&&t.deadline).forEach(t=>{
+    const dl=new Date(t.deadline).getTime();
+    const days=t.reminderDays&&t.reminderDays.length?t.reminderDays:appData.settings.reminderDays||[1];
+    days.forEach(d=>{
+      const notifyAt=dl-(d*864e5)-(d===0?new Date().setHours(0,0,0,0)-new Date().setHours(8,0,0,0):0);
+      const delay=notifyAt-now;
+      if(delay>0&&delay<7*864e5){
+        navigator.serviceWorker.controller.postMessage({
+          type:'SCHEDULE',delay,
+          title:'📚 課題リマインド',
+          body:`${t.title} の期限${d===0?'は今日です！':d===1?'まであと1日':d+'日前です'}`,
+          tag:`todo-${t.title.slice(0,15)}-${d}`
+        });
+      }
+    });
+  });
+}
+
+function checkDeadlines(){
+  if(Notification.permission!=='granted') return;
+  const now=new Date();
+  curTodos().filter(t=>!t.completed&&t.deadline).forEach(t=>{
+    const diff=(new Date(t.deadline)-now)/36e5;
+    const interval=appData.settings.notifyIntervalHours||24;
+    if(diff>0&&diff<24&&(!t.lastNotified||(now-new Date(t.lastNotified))>interval*36e5)){
+      sendNotification('📚 課題期限まであと少し',`「${t.title}」の締め切りが迫っています！`,'dl-'+t.title.slice(0,20));
+      t.lastNotified=now.toISOString();
+      saveData();
+    }
+  });
+}
+setInterval(checkDeadlines,60000);
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden') scheduleReminderNotifications();
+});
+
+// ═══════════════════════════════
+//  SETTINGS MODAL
+// ═══════════════════════════════
+function openSettings(){
+  const s=appData.settings;
+  document.getElementById('sUserName').value=s.userName||'';
+  document.getElementById('sDefaultTerm').value=s.defaultTerm||'1Q';
+  document.getElementById('sQCount').value=s.classCounts?s.classCounts.quarter:7;
+  document.getElementById('sSCount').value=s.classCounts?s.classCounts.semester:15;
+  document.getElementById('sLatePen').value=s.latenessPenalty||3;
+  document.getElementById('sAbsWarn').value=s.absenceWarningThreshold??2;
+  document.getElementById('sBgStart').value=s.theme.bgStart;
+  document.getElementById('sBgEnd').value=s.theme.bgEnd;
+  document.getElementById('sAccent').value=s.theme.accent;
+  document.getElementById('sDark').checked=s.darkMode||false;
+  document.getElementById('sSound').checked=s.soundEnabled!==false;
+  const vol=s.soundVolume??60;
+  document.getElementById('sVolume').value=vol;
+  document.getElementById('sVolVal').textContent=vol+'%';
+  document.getElementById('sVolumeRow').style.opacity=s.soundEnabled!==false?'1':'.4';
+  document.getElementById('sAnim').checked=s.animEnabled!==false;
+  document.getElementById('sMorning').checked=s.morningNotify||false;
+  document.getElementById('sMorningTime').value=s.morningNotifyTime||'07:00';
+  document.getElementById('sMorningTimeRow').style.opacity=s.morningNotify?'1':'.4';
+  document.getElementById('sReqCredits').value=s.requiredCredits??124;
+  document.getElementById('sPrevCredits').value=s.prevEarnedCredits??0;
+  // Reminder opts
+  const rd=s.reminderDays||[1];
+  document.querySelectorAll('#sReminderOpts .r-opt').forEach(b=>{
+    b.classList.toggle('on',rd.includes(parseInt(b.dataset.days)));
+  });
+  renderSettingsYearList();
+  loadGcalUrl();
+  updateBackupDateUI();
+  applyUITheme();
+  updateColorPreview();
+  markActivePreset();
+  document.getElementById('settingsModal').classList.add('active');
+}
+function toggleROpt(el){ el.classList.toggle('on'); }
+
+function saveSettings(){
+  const s=appData.settings;
+  s.userName=document.getElementById('sUserName').value.trim();
+  s.defaultTerm=document.getElementById('sDefaultTerm').value;
+  s.classCounts={
+    quarter:parseInt(document.getElementById('sQCount').value)||7,
+    semester:parseInt(document.getElementById('sSCount').value)||15
+  };
+  s.latenessPenalty=parseInt(document.getElementById('sLatePen').value)||3;
+  s.absenceWarningThreshold=parseInt(document.getElementById('sAbsWarn').value)??2;
+  s.notifyIntervalHours=parseInt(document.getElementById('sAbsWarn').value)||24;
+  s.theme.bgStart=document.getElementById('sBgStart').value;
+  s.theme.bgEnd=document.getElementById('sBgEnd').value;
+  s.theme.accent=document.getElementById('sAccent').value;
+  s.reminderDays=[...document.querySelectorAll('#sReminderOpts .r-opt.on')].map(b=>parseInt(b.dataset.days));
+  s.soundEnabled=document.getElementById('sSound').checked;
+  s.soundVolume=parseInt(document.getElementById('sVolume').value)||60;
+  s.animEnabled=document.getElementById('sAnim').checked;
+  s.morningNotify=document.getElementById('sMorning').checked;
+  s.morningNotifyTime=document.getElementById('sMorningTime').value||'07:00';
+  s.requiredCredits=parseInt(document.getElementById('sReqCredits').value)||124;
+  s.prevEarnedCredits=parseInt(document.getElementById('sPrevCredits').value)||0;
+  applyAnim();
+  scheduleMorningNotify();
+  saveData(); applyTheme(); closeModal('settingsModal');
+  renderAll();
+}
+
+// ═══════════════════════════════
+//  DATA IO
+// ═══════════════════════════════
+const LAST_EXPORT_KEY='rakutan_last_export';
+function exportData(){
+  const b=new Blob([JSON.stringify(appData)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download=`rakutan_${currentYear}_backup.json`; a.click();
+  localStorage.setItem(LAST_EXPORT_KEY,new Date().toISOString());
+  updateBackupDateUI();
+}
+function updateBackupDateUI(){
+  const el=document.getElementById('backupLastDate'); if(!el) return;
+  const iso=localStorage.getItem(LAST_EXPORT_KEY);
+  if(!iso){ el.textContent='未実施'; el.className='backup-date-val stale'; return; }
+  const d=new Date(iso);
+  const days=Math.floor((Date.now()-d.getTime())/(1000*60*60*24));
+  el.textContent=d.toLocaleDateString('ja-JP')+(days===0?' (今日)':days===1?' (昨日)':`（${days}日前）`);
+  el.className='backup-date-val'+(days>=7?' stale':'');
+}
+function importData(input){
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const j=JSON.parse(e.target.result);
+      if(j.years&&j.settings){ appData=j; }
+      else if(j.classes&&j.settings){
+        const cy=currentYear;
+        if(!appData.years[cy]) appData.years[cy]=defYear();
+        appData.years[cy].classes=j.classes;
+        appData.years[cy].todos=j.todos||[];
+        Object.assign(appData.settings,j.settings);
+      } else { alert('無効なファイルです'); return; }
+      saveData(); location.reload();
+    } catch{ alert('読み込み失敗'); }
+  };
+  r.readAsText(f);
+}
+
+// ═══════════════════════════════
+//  GUIDE
+// ═══════════════════════════════
+function openGuide(){ document.getElementById('guideModal').classList.add('active'); }
+
+// ═══════════════════════════════
+//  HELPERS
+// ═══════════════════════════════
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+function readFile(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(f); }); }
+
+function renderAll(){
+  renderYearNav();
+  renderTodayCard();
+  renderDangerBanner('todo');
+  renderDangerBanner('sched');
+  renderSchedule();
+  renderTodos();
+  updateHdrSub();
+}
+
+// ═══════════════════════════════
+//  QUICK ADD
+// ═══════════════════════════════
+let qaClass = -1;   // 選択中の授業インデックス
+let qaCustomDL = false; // カスタム日付を直接入力中かどうか
+
+function openQuickAdd(){
+  qaClass = -1;
+  qaCustomDL = false;
+
+  // 授業ボタンを生成
+  const grid = document.getElementById('qaClassGrid');
+  grid.innerHTML = `<button class="qa-class-btn no-class sel" onclick="selectQaClass(-1,this)">指定なし</button>`;
+  curClasses().forEach((c,i)=>{
+    const col = c.color||'';
+    grid.innerHTML += `<button class="qa-class-btn" data-idx="${i}"
+      style="${col?`background:${col};border-color:${col};color:#fff;`:''}"
+      onclick="selectQaClass(${i},this)">${c.name}</button>`;
+  });
+
+  // デフォルト: 明日
+  setQaDL(1);
+
+  // リマインドチップをリセット（前日をON）
+  document.querySelectorAll('#qaChips .chip').forEach(c=>{
+    c.classList.toggle('on', c.dataset.days==='1');
+  });
+
+  document.getElementById('qaTodoTitle').value = '';
+  document.getElementById('qaTodoTitle').style.borderColor = '';
+  document.getElementById('quickAddModal').classList.add('active');
+  setTimeout(()=>document.getElementById('qaTodoTitle').focus(), 280);
+}
+
+function selectQaClass(idx, btn){
+  qaClass = idx;
+  document.querySelectorAll('#qaClassGrid .qa-class-btn').forEach(b=>{
+    const isThis = b === btn;
+    b.classList.toggle('sel', isThis);
+    // 色付き授業ボタン: 非選択時はinp背景に戻す
+    const bi = parseInt(b.dataset.idx ?? -1);
+    if(bi >= 0){
+      const c = curClasses()[bi];
+      if(c && c.color){
+        b.style.background = isThis ? c.color : '';
+        b.style.borderColor = isThis ? c.color : '';
+        b.style.color = isThis ? '#fff' : '';
+      }
+    }
+  });
+}
+
+function setQaDL(days){
+  qaCustomDL = false;
+  document.querySelectorAll('#dlBtns .dl-btn').forEach(b=>{
+    b.classList.toggle('sel', parseInt(b.dataset.d) === days);
+  });
+  const inp = document.getElementById('qaDLCustom');
+  if(days === -1){
+    inp.value = '';
+    inp.style.opacity = '.4';
+  } else {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    d.setHours(23, 59, 0, 0);
+    inp.value = d.toISOString().slice(0,16);
+    inp.style.opacity = '1';
+  }
+}
+
+function onQaDLCustomChange(){
+  qaCustomDL = true;
+  // カスタム入力したら全ボタンの選択を外す
+  document.querySelectorAll('#dlBtns .dl-btn').forEach(b=>b.classList.remove('sel'));
+}
+
+function addQuickTodo(){
+  const title = document.getElementById('qaTodoTitle').value.trim();
+  if(!title){
+    const inp = document.getElementById('qaTodoTitle');
+    inp.style.borderColor = 'var(--danger)';
+    inp.focus();
+    setTimeout(()=>inp.style.borderColor = '', 1500);
+    return;
+  }
+  const dlInp = document.getElementById('qaDLCustom');
+  const deadline = dlInp.value && dlInp.style.opacity !== '.4' ? dlInp.value : null;
+  const reminderDays = [...document.querySelectorAll('#qaChips .chip.on')].map(c=>parseInt(c.dataset.days));
+
+  curTodos().push({
+    title, deadline, details:'', completed:false, image:null,
+    addedAt: new Date().toISOString(),
+    linkedClass: qaClass,
+    reminderDays,
+    lastNotified: null
+  });
+
+  sfx('add');
+  saveData();
+  closeModal('quickAddModal');
+  if(activeTab==='todo') renderTodos();
+  scheduleReminderNotifications();
+
+  // 授業名をトーストに表示
+  const cName = qaClass >= 0 && curClasses()[qaClass] ? `【${curClasses()[qaClass].name}】 ` : '';
+  showToast(`${cName}${title} を追加しました`);
+}
+
+function showToast(msg){
+  const t = document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:calc(82px + env(safe-area-inset-bottom));left:50%;
+    transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:11px 20px;
+    border-radius:22px;font-size:13px;font-weight:700;z-index:2000;
+    animation:toastIn .22s ease;pointer-events:none;white-space:nowrap;
+    box-shadow:0 4px 16px rgba(0,0,0,.3);`;
+  t.textContent = '✅ ' + msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{
+    t.style.transition='opacity .3s';
+    t.style.opacity='0';
+    setTimeout(()=>t.remove(), 300);
+  }, 2200);
+}
+
+// ═══════════════════════════════
+//  過去取得単位 クイック保存
+// ═══════════════════════════════
+function savePrevCredits(val){
+  appData.settings.prevEarnedCredits=Math.max(0,parseInt(val)||0);
+  // 設定モーダルの値も同期
+  const si=document.getElementById('sPrevCredits');
+  if(si) si.value=appData.settings.prevEarnedCredits;
+  saveData();
+  if(activeTab==='stats') renderStats();
+  sfx('click');
+}
+
+// ═══════════════════════════════
+//  科目ピッカー（既存選択 or 新規作成）
+// ═══════════════════════════════
+let _pickerDay=null, _pickerPeriod=null, _pickerIsOD=false, _pickerTermHint=null;
+
+function openClassPicker(day, period, isOD){
+  _pickerDay=day; _pickerPeriod=period; _pickerIsOD=isOD;
+  let title='📅 授業を追加';
+  if(isOD) title='📚 オンデマンドに追加';
+  else if(day&&period) title=`📅 ${DAY_JA[day]}曜 ${period}限に追加`;
+  else if(day) title=`📅 ${DAY_JA[day]}曜日に追加`;
+  document.getElementById('classPickerTitle').textContent=title;
+  document.getElementById('pickerSearch').value='';
+  renderClassPicker();
+  document.getElementById('classPickerModal').classList.add('active');
+}
+
+function renderClassPicker(){
+  const search=(document.getElementById('pickerSearch').value||'').toLowerCase();
+  const classes=curClasses();
+  const list=document.getElementById('pickerList');
+  if(!classes.length){
+    list.innerHTML='<div class="picker-empty">まだ科目が登録されていません</div>'; return;
+  }
+  const filtered=classes.filter((c,i)=>{
+    if(search&&!c.name.toLowerCase().includes(search)) return false;
+    // 同じコマにすでに入っているものは除外
+    if(!_pickerIsOD&&_pickerDay&&_pickerPeriod&&!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===_pickerDay&&s.period==_pickerPeriod)) return false;
+    return true;
+  });
+  if(!filtered.length){
+    list.innerHTML='<div class="picker-empty">該当する科目がありません</div>'; return;
+  }
+  list.innerHTML=filtered.map(c=>{
+    const idx=classes.indexOf(c);
+    let dStr;
+    if(c.isOnDemand) dStr='オンデマンド';
+    else if(c.slots&&c.slots.length) dStr=c.slots.map(s=>DAY_JA[s.day]+s.period+'限').join('・');
+    else dStr='未割当';
+    const dot=c.color?`<div class="pi-dot" style="background:${c.color}"></div>`:'<div class="pi-dot" style="background:var(--ac)"></div>';
+    let badge='';
+    if(c.status==='withdrawn') badge='<span class="pi-badge" style="background:#e5e7eb;color:#6b7280;">取消</span>';
+    else if(c.status==='finalized') badge='<span class="pi-badge" style="background:rgba(5,150,105,.12);color:#059669;">確定</span>';
+    return `<div class="picker-item" onclick="assignExistingToSlot(${idx})">
+      <div class="pi-left">${dot}<div class="pi-info"><div class="pi-name">${c.name}${badge}</div><div class="pi-meta">${dStr}</div></div></div>
+      <div class="pi-arrow">›</div>
+    </div>`;
+  }).join('');
+}
+
+function pickerNewClass(){
+  closeModal('classPickerModal');
+  if(_pickerIsOD){
+    openAddClass();
+    document.getElementById('cOnDemand').checked=true;
+    toggleOD();
+  } else {
+    openAddClass();
+    if(_pickerDay||_pickerPeriod){
+      document.getElementById('cSlotList').innerHTML='';
+      addSlotRow(_pickerDay||'mon', _pickerPeriod||1);
+    }
+  }
+  if(curTermType==='annual') document.getElementById('cTerm').value='通年';
+  else if(curTermType==='semester'&&curQuarter!=='all_s') document.getElementById('cTerm').value=curQuarter;
+  else if(curTermType==='quarter'&&curQuarter!=='all_q') document.getElementById('cTerm').value=curQuarter;
+  if(_pickerTermHint) document.getElementById('cTerm').value=_pickerTermHint;
+  _pickerTermHint=null;
+}
+
+function assignExistingToSlot(idx){
+  const c=curClasses()[idx]; if(!c) return;
+  if(_pickerIsOD){
+    c.isOnDemand=true;
+    if(!c.slots) c.slots=[];
+  } else if(_pickerDay){
+    if(!c.slots) c.slots=[];
+    const period=_pickerPeriod||1;
+    const already=c.slots.some(s=>s.day===_pickerDay&&s.period===period);
+    if(!already) c.slots.push({day:_pickerDay, period});
+    c.isOnDemand=false;
+  }
+  saveData(); sfx('add');
+  closeModal('classPickerModal');
+  renderSchedule();
+}
+
+function openAddClassFromList(){
+  if(curDay==='od') openClassPicker(null,null,true);
+  else openClassPicker(curDay,null,false);
+}
+
+// ═══════════════════════════════
+//  時間割コマタップで授業追加
+// ═══════════════════════════════
+function openAddClassAt(day, period, termHint){
+  _pickerTermHint=termHint||null;
+  openClassPicker(day, period, false);
+}
+
+function openAddODClass(){
+  openClassPicker(null, null, true);
+}
+
+// ═══════════════════════════════
+//  履修ステータス管理（確定・取り消し）
+// ═══════════════════════════════
+function renderStatusArea(){
+  const el=document.getElementById('statusArea');
+  if(!el||curClassIdx<0) return;
+  const c=curClasses()[curClassIdx];
+  const status=c.status||'active';
+
+  if(status==='active'){
+    const hasGrade=c.finalGrade&&c.finalGrade!=='';
+    const creditLabel=c.finalGrade==='F'?'落単（単位なし）':`${c.credits}単位を取得`;
+    el.innerHTML=`
+      <div class="status-area st-active">
+        <div class="status-title">📌 現在のステータス：履修中</div>
+        <div class="status-btn-row">
+          <button class="btn-finalize" onclick="finalizeClass()" ${hasGrade?'':'disabled style="opacity:.4;cursor:not-allowed;"'}>
+            ✅ ${hasGrade?creditLabel:'成績を入力して確定'}
+          </button>
+          <button class="btn-withdraw" onclick="withdrawClass()">🚫 履修取り消し</button>
+        </div>
+        ${!hasGrade?'<div style="font-size:11px;color:var(--faint);margin-top:8px;">↑ 下の「最終成績」で成績を選択すると確定できます</div>':''}
+      </div>`;
+  } else if(status==='finalized'){
+    const earned=c.finalGrade!=='F';
+    el.innerHTML=`
+      <div class="status-area st-finalized">
+        <div class="status-title">${earned?`✅ 単位取得済み（${c.credits}単位・${c.finalGrade}）`:'❌ 落単確定（単位なし）'}</div>
+        <button class="btn-undo" onclick="unfinalizeClass()">↩ 確定を取り消して履修中に戻す</button>
+      </div>`;
+  } else if(status==='withdrawn'){
+    el.innerHTML=`
+      <div class="status-area st-withdrawn">
+        <div class="status-title">🚫 履修取り消し済み</div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:10px;">この科目は単位計算・出席管理から除外されています</div>
+        <button class="btn-undo" onclick="reactivateClass()">↩ 履修取り消しを解除して履修中に戻す</button>
+      </div>`;
+  }
+}
+
+function finalizeClass(){
+  const c=curClasses()[curClassIdx];
+  if(!c.finalGrade){showToast('先に成績を選択してください');return;}
+  const earned=c.finalGrade!=='F';
+  const msg=earned
+    ?`「${c.name}」を${c.finalGrade}・${c.credits}単位取得として確定しますか？\n（統計の取得単位に加算されます）`
+    :`「${c.name}」を落単として確定しますか？`;
+  if(!confirm(msg)) return;
+  c.status='finalized';
+  saveData(); renderStatusArea(); renderSchedule();
+  if(activeTab==='stats') renderStats();
+  sfx('complete');
+  showToast(earned?`${c.name}（${c.credits}単位）を確定しました`:`${c.name} を落単として確定しました`);
+}
+
+function unfinalizeClass(){
+  if(!confirm('確定を取り消して「履修中」に戻しますか？')) return;
+  curClasses()[curClassIdx].status='active';
+  saveData(); renderStatusArea(); renderSchedule();
+  if(activeTab==='stats') renderStats();
+  sfx('click');
+  showToast('履修中に戻しました');
+}
+
+function withdrawClass(){
+  const c=curClasses()[curClassIdx];
+  if(!confirm(`「${c.name}」を履修取り消しにしますか？\n時間割に斜線が表示され、単位計算から除外されます。`)) return;
+  c.status='withdrawn';
+  saveData(); renderStatusArea(); renderSchedule(); renderTodayCard();
+  if(activeTab==='stats') renderStats();
+  sfx('delete');
+  showToast(`${c.name} を履修取り消しにしました`);
+}
+
+function reactivateClass(){
+  if(!confirm('履修取り消しを解除して「履修中」に戻しますか？')) return;
+  curClasses()[curClassIdx].status='active';
+  saveData(); renderStatusArea(); renderSchedule(); renderTodayCard();
+  if(activeTab==='stats') renderStats();
+  sfx('click');
+  showToast('履修を再登録しました');
+}
+
+// ═══════════════════════════════
+//  GPA・取得単位トラッカー (④)
+// ═══════════════════════════════
+function gpaPoint(grade){
+  return {S:4.0,A:3.0,B:2.0,C:1.0,F:0.0}[grade]??null;
+}
+
+function calcGPAAll(cls){
+  // GPAは「確定済み(finalized)」科目のみで計算
+  let weightedSum=0, totalGPACredits=0;
+  const gradeCounts={S:0,A:0,B:0,C:0,F:0};
+  let finalizedEarned=0;
+  for(const c of cls){
+    if((c.status||'active')!=='finalized') continue;
+    const pt=gpaPoint(c.finalGrade);
+    const cr=Number(c.credits)||0;
+    if(pt===null) continue;
+    if(gradeCounts[c.finalGrade]!==undefined) gradeCounts[c.finalGrade]++;
+    if(c.finalGrade!=='F') finalizedEarned+=cr;
+    weightedSum+=pt*cr;
+    totalGPACredits+=cr;
+  }
+  const gpa=totalGPACredits>0?Math.round(weightedSum/totalGPACredits*100)/100:null;
+  const prev=appData.settings.prevEarnedCredits||0;
+  const totalEarned=prev+finalizedEarned;
+  return {gpa, totalEarned, finalizedEarned, prev, gradeCounts};
+}
+
+function renderGPASection(cls){
+  const {gpa,totalEarned,finalizedEarned,prev,gradeCounts}=calcGPAAll(cls);
+  const req=appData.settings.requiredCredits??124;
+  const pct=Math.min(100,Math.round(totalEarned/req*100));
+  document.getElementById('gpaNum').textContent=gpa!==null?gpa.toFixed(2):'--';
+  document.getElementById('gpaCreditEarned').textContent=
+    prev>0?`${totalEarned}単位（確定${finalizedEarned}＋過去${prev}）`:totalEarned+'単位';
+  document.getElementById('gpaCreditReq').textContent=req+'単位';
+  document.getElementById('gpaProgFill').style.width=pct+'%';
+  // クイック入力欄を同期
+  const qi=document.getElementById('prevCreditsQuick');
+  if(qi) qi.value=prev;
+  const bd=document.getElementById('gradeBreakdown');
+  bd.innerHTML=Object.entries(gradeCounts).filter(([,n])=>n>0).map(([g,n])=>
+    `<span class="grade-chip gc-${g.toLowerCase()}">${g} × ${n}</span>`
+  ).join('');
+}
+
+function updateGpaPoint(grade){
+  const pt=gpaPoint(grade);
+  const el=document.getElementById('dGpaPoint');
+  if(!el) return;
+  el.textContent=pt!==null?pt.toFixed(1)+'pt':'';
+  el.style.color=grade==='S'?'#2e7d32':grade==='A'?'#1565c0':grade==='B'?'#e65100':grade==='C'?'#6a1b9a':grade==='F'?'#c62828':'var(--ac)';
+}
+
+function saveGrade(){
+  if(curClassIdx<0) return;
+  const grade=document.getElementById('dGradeSelect').value||null;
+  curClasses()[curClassIdx].finalGrade=grade;
+  updateGpaPoint(grade);
+  saveData();
+  renderStatusArea(); // 確定ボタンの活性状態を更新
+  sfx('click');
+}
+
+function saveRequired(){
+  if(curClassIdx<0) return;
+  curClasses()[curClassIdx].required=document.getElementById('dRequiredSelect').value;
+  saveData();
+}
+
+// ═══════════════════════════════
+//  休講記録 (⑤)
+// ═══════════════════════════════
+function recordCanceled(){
+  if(curClassIdx<0) return;
+  const date=document.getElementById('cancelDate').value;
+  if(!date){ showToast('日付を選択してください'); return; }
+  const c=curClasses()[curClassIdx];
+  if(!c.canceledDates) c.canceledDates=[];
+  if(c.canceledDates.includes(date)){ showToast('その日はすでに記録済みです'); return; }
+  c.canceledDates.push(date);
+  c.canceledDates.sort((a,b)=>new Date(b)-new Date(a));
+  saveData();
+  renderCanceledList();
+  renderTodayCard();
+  sfx('add');
+  showToast(`${date} を休講として記録しました`);
+}
+
+function removeCanceled(date){
+  if(curClassIdx<0) return;
+  const c=curClasses()[curClassIdx];
+  c.canceledDates=(c.canceledDates||[]).filter(d=>d!==date);
+  saveData();
+  renderCanceledList();
+  renderTodayCard();
+}
+
+function renderCanceledList(){
+  const el=document.getElementById('canceledList');
+  if(!el) return;
+  const c=curClasses()[curClassIdx];
+  const dates=c&&c.canceledDates&&c.canceledDates.length?c.canceledDates:[];
+  if(!dates.length){ el.innerHTML='<div style="color:var(--faint);font-size:12px;">記録なし</div>'; return; }
+  el.innerHTML=dates.map(d=>`
+    <div class="canceled-entry">
+      <span class="canceled-badge">休講</span>
+      <span>${d}</span>
+      <button class="cancel-del" onclick="removeCanceled('${d}')">×</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════
+//  時間割シェア (⑥)
+// ═══════════════════════════════
+function shareSchedule(){
+  const year=appData.settings.currentYear;
+  const cls=curClasses();
+  if(!cls.length){ showToast('授業が登録されていません'); return; }
+
+  const DAY_ORDER=['mon','tue','wed','thu','fri','sat'];
+  const DAY_JA2={mon:'月',tue:'火',wed:'水',thu:'木',fri:'金',sat:'土',sun:'日'};
+
+  // スロットベースで曜日ごとに整理
+  const byDay={};
+  DAY_ORDER.forEach(d=>byDay[d]=[]);
+  cls.filter(c=>!c.isOnDemand&&c.slots&&c.slots.length).forEach(c=>{
+    c.slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push({c,period:s.period}); });
+  });
+  DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
+
+  let text=`【${year}年度 時間割】\n`;
+  text+=`（楽単チェッカー ver1.2.2）\n\n`;
+
+  DAY_ORDER.forEach(d=>{
+    if(!byDay[d].length) return;
+    text+=`${DAY_JA2[d]}曜\n`;
+    byDay[d].forEach(({c,period})=>{
+      const room=c.room?` ${c.room}`:'';
+      text+=`  ${period}限 ${c.name}（${c.term}）${room}\n`;
+    });
+  });
+
+  // オンデマンド
+  const od=cls.filter(c=>c.isOnDemand);
+  if(od.length){
+    text+=`\nオンデマンド\n`;
+    od.forEach(c=>{ text+=`  ${c.name}（${c.term}）\n`; });
+  }
+
+  if(navigator.share){
+    navigator.share({ title:'時間割', text }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>{
+      showToast('クリップボードにコピーしました！LINEやXに貼り付けてください');
+    }).catch(()=>{
+      prompt('以下をコピーしてください', text);
+    });
+  }
+  sfx('add');
+}
+
+// ═══════════════════════════════
+//  朝の授業サマリー通知 (③)
+// ═══════════════════════════════
+function buildMorningBody(){
+  const todayDay=DAYS[new Date().getDay()];
+  const todayStr=new Date().toISOString().slice(0,10);
+  const todays=[];
+  curClasses()
+    .filter(c=>!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===todayDay))
+    .filter(c=>!(c.canceledDates||[]).includes(todayStr))
+    .forEach(c=>{
+      const sl=c.slots.find(s=>s.day===todayDay);
+      if(sl) todays.push({c,period:sl.period});
+    });
+  todays.sort((a,b)=>a.period-b.period);
+  if(!todays.length) return null;
+  const lines=todays.map(({c,period})=>{
+    const s=calcAbs(c);
+    const warn=s.remaining<=1?`⚠️残${s.remaining}`:'';
+    return `${period}限 ${c.name}${warn}`;
+  });
+  return lines.join(' / ');
+}
+
+function scheduleMorningNotify(){
+  if(!appData.settings.morningNotify) return;
+  if(Notification.permission!=='granted') return;
+  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller) return;
+
+  const [h,m]=(appData.settings.morningNotifyTime||'07:00').split(':').map(Number);
+  const now=new Date();
+  const next=new Date(now);
+  next.setHours(h,m,0,0);
+  if(next<=now) next.setDate(next.getDate()+1);
+  const delay=next-now;
+
+  const body=buildMorningBody()||'今日は授業があります。準備してください！';
+  navigator.serviceWorker.controller.postMessage({
+    type:'MORNING_RESCHEDULE',
+    delay,
+    title:'🌅 今日の授業',
+    body
+  });
+}
+
+// ═══════════════════════════════
+//  SOUND ENGINE (Web Audio API)
+// ═══════════════════════════════
+let _audioCtx = null;
+function getACtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
+function sfx(type){
+  if(appData && appData.settings && appData.settings.soundEnabled === false) return;
+  const vol = ((appData && appData.settings && appData.settings.soundVolume != null)
+    ? appData.settings.soundVolume : 60) / 100;
+  try{
+    const ctx = getACtx();
+    const master = ctx.createGain();
+    master.gain.value = vol;
+    master.connect(ctx.destination);
+    const t = ctx.currentTime;
+
+    if(type === 'complete'){
+      // C5 → G5 二音チャイム
+      [[523.25, 0, 0.32], [783.99, 0.13, 0.32]].forEach(([freq, d, dur])=>{
+        const osc=ctx.createOscillator(), g=ctx.createGain();
+        osc.connect(g); g.connect(master);
+        osc.type='sine'; osc.frequency.value=freq;
+        g.gain.setValueAtTime(0, t+d);
+        g.gain.linearRampToValueAtTime(0.4, t+d+0.025);
+        g.gain.exponentialRampToValueAtTime(0.001, t+d+dur);
+        osc.start(t+d); osc.stop(t+d+dur+0.05);
+      });
+    } else if(type === 'add'){
+      // ポップ音
+      const osc=ctx.createOscillator(), g=ctx.createGain();
+      osc.connect(g); g.connect(master); osc.type='sine';
+      osc.frequency.setValueAtTime(620, t);
+      osc.frequency.exponentialRampToValueAtTime(310, t+0.13);
+      g.gain.setValueAtTime(0.35, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.18);
+      osc.start(t); osc.stop(t+0.22);
+    } else if(type === 'delete'){
+      // 下降スウィープ
+      const osc=ctx.createOscillator(), g=ctx.createGain();
+      osc.connect(g); g.connect(master); osc.type='sawtooth';
+      osc.frequency.setValueAtTime(380, t);
+      osc.frequency.exponentialRampToValueAtTime(55, t+0.22);
+      g.gain.setValueAtTime(0.14, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.25);
+      osc.start(t); osc.stop(t+0.28);
+    } else if(type === 'tab'){
+      // 短いウーシュ
+      const osc=ctx.createOscillator(), g=ctx.createGain();
+      osc.connect(g); g.connect(master); osc.type='sine';
+      osc.frequency.setValueAtTime(280, t);
+      osc.frequency.exponentialRampToValueAtTime(440, t+0.1);
+      g.gain.setValueAtTime(0.12, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.18);
+      osc.start(t); osc.stop(t+0.2);
+    } else if(type === 'click'){
+      // ショートクリック（ノイズバースト）
+      const buf=ctx.createBuffer(1, Math.floor(ctx.sampleRate*0.04), ctx.sampleRate);
+      const d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+      const src=ctx.createBufferSource(), g=ctx.createGain();
+      src.buffer=buf; g.gain.value=0.18;
+      src.connect(g); g.connect(master);
+      src.start(t);
+    } else if(type === 'warn'){
+      // 低音アラート2連
+      [170, 190].forEach((freq, i)=>{
+        const osc=ctx.createOscillator(), g=ctx.createGain();
+        osc.connect(g); g.connect(master); osc.type='square';
+        osc.frequency.value=freq;
+        const s=t+i*0.18;
+        g.gain.setValueAtTime(0.09, s);
+        g.gain.exponentialRampToValueAtTime(0.001, s+0.16);
+        osc.start(s); osc.stop(s+0.2);
+      });
+    }
+  } catch(e){ console.warn('sfx:', e); }
+}
+
+// ─── アニメーション補助 ───
+function animOut(li, cb){
+  if(!li){ cb(); return; }
+  li.style.overflow='hidden';
+  li.style.maxHeight=li.offsetHeight+'px';
+  li.style.transition='opacity .22s ease, transform .22s ease, max-height .26s ease, margin .26s ease, padding .26s ease';
+  requestAnimationFrame(()=>{
+    li.style.opacity='0';
+    li.style.transform='translateX(32px) scale(.93)';
+    li.style.maxHeight='0';
+    li.style.marginBottom='0';
+    li.style.paddingTop='0';
+    li.style.paddingBottom='0';
+    setTimeout(cb, 280);
+  });
+}
+
+// ═══════════════════════════════
+//  GOOGLE CALENDAR / ICS IMPORT
+// ═══════════════════════════════
+const GCAL_URL_KEY  = 'rakutan_gcal_url';
+const GCAL_SYNC_KEY = 'rakutan_gcal_sync';
+
+function saveGcalUrl(){
+  const url = document.getElementById('gcalUrl').value.trim();
+  if(!url){ showToast('URLを入力してください'); return; }
+  localStorage.setItem(GCAL_URL_KEY, url);
+  showToast('URLを保存しました');
+}
+
+function loadGcalUrl(){
+  const url = localStorage.getItem(GCAL_URL_KEY) || '';
+  const el = document.getElementById('gcalUrl');
+  if(el) el.value = url;
+  updateGcalStatus();
+}
+
+function updateGcalStatus(){
+  const el = document.getElementById('gcalSyncStatus');
+  if(!el) return;
+  const last = localStorage.getItem(GCAL_SYNC_KEY);
+  el.textContent = last
+    ? `最終同期: ${new Date(last).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`
+    : '';
+}
+
+async function syncGcal(btn){
+  let url = document.getElementById('gcalUrl').value.trim();
+  if(!url) url = localStorage.getItem(GCAL_URL_KEY) || '';
+  if(!url){ showToast('URLを入力してください'); return; }
+  localStorage.setItem(GCAL_URL_KEY, url);
+
+  const httpsUrl = url.replace(/^webcal:\/\//i, 'https://');
+  btn.disabled = true;
+  const origText = btn.textContent;
+  btn.textContent = '同期中...';
+
+  try {
+    let text;
+    try {
+      const r = await fetch(httpsUrl);
+      if(!r.ok) throw new Error(r.status);
+      text = await r.text();
+    } catch {
+      // CORS fallback: use public proxy
+      const r = await fetch('https://corsproxy.io/?' + encodeURIComponent(httpsUrl));
+      if(!r.ok) throw new Error('proxy ' + r.status);
+      text = await r.text();
+    }
+    const events = parseICS(text);
+    const count  = importICSEvents(events);
+    localStorage.setItem(GCAL_SYNC_KEY, new Date().toISOString());
+    updateGcalStatus();
+    if(count > 0){ showToast(`${count}件取り込みました`); renderTodos(); }
+    else showToast('新しい予定はありませんでした');
+  } catch {
+    alert('同期に失敗しました。\nURLをもう一度確認するか、.ics ファイルをダウンロードしてインポートしてください。');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+}
+
+function importICSFile(input){
+  const f = input.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const events = parseICS(e.target.result);
+    const count  = importICSEvents(events);
+    showToast(count > 0 ? `${count}件取り込みました` : '新しい予定はありませんでした');
+    if(count > 0) renderTodos();
+    input.value = '';
+  };
+  r.readAsText(f);
+}
+
+function parseICS(text){
+  // RFC 5545: unfold continuation lines (CRLF + whitespace = line continuation)
+  text = text.replace(/\r\n[ \t]/g, '').replace(/\r\n|\r/g, '\n');
+  const events = [];
+  let ev = null;
+  for(const raw of text.split('\n')){
+    const line = raw.trim();
+    if(line === 'BEGIN:VEVENT'){ ev = {}; }
+    else if(line === 'END:VEVENT'){ if(ev) events.push(ev); ev = null; }
+    else if(ev){
+      const ci = line.indexOf(':');
+      if(ci < 0) continue;
+      const key = line.slice(0, ci).replace(/;[^:]+/, ''); // strip TZID=... params
+      const val = line.slice(ci + 1);
+      if(!ev[key]) ev[key] = val; // keep first occurrence of each key
+    }
+  }
+  return events;
+}
+
+function parseICSDate(str){
+  if(!str) return null;
+  const d = str.replace(/[TZ\s].*/,''); // keep only YYYYMMDD part
+  if(d.length < 8) return null;
+  return `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+}
+
+function icsUnescape(s){
+  return (s||'').replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\').trim();
+}
+
+function importICSEvents(events){
+  const todos = curTodos();
+  const existingUids = new Set(todos.filter(t=>t.icsUid).map(t=>t.icsUid));
+  const defRem = appData.settings.reminderDays || [1];
+  let count = 0;
+
+  for(const ev of events){
+    const title = icsUnescape(ev['SUMMARY']);
+    if(!title) continue;
+
+    const uid = ev['UID'] || null;
+    if(uid && existingUids.has(uid)) continue; // skip already-imported events
+
+    const deadline = parseICSDate(ev['DUE'] || ev['DTEND'] || ev['DTSTART']);
+    const desc     = icsUnescape(ev['DESCRIPTION']);
+    const loc      = icsUnescape(ev['LOCATION']);
+    const details  = [desc, loc ? `📍 ${loc}` : ''].filter(Boolean).join('\n');
+
+    todos.push({
+      title, deadline, details,
+      completed: false, image: null,
+      addedAt: new Date().toISOString(),
+      linkedClass: -1,
+      reminderDays: [...defRem],
+      lastNotified: null,
+      icsUid: uid
+    });
+    if(uid) existingUids.add(uid);
+    count++;
+  }
+
+  if(count > 0) saveData();
+  return count;
+}
+
+// ═══════════════════════════════
+//  INIT
+// ═══════════════════════════════
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW failed:',e));
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initData();
+  syncYear();
+  applyTheme();
+  applyDark();
+  applyAnim();
+  applyUITheme();
+  updateNotifyBtn();
+  updateBackupDateUI();
+
+  // Set today's day button active
+  const todayKey=DAYS[new Date().getDay()];
+  if(['mon','tue','wed','thu','fri','sat','sun'].includes(todayKey)){
+    curDay=todayKey;
+    document.querySelectorAll('#dayBtns .dbtn').forEach(b=>{
+      const oc=b.getAttribute('onclick')||'';
+      b.classList.toggle('on',oc.includes(`'${todayKey}'`));
+    });
+  }
+
+  const GUIDE_KEY='hasSeenGuide_v3';
+  if(!localStorage.getItem(GUIDE_KEY)){ openGuide(); localStorage.setItem(GUIDE_KEY,'true'); }
+
+  renderAll();
+  document.getElementById('attDate').valueAsDate=new Date();
+
+  if(Notification.permission==='granted'){
+    navigator.serviceWorker.ready.then(()=>{
+      scheduleReminderNotifications();
+      scheduleMorningNotify();
+    });
+  }
+});
+</script>
+</body>
+</html>
