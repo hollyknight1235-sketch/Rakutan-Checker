@@ -84,11 +84,17 @@ body.dark .danger-banner{border-color:#5a0000;}
 .today-card{background:linear-gradient(160deg,#1e1b4b 0%,#3730a3 50%,#6d28d9 100%);color:#fff;border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:0 6px 24px rgba(55,48,163,.28);}
 .tc-label{font-size:10px;opacity:.75;font-weight:800;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;}
 .tc-empty{font-size:13px;opacity:.65;}
-.tc-item{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:5px;}
+.tc-item{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:6px;}
 .tc-item:last-child{margin-bottom:0;}
-.tc-period{background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap;}
-.tc-name{font-weight:700;flex:1;}
-.tc-warn{background:rgba(220,38,38,.75);backdrop-filter:blur(4px);border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;}
+.tc-period{background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.tc-info{flex:1;min-width:0;}
+.tc-name{font-weight:700;display:block;}
+.tc-sub{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px;}
+.tc-format{background:rgba(255,255,255,.18);border-radius:6px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap;}
+.tc-format.fmt-online{background:rgba(99,102,241,.35);}
+.tc-format.fmt-hybrid{background:rgba(245,158,11,.35);}
+.tc-room{background:rgba(255,255,255,.12);border-radius:6px;padding:1px 7px;font-size:10px;font-weight:600;white-space:nowrap;opacity:.9;}
+.tc-warn{background:rgba(220,38,38,.75);backdrop-filter:blur(4px);border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;flex-shrink:0;}
 
 /* ── TODO ── */
 .todo-tab-bar{display:flex;gap:2px;background:var(--inp);border-radius:14px;padding:3px;margin-bottom:14px;}
@@ -120,8 +126,10 @@ body.dark .danger-banner{border-color:#5a0000;}
 .todo-item{background:var(--inp);padding:12px 13px;border-radius:var(--rs);border-left:3px solid transparent;transition:.2s;}
 .todo-item.urgent{border-left-color:#e07b00;background:var(--warn-bg);}
 .todo-item.overdue{border-left-color:#d32f2f;background:var(--danger-bg);}
-.todo-item.done{opacity:.5;}
-.todo-item.done .ttl{text-decoration:line-through;}
+.todo-item.done{background:rgba(5,150,105,.08);border-left-color:#059669;}
+.todo-item.done .ttl{text-decoration:line-through;color:var(--sub);}
+.todo-item.done .t-dl,.todo-item.done .t-detail,.todo-item.done .t-class-tag{opacity:.55;}
+body.dark .todo-item.done{background:rgba(5,150,105,.14);}
 .t-head{display:flex;align-items:flex-start;gap:8px;}
 .t-chk{width:20px;height:20px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--ac);}
 .ttl{flex:1;font-weight:700;font-size:15px;}
@@ -745,9 +753,10 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   <!-- 一覧ペイン -->
   <div class="todo-pane on" id="todoPaneList">
     <div class="todo-filter-bar">
-      <button class="tfilter-btn on" id="tfilterAll" onclick="setTodoFilter('all')">全て</button>
-      <button class="tfilter-btn" id="tfilterActive" onclick="setTodoFilter('active')">未完了</button>
+      <button class="tfilter-btn" id="tfilterAll" onclick="setTodoFilter('all')">全て</button>
+      <button class="tfilter-btn on" id="tfilterActive" onclick="setTodoFilter('active')">未完了</button>
       <button class="tfilter-btn" id="tfilterOverdue" onclick="setTodoFilter('overdue')">期限切れ</button>
+      <button class="tfilter-btn" id="tfilterDone" onclick="setTodoFilter('done')">✅ 完了済み</button>
       <select class="tsort-sel" id="todoSortSel" onchange="renderTodos()">
         <option value="deadline">期限順</option>
         <option value="added">追加順</option>
@@ -2120,7 +2129,14 @@ function renderTodayCard(){
     const todayPeriod=c.slots.find(sl=>sl.day===todayDay)?.period||'?';
     const warnHtml=!isCanceled&&s.remaining<=1?`<span class="tc-warn">残${s.remaining}欠席</span>`:'';
     const canceledHtml=isCanceled?'<span class="canceled-badge">休講</span>':'';
-    return `<div class="tc-item" style="${isCanceled?'opacity:.5':''}"><span class="tc-period">${todayPeriod}限</span><span class="tc-name">${c.name}${canceledHtml}</span>${warnHtml}</div>`;
+    let fmtClass='',fmtLabel='';
+    if(c.format==='オンライン（遠隔）'){fmtClass='fmt-online';fmtLabel='🌐 オンライン';}
+    else if(c.format==='ハイブリッド（対面＋遠隔）'){fmtClass='fmt-hybrid';fmtLabel='🔀 ハイブリッド';}
+    else if(c.format==='対面'){fmtLabel='🏫 対面';}
+    const fmtHtml=fmtLabel?`<span class="tc-format ${fmtClass}">${fmtLabel}</span>`:'';
+    const roomHtml=(!isCanceled&&c.room)?`<span class="tc-room">📍 ${c.room}</span>`:'';
+    const subHtml=(fmtHtml||roomHtml)?`<div class="tc-sub">${fmtHtml}${roomHtml}</div>`:'';
+    return `<div class="tc-item" style="${isCanceled?'opacity:.5':''}"><span class="tc-period">${todayPeriod}限</span><div class="tc-info"><span class="tc-name">${c.name}${canceledHtml}</span>${subHtml}</div>${warnHtml}</div>`;
   }).join('');
 }
 
@@ -2347,7 +2363,7 @@ let curClassIdx=-1;
 let editingClassIdx=-1;
 let pendingReason='';
 let editingTodoIdx=-1;
-let todoFilter='all';
+let todoFilter='active';
 
 function fmtDate(d){ if(!d) return ''; const p=d.split('-'); return `${p[1]}/${p[2]}`; }
 function daysUntil(d){ return Math.ceil((new Date(d)-new Date().setHours(0,0,0,0))/864e5); }
@@ -2744,7 +2760,10 @@ function openAddClass(){
   addCrit();
   document.getElementById('delClassBtn').style.display='none';
   populateCreditCatSelect();
-  document.getElementById('classModal').classList.add('active');
+  const _cm=document.getElementById('classModal');
+  const _cms=_cm.querySelector('.modal-sheet');
+  if(_cms) _cms.scrollTop=0;
+  _cm.classList.add('active');
 }
 
 function openEditClass(){
@@ -2782,7 +2801,10 @@ function openEditClass(){
   document.getElementById('delClassBtn').style.display='block';
   populateCreditCatSelect();
   document.getElementById('cCreditCat').value=c.creditCategory||'';
-  document.getElementById('classModal').classList.add('active');
+  const _cm2=document.getElementById('classModal');
+  const _cms2=_cm2.querySelector('.modal-sheet');
+  if(_cms2) _cms2.scrollTop=0;
+  _cm2.classList.add('active');
 }
 
 async function saveClass(){
@@ -2946,7 +2968,8 @@ function populateTodoClassSelect(){
 
 function setTodoFilter(f){
   todoFilter=f;
-  document.querySelectorAll('.tfilter-btn').forEach(b=>b.classList.toggle('on',b.id==='tfilter'+f.charAt(0).toUpperCase()+f.slice(1)));
+  const idMap={all:'tfilterAll',active:'tfilterActive',overdue:'tfilterOverdue',done:'tfilterDone'};
+  document.querySelectorAll('.tfilter-btn').forEach(b=>b.classList.toggle('on',b.id===idMap[f]));
   renderTodos();
 }
 
@@ -2957,6 +2980,7 @@ function renderTodos(){
   // Filter
   if(todoFilter==='active') todos=todos.filter(t=>!t.completed);
   else if(todoFilter==='overdue') todos=todos.filter(t=>!t.completed&&t.deadline&&new Date(t.deadline)<new Date());
+  else if(todoFilter==='done') todos=todos.filter(t=>t.completed);
   // Sort
   const sortSel=document.getElementById('todoSortSel');
   const sortBy=sortSel?sortSel.value:'deadline';
@@ -3013,6 +3037,7 @@ function openEditTodo(i){
   document.getElementById('todoDeadline').value=noD?'':t.deadline||'';
   document.getElementById('todoDeadline').disabled=noD;
   document.getElementById('todoDetails').value=t.details||'';
+  populateTodoClassSelect();
   const sel=document.getElementById('todoClass');
   sel.value=t.linkedClass>=0?t.linkedClass:-1;
   const rdDays=t.reminderDays||[1];
