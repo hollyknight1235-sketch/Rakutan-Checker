@@ -1,4 +1,4 @@
-const CACHE = 'rakutan-v1.4.0';
+const CACHE = 'rakutan-v2.1.0';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
@@ -65,6 +65,7 @@ self.addEventListener('message', e => {
       body: e.data.body, icon: './icon.png', tag: e.data.tag || 'now', renotify: true, vibrate: [200, 100, 200]
     });
   }
+  // 翌朝の授業サマリー通知を再スケジュール
   if (e.data.type === 'MORNING_RESCHEDULE') {
     const { delay, title, body } = e.data;
     setTimeout(() => {
