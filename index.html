@@ -416,10 +416,12 @@ input:checked+.slider:before{transform:translateX(22px);}
 .fab{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));right:18px;z-index:500;
   background:linear-gradient(145deg,var(--gs),var(--ge));color:#fff;border:none;
   border-radius:32px;padding:14px 22px;font-size:14px;font-weight:900;cursor:pointer;
-  box-shadow:0 6px 28px rgba(55,48,163,.55);display:flex;align-items:center;gap:7px;
-  transition:transform .18s,box-shadow .18s;font-family:inherit;letter-spacing:.3px;}
+  box-shadow:0 6px 28px rgba(55,48,163,.55);display:none;align-items:center;gap:7px;
+  transition:transform .22s,box-shadow .22s,opacity .22s;font-family:inherit;letter-spacing:.3px;
+  opacity:1;}
 .fab:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(55,48,163,.65);}
 .fab:active{transform:scale(.94);}
+.fab.fab-hidden,.share-fab.fab-hidden{transform:translateY(80px)!important;opacity:0!important;pointer-events:none;}
 
 /* ── Quick Add Modal ── */
 .qa-class-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
@@ -483,7 +485,7 @@ body:not(.no-anim) .danger-banner.shake{animation:dangerShake .4s ease}
   background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;border:none;
   border-radius:28px;padding:13px 18px;font-size:13px;font-weight:900;cursor:pointer;
   box-shadow:0 4px 18px rgba(17,153,142,.45);display:none;align-items:center;gap:7px;
-  transition:transform .18s,box-shadow .18s;font-family:inherit;}
+  transition:transform .22s,box-shadow .22s,opacity .22s;font-family:inherit;opacity:1;}
 .share-fab:hover{transform:translateY(-2px);box-shadow:0 7px 24px rgba(17,153,142,.6);}
 body:not(.no-anim) .share-fab{animation:fabGlow 2.5s ease-in-out infinite;}
 
@@ -565,8 +567,10 @@ body.classic .cc-period-chip{background:rgba(255,255,255,.25);color:#fff;}
 body.classic .cc-meta{color:rgba(255,255,255,.75);}
 body.classic .cc-del{width:26px;height:26px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3);}
 body.classic .cc-del:hover{background:rgba(220,38,38,.7);color:#fff;border-color:transparent;}
-body.classic .cc-name{font-size:17px;letter-spacing:normal;}
-body.classic .cc-badge{border-radius:20px;backdrop-filter:none;padding:3px 10px;}
+body.classic .cc-name{font-size:17px;letter-spacing:normal;color:#fff!important;}
+body.classic .cc-room{color:rgba(255,255,255,.75)!important;}
+body.classic .cc-badge{border-radius:20px;backdrop-filter:none;padding:3px 10px;background:rgba(255,255,255,.2)!important;color:#fff!important;}
+body.classic .cc-badge.b-danger{background:rgba(220,38,38,.5)!important;color:#fff!important;}
 body.classic .cc-exam{top:10px;right:38px;border-radius:10px;color:#333;}
 body.classic .class-card.c-withdrawn::after{top:8px;right:32px;border-radius:10px;background:#9e9e9e;backdrop-filter:none;}
 body.classic .class-card.c-finalized::after{top:8px;right:32px;border-radius:10px;background:#2e9e56;backdrop-filter:none;content:'✓';}
@@ -681,6 +685,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
       <div class="sub" id="hdrSub">単位管理をスマートに</div>
     </div>
     <div class="hdr-btns" style="align-items:center;">
+      <button class="icon-btn" onclick="openGuide()" title="使い方ガイド">❓</button>
       <button class="icon-btn" onclick="openSettings()" title="設定">⚙️</button>
     </div>
   </div>
@@ -1056,15 +1061,16 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
 <div class="modal" id="deleteConfirmModal">
 <div class="modal-sheet" style="max-width:360px;margin:auto;">
   <div class="m-handle"></div>
-  <div style="text-align:center;padding:18px 0 14px;">
+  <div style="text-align:center;padding:18px 0 10px;">
     <div style="font-size:36px;">🗑️</div>
-    <div style="font-size:17px;font-weight:700;margin-top:10px;">この授業を削除しますか？</div>
+    <div style="font-size:17px;font-weight:700;margin-top:10px;" id="delConfirmTitle">この授業を削除しますか？</div>
     <div style="font-size:14px;font-weight:700;color:var(--ac);margin-top:8px;word-break:break-all;" id="delConfirmName"></div>
-    <div style="font-size:12px;color:var(--faint);margin-top:10px;line-height:1.7;">出席・成績データも含めて完全に削除されます。<br>この操作は<b>元に戻せません</b>。</div>
+    <div style="font-size:12px;color:var(--faint);margin-top:8px;line-height:1.7;" id="delConfirmNote">出席・成績データも含めて完全に削除されます。<br>この操作は<b>元に戻せません</b>。</div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:9px;padding-top:6px;">
+  <div id="delSlotList" style="display:none;margin:4px 0 10px;"></div>
+  <div style="display:flex;flex-direction:column;gap:9px;padding-top:2px;">
     <button class="btn bs" style="padding:14px;font-size:15px;font-weight:700;order:1;" onclick="closeModal('deleteConfirmModal')">← キャンセル（残す）</button>
-    <button class="btn" style="background:#e53935;color:#fff;border:none;padding:11px;font-size:13px;border-radius:10px;cursor:pointer;font-family:inherit;order:2;" onclick="confirmDeleteClass()">削除する</button>
+    <button class="btn" id="delAllBtn" style="background:#e53935;color:#fff;border:none;padding:11px;font-size:13px;border-radius:10px;cursor:pointer;font-family:inherit;order:2;" onclick="confirmDeleteClass()">授業全体を削除する</button>
   </div>
 </div>
 </div>
@@ -1475,28 +1481,116 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
 <div class="modal-sheet">
   <div class="m-handle"></div>
   <div class="m-title">📖 使い方ガイド</div>
+
   <div class="guide-sec">
-    <h3>⚠️ 更新時の注意</h3>
-    <ul><li>初回はシークレットモードで開き「ホーム画面に追加」してください</li>
-    <li>通常モードでは古いキャッシュが残る場合があります</li></ul>
+    <h3>🚀 基本的な使い方</h3>
+    <ul>
+      <li>上部の「‹ 2026年度 ›」で<strong>年度を切り替え</strong>られます。複数年度のデータを独立して管理できます</li>
+      <li>ヘッダー右上の <strong>❓</strong> でいつでもこのガイドを開けます</li>
+      <li>データはすべて<strong>端末内のみ</strong>に保存されます（サーバー送信なし）</li>
+    </ul>
   </div>
+
   <div class="guide-sec">
     <h3>📅 時間割タブ</h3>
-    <ul><li>年度ごとに授業データを管理。ヘッダーの「‹ 2026年度 ›」で切り替えられます</li>
-    <li>クォーター・前期後期フィルタでまとめて表示</li>
-    <li>授業カードをタップ→出欠記録・詳細確認</li>
-    <li><strong>遅刻換算は授業ごとに設定可能</strong>（授業編集画面）</li></ul>
+    <ul>
+      <li><strong>授業を追加</strong>：右下の「＋」ボタン、または時間割の空きコマをタップ</li>
+      <li>クォーター表示と前期後期表示を切り替えられます。「すべて」では全期間が縦に並んで表示されます</li>
+      <li><strong>授業カードをタップ</strong>→出欠入力・詳細確認・授業ノートの記録</li>
+      <li>補講・休講はカードの詳細画面から登録可能</li>
+      <li>授業追加時に<strong>時間割の重複</strong>があると2段階で警告します</li>
+      <li>開講期は現在の表示モード（クォーター/前後期）に合わせて自動で絞り込まれます</li>
+      <li>右下の <strong>📤 時間割をシェア</strong> からiCalエクスポート・QRコード共有が可能です</li>
+    </ul>
   </div>
+
+  <div class="guide-sec">
+    <h3>✏️ 授業の追加・編集</h3>
+    <ul>
+      <li><strong>授業名・担当教員・教室</strong>を入力できます</li>
+      <li><strong>単位数</strong>は0.5・1・2・3・4・6・8から選択、または直接入力可能です</li>
+      <li><strong>授業形式</strong>：講義／演習／実験・実習／研究／集中講義（授業種別）、対面／オンデマンド（受講方法）から選択</li>
+      <li>授業ごとに<strong>遅刻換算率</strong>を設定可能（例：遅刻3回で欠席1回換算）</li>
+      <li><strong>オンデマンド科目</strong>チェックを入れると出席管理なしになります</li>
+      <li>授業コマは複数曜日・時限を登録できます（例：月2限＋水2限）</li>
+    </ul>
+  </div>
+
+  <div class="guide-sec">
+    <h3>✅ 出席・欠席の記録</h3>
+    <ul>
+      <li>授業カードをタップして出欠を記録します</li>
+      <li>出席率が低下すると<strong>赤いバナー警告</strong>が表示されます</li>
+      <li>授業ごとの出席状況は統計タブで一覧確認できます</li>
+      <li>授業ノートをメモとして残すことができます</li>
+    </ul>
+  </div>
+
   <div class="guide-sec">
     <h3>📝 ToDoタブ</h3>
-    <ul><li>期限・リマインドタイミング・関連授業を設定できます</li>
-    <li>期限が近づくと赤・黄色で強調表示</li>
-    <li>今日の授業サマリーをToDoタブ上部に表示します</li></ul>
+    <ul>
+      <li>「<strong>タスク一覧</strong>」タブ：登録済みのタスクをフィルタ・ソートして確認</li>
+      <li>「<strong>タスクを追加</strong>」タブ：新しいタスクを入力</li>
+      <li>期限・リマインドタイミング・関連授業を設定できます</li>
+      <li>期限が近づくと<strong>赤・黄色</strong>で強調表示されます</li>
+      <li>ToDoタブ上部に<strong>今日の授業サマリー</strong>が表示されます</li>
+      <li>⚡ ボタン（ToDo画面右下）でどの画面からでもクイック追加できます</li>
+    </ul>
   </div>
+
   <div class="guide-sec">
     <h3>📊 統計タブ</h3>
-    <ul><li>取得見込み単位数・危険科目・全授業の出席状況を確認</li></ul>
+    <ul>
+      <li>取得見込み単位数と卒業要件までの残り単位数を確認できます</li>
+      <li>危険科目（出席率低下）の一覧を表示します</li>
+      <li>全授業の出席状況をまとめて確認できます</li>
+      <li>単位カテゴリを設定して、系別の取得状況も管理できます</li>
+    </ul>
   </div>
+
+  <div class="guide-sec">
+    <h3>📅 カレンダータブ</h3>
+    <ul>
+      <li>月カレンダー形式で授業・タスクの予定を俯瞰できます</li>
+      <li>日付をタップするとその日の授業・タスク詳細を確認できます</li>
+    </ul>
+  </div>
+
+  <div class="guide-sec">
+    <h3>🔔 通知機能</h3>
+    <ul>
+      <li>ヘッダーの「通知」ボタンをONにすると、タスク期限前にリマインド通知が届きます</li>
+      <li>設定から翌朝の授業サマリー通知の時刻を設定できます</li>
+      <li>通知はブラウザの権限許可が必要です</li>
+    </ul>
+  </div>
+
+  <div class="guide-sec">
+    <h3>📤 共有・エクスポート</h3>
+    <ul>
+      <li><strong>iCalエクスポート</strong>：時間割をGoogleカレンダーやAppleカレンダーに取り込めます（時間割タブ→📤ボタン）</li>
+      <li><strong>QRコード</strong>：友達と時間割データをQRコードで共有できます</li>
+    </ul>
+  </div>
+
+  <div class="guide-sec">
+    <h3>⚙️ 設定・カスタマイズ</h3>
+    <ul>
+      <li>テーマカラー・ダークモード・クラシックUIを変更できます</li>
+      <li>サウンドのON/OFF・音量調整が可能です</li>
+      <li>卒業要件単位数・既修得単位数を設定できます</li>
+      <li>データのバックアップ（JSON）とリストアが可能です</li>
+    </ul>
+  </div>
+
+  <div class="guide-sec">
+    <h3>⚠️ 更新時の注意</h3>
+    <ul>
+      <li>初回はシークレットモードで開き「ホーム画面に追加」してください</li>
+      <li>通常モードでは古いキャッシュが残る場合があります。設定→「キャッシュをクリア」で解決できます</li>
+    </ul>
+  </div>
+
   <button class="btn bp" style="width:100%;margin-top:12px;" onclick="closeModal('guideModal')">閉じる</button>
 </div>
 </div>
@@ -1847,6 +1941,11 @@ function showTab(tab){
   if(tab==='calendar'){ calYear=new Date().getFullYear(); calMonth=new Date().getMonth(); renderCalendar(); }
   const sf=document.getElementById('shareFab');
   if(sf) sf.style.display=tab==='schedule'?'flex':'none';
+  const qf=document.querySelector('.fab');
+  if(qf) qf.style.display=tab==='todo'?'flex':'none';
+  // reset scroll-hide when switching tabs
+  if(sf) sf.classList.remove('fab-hidden');
+  if(qf) qf.classList.remove('fab-hidden');
 }
 
 // ═══════════════════════════════
@@ -2628,7 +2727,34 @@ function promptDeleteClass(idx){
   const c=curClasses()[idx];
   if(!c) return;
   document.getElementById('delConfirmName').textContent=c.name;
+  const slotList=document.getElementById('delSlotList');
+  const slots=(c.slots||[]).filter(s=>!c.isOnDemand);
+  if(slots.length>1){
+    document.getElementById('delConfirmTitle').textContent='どのコマを削除しますか？';
+    document.getElementById('delConfirmNote').innerHTML='コマだけ削除するか、授業ごと削除するか選んでください。';
+    document.getElementById('delAllBtn').textContent='授業全体を削除する';
+    slotList.style.display='block';
+    slotList.innerHTML=slots.map((s,i)=>
+      `<button class="btn bs" style="width:100%;margin-bottom:6px;text-align:left;padding:10px 14px;" onclick="deleteOneSlot(${idx},${i})">🗓 ${DAY_JA[s.day]}曜 ${s.period}限のみ削除</button>`
+    ).join('');
+  } else {
+    document.getElementById('delConfirmTitle').textContent='この授業を削除しますか？';
+    document.getElementById('delConfirmNote').innerHTML='出席・成績データも含めて完全に削除されます。<br>この操作は<b>元に戻せません</b>。';
+    document.getElementById('delAllBtn').textContent='削除する';
+    slotList.style.display='none';
+    slotList.innerHTML='';
+  }
   document.getElementById('deleteConfirmModal').classList.add('active');
+}
+
+function deleteOneSlot(classIdx, slotIdx){
+  closeModal('deleteConfirmModal');
+  const c=curClasses()[classIdx];
+  if(!c||!c.slots) return;
+  c.slots.splice(slotIdx,1);
+  saveData();
+  sfx('delete');
+  renderSchedule();
 }
 
 function confirmDeleteClass(){
@@ -2639,7 +2765,7 @@ function confirmDeleteClass(){
   const wasDetail=(curClassIdx===idx);
   curClasses().splice(idx,1);
   saveData();
-  sfx('click');
+  sfx('delete');
   if(wasDetail){ closeModal('classModal'); showTab('schedule'); }
   else renderSchedule();
 }
@@ -3993,6 +4119,24 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const GUIDE_KEY='hasSeenGuide_v3';
   if(!localStorage.getItem(GUIDE_KEY)){ openGuide(); localStorage.setItem(GUIDE_KEY,'true'); }
+
+  // FAB scroll-hide: use touch events only — no DOM writes during momentum scroll
+  (function(){
+    let _fabTimer;
+    function hideFabs(){
+      document.querySelectorAll('.fab,.share-fab').forEach(function(el){
+        if(el.style.display!=='none') el.classList.add('fab-hidden');
+      });
+    }
+    function showFabs(){
+      document.querySelectorAll('.fab,.share-fab').forEach(function(el){
+        el.classList.remove('fab-hidden');
+      });
+    }
+    document.addEventListener('touchstart',function(){ clearTimeout(_fabTimer); hideFabs(); },{passive:true});
+    document.addEventListener('touchend',function(){ _fabTimer=setTimeout(showFabs,800); },{passive:true});
+    document.addEventListener('touchcancel',function(){ _fabTimer=setTimeout(showFabs,800); },{passive:true});
+  })();
 
   renderAll();
   document.getElementById('attDate').valueAsDate=new Date();
