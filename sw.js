@@ -1,4 +1,4 @@
-const CACHE = 'rakutan-v2.1.0';
+const CACHE = 'rakutan-v1.2.2';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
