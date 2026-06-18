@@ -129,6 +129,19 @@ body.dark .db-bar-wrap{background:rgba(255,255,255,.12);}
 .deadline-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
 .deadline-row span{font-size:11px;font-weight:700;color:var(--sub);flex:1;}
 .deadline-row label{font-size:12px;display:flex;align-items:center;gap:3px;cursor:pointer;color:var(--sub);}
+/* 時刻プリセット */
+.dl-time-label{font-size:10px;font-weight:700;color:var(--faint);margin:5px 0 4px;}
+.dl-time-row{display:flex;gap:5px;flex-wrap:wrap;}
+.dl-time-btn{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:14px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.dl-time-btn:active{transform:scale(.94);}
+.dl-time-btn.on{border-color:var(--ac);background:var(--ac);color:#fff;}
+/* 期間日程設定 */
+.term-date-grp{margin-bottom:10px;}
+.tdg-title{font-size:11px;font-weight:800;color:var(--ac);padding:3px 8px;background:var(--faint2,rgba(99,102,241,.08));border-radius:6px;margin-bottom:6px;display:inline-block;}
+.tdr{display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap;}
+.tdr-name{font-size:12px;font-weight:800;color:var(--text);min-width:28px;flex-shrink:0;}
+.tdr input[type=date]{flex:1;min-width:90px;padding:6px 7px;border:1.5px solid var(--border);border-radius:7px;font-size:11px;background:var(--card);color:var(--text);font-family:inherit;}
+.tdr-sep{font-size:12px;color:var(--faint);flex-shrink:0;}
 
 /* Reminder chips */
 .reminder-label{font-size:11px;font-weight:700;color:var(--sub);margin-bottom:5px;}
@@ -173,9 +186,23 @@ body.dark .theme-opt{background:rgba(255,255,255,.08);}
 
 /* ── SCHEDULE ── */
 .filter-group{margin-bottom:14px;}
-.fg-label{font-size:10px;font-weight:700;color:var(--faint);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;}
+.fg-label{font-size:10px;font-weight:700;color:var(--faint);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;justify-content:space-between;}
 .filter-row{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;margin-bottom:5px;scrollbar-width:none;}
 .filter-row::-webkit-scrollbar{display:none;}
+/* 期間設定トグルボタン */
+.tdp-toggle{background:none;border:1.5px solid var(--border);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;color:var(--faint);font-family:inherit;letter-spacing:0;text-transform:none;transition:.18s;white-space:nowrap;flex-shrink:0;}
+.tdp-toggle.on{border-color:var(--ac);color:var(--ac);background:rgba(99,102,241,.1);}
+/* 期間設定パネル */
+#termDatePanel{background:var(--card);border:1.5px solid var(--border);border-left:3px solid var(--ac);border-radius:10px;padding:11px 13px;margin-bottom:12px;animation:tdpFadeIn .18s ease;}
+@keyframes tdpFadeIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.tdp-title{font-size:10px;font-weight:800;color:var(--ac);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;}
+.tdp-row{display:flex;align-items:center;gap:5px;margin-bottom:7px;flex-wrap:wrap;}
+.tdp-row:last-child{margin-bottom:0;}
+.tdp-name{font-size:12px;font-weight:800;color:var(--text);min-width:30px;flex-shrink:0;}
+.tdp-date{flex:1;min-width:88px;padding:5px 7px;border:1.5px solid var(--border);border-radius:7px;font-size:11px;background:var(--inp,var(--bg));color:var(--text);font-family:inherit;}
+.tdp-date:focus{outline:none;border-color:var(--ac);}
+.tdp-sep{font-size:11px;color:var(--faint);flex-shrink:0;}
+.subA-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 .fbtn{padding:7px 14px;border:2px solid var(--btn-border);background:var(--card);border-radius:24px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;transition:.2s;color:var(--sub);font-family:inherit;font-weight:700;}
 .fbtn:hover{border-color:var(--ac);color:var(--ac);}
 .fbtn.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 12px rgba(79,70,229,.35);}
@@ -822,7 +849,15 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
           <span>提出期限</span>
           <label><input type="checkbox" id="noDeadline" onchange="toggleDL()"> 期限なし</label>
         </div>
-        <input class="fi" type="datetime-local" id="todoDeadline">
+        <input class="fi" type="datetime-local" id="todoDeadline" oninput="syncTimePreset('todo')">
+        <div class="dl-time-label">⏰ 時刻プリセット</div>
+        <div class="dl-time-row" id="todoTimeBtns">
+          <button class="dl-time-btn" data-t="12:00" onclick="setDeadlineTime('todoDeadline','todoTimeBtns','12:00')">正午 12:00</button>
+          <button class="dl-time-btn" data-t="18:00" onclick="setDeadlineTime('todoDeadline','todoTimeBtns','18:00')">18:00</button>
+          <button class="dl-time-btn" data-t="21:00" onclick="setDeadlineTime('todoDeadline','todoTimeBtns','21:00')">21:00</button>
+          <button class="dl-time-btn" data-t="22:00" onclick="setDeadlineTime('todoDeadline','todoTimeBtns','22:00')">22:00</button>
+          <button class="dl-time-btn" data-t="23:59" onclick="setDeadlineTime('todoDeadline','todoTimeBtns','23:59')">深夜 23:59</button>
+        </div>
       </div>
       <div class="fr">
         <div class="reminder-label">🔔 リマインド</div>
@@ -872,7 +907,10 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   </div>
   <!-- ② クォーター用サブフィルター -->
   <div id="subQ" class="filter-group">
-    <div class="fg-label">クォーター選択</div>
+    <div class="fg-label">
+      <span>クォーター選択</span>
+      <button class="tdp-toggle" onclick="toggleTermDatePanel()">📅 期間</button>
+    </div>
     <div class="filter-row" id="quarterBtns">
       <button class="fbtn on" onclick="setQuarter('all_q')">全て</button>
       <button class="fbtn" onclick="setQuarter('1Q')">1Q</button>
@@ -883,7 +921,10 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   </div>
   <!-- ③ 前期/後期用サブフィルター -->
   <div id="subS" class="filter-group" style="display:none">
-    <div class="fg-label">学期選択</div>
+    <div class="fg-label">
+      <span>学期選択</span>
+      <button class="tdp-toggle" onclick="toggleTermDatePanel()">📅 期間</button>
+    </div>
     <div class="filter-row" id="semesterBtns">
       <button class="fbtn on" onclick="setQuarter('all_s')">両方</button>
       <button class="fbtn" onclick="setQuarter('前期')">前期</button>
@@ -892,8 +933,13 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   </div>
   <!-- ④ 通年（サブフィルター不要） -->
   <div id="subA" style="display:none">
-    <div class="sub-filter-note">🔄 通年開講の授業を表示しています</div>
+    <div class="subA-row">
+      <span class="sub-filter-note" style="margin-bottom:0;flex:1;">🔄 通年開講の授業を表示しています</span>
+      <button class="tdp-toggle" onclick="toggleTermDatePanel()">📅 期間</button>
+    </div>
   </div>
+  <!-- 期間設定パネル（共通・開閉式） -->
+  <div id="termDatePanel" style="display:none;"></div>
   <div class="view-toggle">
     <button class="vbtn on" id="vBtnList" onclick="setView('list')">リスト表示</button>
     <button class="vbtn" id="vBtnTable" onclick="setView('table')">時間割表</button>
@@ -1228,6 +1274,25 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <div class="mg"><label>1Qあたり授業回数</label><input type="number" id="sQCount" value="7"></div>
     <div class="mg"><label>半期(前期・後期)授業回数</label><input type="number" id="sSCount" value="15"></div>
     <div class="mg"><label>デフォルト遅刻換算（何回遅刻で1欠席）</label><input type="number" id="sLatePen" value="3" min="1"></div>
+
+    <div class="m-sec">📅 開講期間設定</div>
+    <div style="font-size:10px;color:var(--faint);margin-bottom:10px;">各クォーター・学期の開始日と最終日を入力してください</div>
+    <div class="term-date-grp">
+      <div class="tdg-title">📐 クォーター制</div>
+      <div class="tdr"><span class="tdr-name">1Q</span><input type="date" id="td_1Q_s"><span class="tdr-sep">〜</span><input type="date" id="td_1Q_e"></div>
+      <div class="tdr"><span class="tdr-name">2Q</span><input type="date" id="td_2Q_s"><span class="tdr-sep">〜</span><input type="date" id="td_2Q_e"></div>
+      <div class="tdr"><span class="tdr-name">3Q</span><input type="date" id="td_3Q_s"><span class="tdr-sep">〜</span><input type="date" id="td_3Q_e"></div>
+      <div class="tdr"><span class="tdr-name">4Q</span><input type="date" id="td_4Q_s"><span class="tdr-sep">〜</span><input type="date" id="td_4Q_e"></div>
+    </div>
+    <div class="term-date-grp">
+      <div class="tdg-title">📅 前期／後期</div>
+      <div class="tdr"><span class="tdr-name">前期</span><input type="date" id="td_前期_s"><span class="tdr-sep">〜</span><input type="date" id="td_前期_e"></div>
+      <div class="tdr"><span class="tdr-name">後期</span><input type="date" id="td_後期_s"><span class="tdr-sep">〜</span><input type="date" id="td_後期_e"></div>
+    </div>
+    <div class="term-date-grp">
+      <div class="tdg-title">🔄 通年</div>
+      <div class="tdr"><span class="tdr-name">通年</span><input type="date" id="td_通年_s"><span class="tdr-sep">〜</span><input type="date" id="td_通年_e"></div>
+    </div>
 
     <div class="m-sec">🎓 卒業管理</div>
     <div class="mg"><label>卒業必要単位数</label>
@@ -1731,7 +1796,13 @@ function defSettings(){
     requiredCredits:124,prevEarnedCredits:0,
     reminderDays:[1],absenceWarningThreshold:2,
     uiTheme:'classic',
-    creditCategories:[]
+    creditCategories:[],
+    termDates:{
+      '1Q':{start:'',end:''},'2Q':{start:'',end:''},
+      '3Q':{start:'',end:''},'4Q':{start:'',end:''},
+      '前期':{start:'',end:''},'後期':{start:'',end:''},
+      '通年':{start:'',end:''}
+    }
   };
 }
 function defYear(){ return {classes:[],todos:[]}; }
@@ -2260,7 +2331,54 @@ function setTermType(type){
   } else {
     curQuarter='通年';
   }
+  // 期間パネルが開いていれば内容を更新
+  const panel=document.getElementById('termDatePanel');
+  if(panel&&panel.style.display!=='none') panel.innerHTML=buildTermDatePanel();
   renderSchedule();
+}
+
+// ── 期間設定パネル ──
+let _tdpOpen=false;
+function toggleTermDatePanel(){
+  _tdpOpen=!_tdpOpen;
+  const panel=document.getElementById('termDatePanel');
+  if(_tdpOpen){
+    panel.innerHTML=buildTermDatePanel();
+    panel.style.display='block';
+  } else {
+    panel.style.display='none';
+    panel.innerHTML='';
+  }
+  document.querySelectorAll('.tdp-toggle').forEach(b=>b.classList.toggle('on',_tdpOpen));
+}
+
+function buildTermDatePanel(){
+  const td=(appData.settings.termDates)||{};
+  const map={
+    quarter:[{k:'1Q',l:'1Q'},{k:'2Q',l:'2Q'},{k:'3Q',l:'3Q'},{k:'4Q',l:'4Q'}],
+    semester:[{k:'前期',l:'前期'},{k:'後期',l:'後期'}],
+    annual:[{k:'通年',l:'通年'}]
+  };
+  const items=map[curTermType]||map.quarter;
+  const rows=items.map(({k,l})=>{
+    const d=td[k]||{};
+    return `<div class="tdp-row">
+      <span class="tdp-name">${l}</span>
+      <input class="tdp-date" type="date" value="${d.start||''}" onchange="saveTermDateField('${k}','start',this.value)" title="${l} 開始日">
+      <span class="tdp-sep">〜</span>
+      <input class="tdp-date" type="date" value="${d.end||''}" onchange="saveTermDateField('${k}','end',this.value)" title="${l} 最終日">
+    </div>`;
+  }).join('');
+  const label={quarter:'クォーター',semester:'前期／後期',annual:'通年'}[curTermType];
+  return `<div class="tdp-title">📅 ${label} 開講期間</div>${rows}`;
+}
+
+function saveTermDateField(term,field,value){
+  if(!appData.settings.termDates) appData.settings.termDates={};
+  if(!appData.settings.termDates[term]) appData.settings.termDates[term]={start:'',end:''};
+  appData.settings.termDates[term][field]=value;
+  saveData();
+  showToast('期間を保存しました ✓');
 }
 
 function setQuarter(q){
@@ -3022,7 +3140,38 @@ function switchTodoTab(tab){
 }
 
 function toggleDL(){
-  document.getElementById('todoDeadline').disabled=document.getElementById('noDeadline').checked;
+  const inp=document.getElementById('todoDeadline');
+  const disabled=document.getElementById('noDeadline').checked;
+  inp.disabled=disabled;
+  if(disabled) document.querySelectorAll('#todoTimeBtns .dl-time-btn').forEach(b=>b.classList.remove('on'));
+}
+
+// 時刻プリセット：指定の datetime-local input に時刻を反映
+function setDeadlineTime(inputId,btnGroupId,time){
+  const inp=document.getElementById(inputId);
+  if(!inp||inp.disabled) return;
+  const date=(inp.value?inp.value.split('T')[0]:null)||new Date().toISOString().slice(0,10);
+  inp.value=date+'T'+time;
+  if(inputId==='todoDeadline'){
+    document.getElementById('noDeadline').checked=false;
+    inp.disabled=false;
+  }
+  if(btnGroupId){
+    document.querySelectorAll('#'+btnGroupId+' .dl-time-btn').forEach(b=>{
+      b.classList.toggle('on',b.dataset.t===time);
+    });
+  }
+}
+
+// datetime-local を手入力した場合にプリセットボタンの選択状態を同期
+function syncTimePreset(scope){
+  if(scope==='todo'){
+    const inp=document.getElementById('todoDeadline');
+    const t=inp.value?inp.value.split('T')[1]:'';
+    document.querySelectorAll('#todoTimeBtns .dl-time-btn').forEach(b=>{
+      b.classList.toggle('on',b.dataset.t===t);
+    });
+  }
 }
 function toggleChip(el){
   sfx('toggle');
@@ -3297,6 +3446,15 @@ function openSettings(){
   document.querySelectorAll('#sReminderOpts .r-opt').forEach(b=>{
     b.classList.toggle('on',rd.includes(parseInt(b.dataset.days)));
   });
+  // 開講期間日程
+  const td=s.termDates||{};
+  ['1Q','2Q','3Q','4Q','前期','後期','通年'].forEach(t=>{
+    const d=td[t]||{};
+    const s_el=document.getElementById('td_'+t+'_s');
+    const e_el=document.getElementById('td_'+t+'_e');
+    if(s_el) s_el.value=d.start||'';
+    if(e_el) e_el.value=d.end||'';
+  });
   renderSettingsYearList();
   loadGcalUrl();
   updateBackupDateUI();
@@ -3361,6 +3519,13 @@ function saveSettings(){
   s.morningNotifyTime=document.getElementById('sMorningTime').value||'07:00';
   s.requiredCredits=parseInt(document.getElementById('sReqCredits').value)||124;
   s.prevEarnedCredits=parseInt(document.getElementById('sPrevCredits').value)||0;
+  // 開講期間日程
+  s.termDates={};
+  ['1Q','2Q','3Q','4Q','前期','後期','通年'].forEach(t=>{
+    const sv=document.getElementById('td_'+t+'_s');
+    const ev=document.getElementById('td_'+t+'_e');
+    s.termDates[t]={start:sv?sv.value:'',end:ev?ev.value:''};
+  });
   applyAnim();
   scheduleMorningNotify();
   saveData(); applyTheme(); sfx('save'); closeModal('settingsModal');
@@ -4053,89 +4218,112 @@ function exportTimetablePDF(){
     : [{label:termLabel,classes:filteredCls}];
 
   function buildPdfSection(label,classes){
-    // 使用されている最大限時を求める
     let maxP=5;
     classes.filter(c=>!c.isOnDemand).forEach(c=>(c.slots||[]).forEach(s=>{ if(s.period>maxP) maxP=s.period; }));
-    let t=`<div class="sec-wrap"><div class="sec-label">${label}</div>`;
-    t+='<table class="pdf-table"><thead><tr><th class="period-col"></th>';
+    let t=`<div class="ppl-sec"><div class="ppl-sec-label">${label}</div><div class="ppl-table-wrap">`;
+    t+='<table class="ppl-table"><thead><tr><th class="ppl-pcol"></th>';
     DAYS_PDF.forEach(d=>{ t+=`<th>${DAYS_JA_PDF[d]}</th>`; });
     t+='</tr></thead><tbody>';
     for(let p=1;p<=maxP;p++){
-      t+=`<tr><td class="period-col">${p}限</td>`;
+      t+=`<tr><td class="ppl-pcol">${p}限</td>`;
       DAYS_PDF.forEach(day=>{
         const found=classes.find(c=>!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===day&&s.period==p));
         if(found){
           const color=found.color||'#3730a3';
-          const room=found.room?`<div class="cell-sub">${found.room}</div>`:'';
-          const teacher=found.teacher?`<div class="cell-sub">${found.teacher}</div>`:'';
-          const credits=found.credits?`<div class="cell-sub">${found.credits}単位</div>`:'';
-          t+=`<td><div class="class-cell" style="background:${color};"><div class="cell-name">${found.name}</div>${room}${teacher}${credits}</div></td>`;
+          const room=found.room?`<div class="ppl-csub">${found.room}</div>`:'';
+          const teacher=found.teacher?`<div class="ppl-csub">${found.teacher}</div>`:'';
+          const credits=found.credits?`<div class="ppl-csub">${found.credits}単位</div>`:'';
+          t+=`<td><div class="ppl-cell" style="background:${color};"><div class="ppl-cname">${found.name}</div>${room}${teacher}${credits}</div></td>`;
         } else {
-          t+='<td class="empty-cell"></td>';
+          t+='<td class="ppl-empty"></td>';
         }
       });
       t+='</tr>';
     }
     const odCls=classes.filter(c=>c.isOnDemand);
     if(odCls.length){
-      t+=`<tr class="od-row"><td class="period-col" style="font-size:9px;line-height:1.3;">オン<br>デマ<br>ンド</td><td colspan="7" class="od-cell">`;
+      t+=`<tr><td class="ppl-pcol" style="font-size:8px;line-height:1.3;">OD</td><td colspan="7" style="padding:6px 8px;vertical-align:middle;">`;
       odCls.forEach(c=>{
         const color=c.color||'#3730a3';
-        t+=`<span class="od-chip" style="background:${color};">${c.name}</span>`;
+        t+=`<span style="display:inline-block;border-radius:10px;padding:3px 9px;font-size:10px;font-weight:700;color:#fff;margin:2px;background:${color};">${c.name}</span>`;
       });
       t+='</td></tr>';
     }
-    t+='</tbody></table></div>';
+    t+='</tbody></table></div></div>';
     return t;
   }
 
   const sectionsHtml=sections.map(s=>buildPdfSection(s.label,s.classes)).join('');
 
-  const htmlDoc=`<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>${title}</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Hiragino Sans','Yu Gothic',sans-serif;padding:16px 20px;color:#0f172a;font-size:13px;}
-h1{font-size:20px;font-weight:900;color:#1e1b4b;margin-bottom:2px;}
-.app-sub{font-size:11px;color:#64748b;margin-bottom:18px;}
-.sec-wrap{margin-bottom:24px;page-break-inside:avoid;}
-.sec-label{font-size:14px;font-weight:800;color:#3730a3;padding:6px 10px;background:#eef0fb;border-radius:8px;margin-bottom:8px;border-left:4px solid #3730a3;}
-.pdf-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-.pdf-table th{background:#eef0fb;color:#3730a3;font-size:12px;font-weight:800;padding:7px 4px;border:1.5px solid #dde1f0;text-align:center;}
-.pdf-table td{border:1px solid #dde1f0;vertical-align:top;padding:3px;height:68px;}
-.period-col{width:32px;background:#f5f6ff;color:#94a3b8;font-size:10px;font-weight:800;text-align:center;vertical-align:middle!important;}
-.class-cell{height:100%;border-radius:7px;padding:4px 5px;color:#fff;display:flex;flex-direction:column;justify-content:flex-start;}
-.cell-name{font-size:10px;font-weight:800;line-height:1.3;word-break:break-all;}
-.cell-sub{font-size:8.5px;opacity:0.85;margin-top:2px;line-height:1.3;}
-.empty-cell{background:#fafbff;}
-.od-row td{height:auto;}
-.od-cell{padding:6px 8px;vertical-align:middle;}
-.od-chip{display:inline-block;border-radius:10px;padding:3px 9px;font-size:10px;font-weight:700;color:#fff;margin:2px;}
-.footer{text-align:right;font-size:10px;color:#94a3b8;margin-top:8px;padding-top:8px;border-top:1px solid #dde1f0;}
+  // ── 既存オーバーレイをクリア ──
+  ['pdfPrintLayer','pdfPrintStyle'].forEach(id=>{ const el=document.getElementById(id); if(el) el.remove(); });
+
+  // ── 印刷専用スタイル ──
+  const style=document.createElement('style');
+  style.id='pdfPrintStyle';
+  style.textContent=`
+#pdfPrintLayer{display:none;position:fixed;inset:0;z-index:99999;background:#f0f2ff;overflow-y:auto;font-family:'Hiragino Sans','Yu Gothic',sans-serif;color:#0f172a;font-size:13px;box-sizing:border-box;}
+#pdfPrintLayer.open{display:block;}
+.ppl-toolbar{position:sticky;top:0;z-index:10;background:#3730a3;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;gap:10px;}
+.ppl-back{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);color:#fff;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s;}
+.ppl-back:hover{background:rgba(255,255,255,.32);}
+.ppl-print-btn{background:#fff;color:#3730a3;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:.18s;box-shadow:0 2px 10px rgba(0,0,0,.18);}
+.ppl-print-btn:hover{background:#eef0fb;}
+.ppl-toolbar-title{color:#fff;font-size:13px;font-weight:800;flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ppl-body{padding:16px 20px 40px;}
+.ppl-h1{font-size:20px;font-weight:900;color:#1e1b4b;margin-bottom:2px;}
+.ppl-sub{font-size:11px;color:#64748b;margin-bottom:18px;}
+.ppl-sec{background:#fff;border-radius:12px;margin-bottom:16px;overflow:hidden;}
+.ppl-sec-label{font-size:14px;font-weight:800;color:#3730a3;padding:8px 12px;background:#eef0fb;border-left:4px solid #3730a3;}
+.ppl-table-wrap{overflow-x:auto;padding:4px;}
+.ppl-table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:500px;}
+.ppl-table th{background:#eef0fb;color:#3730a3;font-size:12px;font-weight:800;padding:7px 4px;border:1.5px solid #dde1f0;text-align:center;}
+.ppl-table td{border:1px solid #dde1f0;vertical-align:top;padding:3px;height:68px;}
+.ppl-pcol{width:32px!important;background:#f5f6ff;color:#94a3b8;font-size:10px;font-weight:800;text-align:center;vertical-align:middle!important;}
+.ppl-cell{height:100%;border-radius:7px;padding:4px 5px;color:#fff;display:flex;flex-direction:column;justify-content:flex-start;box-sizing:border-box;}
+.ppl-cname{font-size:10px;font-weight:800;line-height:1.3;word-break:break-all;}
+.ppl-csub{font-size:8.5px;opacity:.85;margin-top:2px;line-height:1.3;}
+.ppl-empty{background:#fafbff;}
+.ppl-footer{text-align:right;font-size:10px;color:#94a3b8;margin-top:4px;padding:8px 0;}
 @media print{
   @page{size:A4 landscape;margin:10mm;}
-  body{padding:0;}
-  .sec-wrap{page-break-after:always;}
-  .sec-wrap:last-child{page-break-after:avoid;}
-}
-</style>
-</head>
-<body>
-<h1>${title}</h1>
-<div class="app-sub">楽単チェッカー ver 2.2.0</div>
-${sectionsHtml}
-<div class="footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
-<script>window.addEventListener('load',function(){setTimeout(function(){window.print();},400);});<\/script>
-</body>
-</html>`;
+  body>*:not(#pdfPrintLayer){display:none!important;}
+  #pdfPrintLayer{display:block!important;position:static!important;background:#fff!important;overflow:visible!important;}
+  .ppl-toolbar{display:none!important;}
+  .ppl-body{padding:0!important;}
+  .ppl-sec{border-radius:0!important;margin-bottom:0!important;page-break-after:always;}
+  .ppl-sec:last-child{page-break-after:avoid;}
+  .ppl-table-wrap{overflow:visible!important;}
+}`;
+  document.head.appendChild(style);
 
-  const win=window.open('','_blank');
-  if(!win){ showToast('ポップアップがブロックされました。ブラウザの設定を確認してください'); return; }
-  win.document.write(htmlDoc);
-  win.document.close();
+  // ── オーバーレイ本体 ──
+  const layer=document.createElement('div');
+  layer.id='pdfPrintLayer';
+  layer.innerHTML=`
+<div class="ppl-toolbar">
+  <button class="ppl-back" onclick="closePdfLayer()">← 戻る</button>
+  <div class="ppl-toolbar-title">${title}</div>
+  <button class="ppl-print-btn" onclick="window.print()">🖨️ PDF保存</button>
+</div>
+<div class="ppl-body">
+  <div class="ppl-h1">${title}</div>
+  <div class="ppl-sub">楽単チェッカー ver 2.2.0</div>
+  ${sectionsHtml}
+  <div class="ppl-footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
+</div>`;
+  document.body.appendChild(layer);
+
+  // モーダルを閉じてからオーバーレイを開く
+  closeModal('shareModal');
+  requestAnimationFrame(()=>{ layer.classList.add('open'); });
+}
+
+function closePdfLayer(){
+  const layer=document.getElementById('pdfPrintLayer');
+  if(layer){ layer.classList.remove('open'); setTimeout(()=>layer.remove(),50); }
+  const style=document.getElementById('pdfPrintStyle');
+  if(style) style.remove();
 }
 
 // ═══════════════════════════════
