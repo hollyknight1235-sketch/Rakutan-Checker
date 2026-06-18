@@ -308,6 +308,18 @@ body.dark .tdp-makeup-chip{color:#38bdf8;background:rgba(14,165,233,.13);border-
 .tdp-makeup-add-btn{background:rgba(14,165,233,.12);border:1.5px solid rgba(14,165,233,.28);color:#0284c7;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;}
 body.dark .tdp-makeup-add-btn{color:#38bdf8;background:rgba(14,165,233,.15);}
 .tdp-makeup-add-btn:hover{background:rgba(14,165,233,.22);}
+/* 全学休講日チップ */
+.tdp-holiday-chip{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;color:#dc2626;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
+body.dark .tdp-holiday-chip{color:#f87171;background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.25);}
+.tdp-holiday-label{font-size:10px;font-weight:800;color:#dc2626;white-space:nowrap;flex-shrink:0;padding-top:3px;}
+body.dark .tdp-holiday-label{color:#f87171;}
+.tdp-holiday-add-btn{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);color:#dc2626;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;}
+body.dark .tdp-holiday-add-btn{color:#f87171;background:rgba(239,68,68,.15);}
+.tdp-holiday-add-btn:hover{background:rgba(239,68,68,.22);}
+/* 起動時モーダル */
+.term-setup-demerits{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.term-setup-demerit-item{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--sub);line-height:1.55;}
+.term-setup-demerit-item strong{color:var(--text);}
 .subA-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 .fbtn{padding:7px 15px;border:1.5px solid var(--btn-border);background:var(--card);border-radius:24px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;transition:all .18s;color:var(--sub);font-family:inherit;font-weight:700;}
 .fbtn:hover{border-color:var(--ac);color:var(--ac);background:var(--hover);}
@@ -1319,6 +1331,7 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#dc2626"></div>試験</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#f59e0b"></div>課題締切</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#059669"></div>補講</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#dc2626"></div>全学休講</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--ac)"></div>授業</div>
   </div>
   <div class="cal-grid-header">
@@ -1886,7 +1899,7 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 2.4.2 — カレンダーUI改善・授業別タスクグループ</div>
+  <div class="ver">ver 2.4.3 — 開講期間設定ガイド・全学休講日管理</div>
 </div>
 </div>
 
@@ -2253,6 +2266,17 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
     </ul>
   </div>
   <div class="guide-sec">
+    <h3>📅 開講期間設定・全学休講日管理 — v2.4.3新機能</h3>
+    <ul>
+      <li>アプリ起動時に<strong>開講期間の設定を促すガイド</strong>が表示されます（設定確認後は非表示）</li>
+      <li>「時間割」タブ上部の <strong>📅 開講期間</strong> ボタンから、各学期の<strong>全学休講日</strong>を登録できます</li>
+      <li>大学祭・記念日・祝日など<strong>大学全体が休みになる日</strong>を登録すると、出席可能回数の計算に自動反映されます</li>
+      <li>全学休講日はカレンダーに<strong>赤色</strong>で表示されます</li>
+      <li>⚠️ 自動入力の日程はあくまで目安です。必ずあなたの大学のシラバス・履修要項で確認してください</li>
+    </ul>
+  </div>
+
+  <div class="guide-sec">
     <h3>⚠️ 更新時の注意</h3>
     <ul>
       <li>初回はシークレットモードで開き「ホーム画面に追加」してください</li>
@@ -2261,6 +2285,52 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
   </div>
 
   <button class="btn bp" style="width:100%;margin-top:12px;" onclick="closeModal('guideModal')">閉じる</button>
+</div>
+</div>
+
+<!-- ── 起動時：開講期間設定促進モーダル ── -->
+<div class="modal" id="termSetupModal">
+<div class="modal-sheet" style="max-width:420px;margin:auto;">
+  <div class="m-handle"></div>
+  <div class="m-title">📅 開講期間の設定</div>
+
+  <div style="background:rgba(251,191,36,.12);border:1.5px solid rgba(251,191,36,.45);border-radius:13px;padding:13px 15px;margin-bottom:16px;">
+    <div style="font-size:13px;font-weight:800;color:#d97706;margin-bottom:6px;">⚠ 開講期間が自動入力されています</div>
+    <div style="font-size:12px;line-height:1.65;color:var(--text);">
+      現在、<strong>一般的な大学カレンダーの目安日程</strong>が設定されています。<br>
+      あなたの大学のシラバス・履修要項に合わせて<strong>正確な日程に修正</strong>することを強くお勧めします。
+    </div>
+  </div>
+
+  <div style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:9px;">自動入力のまま使うと起きる問題</div>
+  <div class="term-setup-demerits">
+    <div class="term-setup-demerit-item">
+      <span style="flex-shrink:0;font-size:14px;">❌</span>
+      <span><strong>出席可能回数の計算がズレる</strong>ため、「あと何回休める」の表示が実態と合わなくなります</span>
+    </div>
+    <div class="term-setup-demerit-item">
+      <span style="flex-shrink:0;font-size:14px;">❌</span>
+      <span><strong>大学祭・試験期間・補講期間</strong>などの全学休講日が反映されず、楽単判定が狂う可能性があります</span>
+    </div>
+    <div class="term-setup-demerit-item">
+      <span style="flex-shrink:0;font-size:14px;">❌</span>
+      <span><strong>カレンダーの学期境界表示</strong>が実際のスケジュールと異なって表示されます</span>
+    </div>
+    <div class="term-setup-demerit-item">
+      <span style="flex-shrink:0;font-size:14px;">❌</span>
+      <span><strong>iCalエクスポート</strong>時に実際の授業期間外にも予定が入ることがあります</span>
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:var(--sub);background:var(--inp);border-radius:10px;padding:10px 13px;margin-bottom:18px;line-height:1.65;">
+    💡 「後で設定」を選んだ場合、自動入力の目安期間で引き続き使用できます。<br>
+    「時間割」タブ上部の <strong>📅 開講期間</strong> ボタンからいつでも変更可能です。
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:9px;">
+    <button class="btn bp" style="width:100%;font-size:14px;" onclick="openTermSetupFromModal()">📅 今すぐ開講期間を設定する</button>
+    <button class="btn" style="width:100%;background:var(--inp);color:var(--sub);border:1.5px solid var(--border);font-size:13px;" onclick="closeModal('termSetupModal')">後で設定する（自動入力のまま続ける）</button>
+  </div>
 </div>
 </div>
 
@@ -2291,13 +2361,13 @@ function getDefaultTermDates(yr){
   yr=yr||new Date().getFullYear();
   const y=parseInt(yr);
   return {
-    '1Q': {start:`${y}-04-07`,end:`${y}-06-06`,makeup:[]},
-    '2Q': {start:`${y}-06-10`,end:`${y}-08-08`,makeup:[]},
-    '3Q': {start:`${y}-09-28`,end:`${y}-11-28`,makeup:[]},
-    '4Q': {start:`${y}-12-01`,end:`${y+1}-02-14`,makeup:[]},
-    '前期':{start:`${y}-04-07`,end:`${y}-08-08`,makeup:[]},
-    '後期':{start:`${y}-09-28`,end:`${y+1}-02-14`,makeup:[]},
-    '通年':{start:`${y}-04-07`,end:`${y+1}-02-14`,makeup:[]},
+    '1Q': {start:`${y}-04-07`,end:`${y}-06-06`,makeup:[],holidays:[]},
+    '2Q': {start:`${y}-06-10`,end:`${y}-08-08`,makeup:[],holidays:[]},
+    '3Q': {start:`${y}-09-28`,end:`${y}-11-28`,makeup:[],holidays:[]},
+    '4Q': {start:`${y}-12-01`,end:`${y+1}-02-14`,makeup:[],holidays:[]},
+    '前期':{start:`${y}-04-07`,end:`${y}-08-08`,makeup:[],holidays:[]},
+    '後期':{start:`${y}-09-28`,end:`${y+1}-02-14`,makeup:[],holidays:[]},
+    '通年':{start:`${y}-04-07`,end:`${y+1}-02-14`,makeup:[],holidays:[]},
   };
 }
 
@@ -2338,10 +2408,12 @@ function initData(){
     if(!td||Object.values(td).every(v=>!v.start&&!v.end)){
       appData.settings.termDates=getDefaultTermDates(tdYr);
     } else {
-      // makeup フィールドが未定義なら空配列で初期化（自動入力はしない）
+      // makeup/holidays フィールドが未定義なら空配列で初期化
       Object.keys(appData.settings.termDates).forEach(term=>{
         if(!appData.settings.termDates[term].makeup)
           appData.settings.termDates[term].makeup=[];
+        if(!appData.settings.termDates[term].holidays)
+          appData.settings.termDates[term].holidays=[];
       });
     }
     const cy = appData.settings.currentYear;
@@ -2967,6 +3039,11 @@ function renderCalendar(){
       if(d.startsWith(monthPfx))
         addEv(d,{type:'term_makeup',label:`補講日（${term}）`,color:'#0ea5e9'});
     });
+    // v2.4.3: 全学休講日をカレンダーに追加（赤で表示）
+    (td.holidays||[]).forEach(d=>{
+      if(d.startsWith(monthPfx))
+        addEv(d,{type:'holiday',label:`全学休講（${term}）`,color:'#dc2626'});
+    });
   });
 
   // 月次統計バー
@@ -3022,9 +3099,9 @@ function renderCalEvents(dateStr,evs){
     el.innerHTML=`<div class="cal-ev-date-header">${dateJa}</div><div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">この日の予定はありません</div>`;
     return;
   }
-  const typeLabel={class:'授業',canceled:'休講',makeup:'補講（授業）',term_makeup:'学期補講日',exam:'試験',todo:'課題締切',absent:'欠席',late:'遅刻'};
-  // 表示順: 試験 > 欠席 > 遅刻 > 授業 > 補講日 > 補講 > 休講 > 課題
-  const order={exam:0,absent:1,late:2,class:3,term_makeup:4,makeup:5,canceled:6,todo:7};
+  const typeLabel={class:'授業',canceled:'休講',makeup:'補講（授業）',term_makeup:'学期補講日',holiday:'全学休講',exam:'試験',todo:'課題締切',absent:'欠席',late:'遅刻'};
+  // 表示順: 試験 > 全学休講 > 欠席 > 遅刻 > 授業 > 補講日 > 補講 > 休講 > 課題
+  const order={exam:0,holiday:1,absent:2,late:3,class:4,term_makeup:5,makeup:6,canceled:7,todo:8};
   const sorted=[...evs].sort((a,b)=>(order[a.type]??9)-(order[b.type]??9));
 
   // 欠席・遅刻イベントがある授業名のセットを収集（重複表示防止）
@@ -3048,7 +3125,7 @@ function renderCalEvents(dateStr,evs){
     const sub=typeLabel[ev.type]||ev.type;
     const period=ev.period?` · ${ev.period}限`:'';
     const reason=ev.reason?` (${ev.reason})`:'';
-    const icon={class:'📚',canceled:'🚫',makeup:'🔄',term_makeup:'📅',exam:'🎓',todo:'📝',absent:'❌',late:'⏰'}[ev.type]||'•';
+    const icon={class:'📚',canceled:'🚫',makeup:'🔄',term_makeup:'📅',holiday:'🏫',exam:'🎓',todo:'📝',absent:'❌',late:'⏰'}[ev.type]||'•';
     return `<div class="cal-ev-item" style="--ev-clr:${ev.color}">
       <div class="cal-ev-body">
         <div class="cal-ev-label">${icon} ${ev.label}</div>
@@ -3064,6 +3141,27 @@ function renderCalEvents(dateStr,evs){
 // ═══════════════════════════════
 //  ABSENCE CALCULATION
 // ═══════════════════════════════
+function calcHolidayPenalty(c){
+  if(c.isOnDemand||!c.slots) return 0;
+  const td=appData.settings.termDates;
+  if(!td||!td[c.term]) return 0;
+  const termData=td[c.term];
+  const holidays=termData.holidays||[];
+  if(!holidays.length) return 0;
+  const attSlots=c.slots.filter(s=>s.att!==false);
+  if(!attSlots.length) return 0;
+  const dayNums={sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
+  const classWeekdays=new Set(attSlots.map(s=>dayNums[s.day]).filter(d=>d!==undefined));
+  const tStart=termData.start?new Date(termData.start+'T00:00:00'):null;
+  const tEnd  =termData.end  ?new Date(termData.end  +'T00:00:00'):null;
+  let count=0;
+  for(const dateStr of holidays){
+    const dt=new Date(dateStr+'T00:00:00');
+    if(classWeekdays.has(dt.getDay())&&(!tStart||dt>=tStart)&&(!tEnd||dt<=tEnd)) count++;
+  }
+  return count;
+}
+
 function calcAbs(c){
   const sc=appData.settings.classCounts;
   let base = ['前期','後期','通年'].includes(c.term) ? (sc?sc.semester:15) : (sc?sc.quarter:7);
@@ -3071,7 +3169,8 @@ function calcAbs(c){
   const attSlots=(!c.isOnDemand&&c.slots)?c.slots.filter(s=>s.att!==false):[];
   const perWeek=(c.isOnDemand||attSlots.length===0)?1:attSlots.length;
   const makeupCount=(c.makeupDates||[]).length;
-  const total=base*perWeek+makeupCount;
+  const holidayPenalty=calcHolidayPenalty(c);
+  const total=Math.max(1,base*perWeek+makeupCount-holidayPenalty);
   const maxSafe=Math.floor(total/3);
   const abs=c.absences?c.absences.length:0;
   const late=c.tardiness?c.tardiness.length:0;
@@ -3217,6 +3316,12 @@ function buildTermDatePanel(){
       const lbl=`${parseInt(date.slice(5,7))}/${parseInt(date.slice(8,10))}(${WJ[dt.getDay()]})`;
       return `<span class="tdp-makeup-chip">${lbl}<button class="tdp-makeup-del" onclick="removeTermMakeup('${k}','${date}')" title="削除">×</button></span>`;
     }).join('');
+    const holidays=[...(d.holidays||[])].sort();
+    const holChips=holidays.map(date=>{
+      const dt=new Date(date+'T00:00:00');
+      const lbl=`${parseInt(date.slice(5,7))}/${parseInt(date.slice(8,10))}(${WJ[dt.getDay()]})`;
+      return `<span class="tdp-holiday-chip">${lbl}<button class="tdp-makeup-del" onclick="removeTermHoliday('${k}','${date}')" title="削除">×</button></span>`;
+    }).join('');
     return `<div class="tdp-term-block">
       <div class="tdp-row">
         <span class="tdp-name">${l}</span>
@@ -3232,6 +3337,14 @@ function buildTermDatePanel(){
         <input class="tdp-makeup-add-date" type="date" id="makeupInp_${k}" placeholder="補講日を追加">
         <button class="tdp-makeup-add-btn" onclick="addTermMakeup('${k}')">＋追加</button>
       </div>
+      <div class="tdp-makeup-row" style="margin-top:5px;">
+        <span class="tdp-holiday-label">全学休講</span>
+        <div class="tdp-makeup-chips">${holChips||'<span style="font-size:10px;color:var(--faint);">未設定（大学祭・祝日等）</span>'}</div>
+      </div>
+      <div class="tdp-makeup-add-row">
+        <input class="tdp-makeup-add-date" type="date" id="holidayInp_${k}" placeholder="全学休講日を追加">
+        <button class="tdp-holiday-add-btn" onclick="addTermHoliday('${k}')">＋追加</button>
+      </div>
     </div>`;
   }).join('');
   const label={quarter:'クォーター',semester:'前期／後期',annual:'通年'}[curTermType];
@@ -3240,7 +3353,7 @@ function buildTermDatePanel(){
   const hint=confirmed
     ?'<div style="font-size:10px;color:var(--faint);margin-top:6px;line-height:1.5;">補講日はカレンダーに青色で表示されます。</div>'
     :'<div style="font-size:10px;color:#d97706;margin-top:6px;line-height:1.6;padding:6px 9px;background:rgba(251,191,36,.08);border-left:3px solid #fbbf24;border-radius:0 6px 6px 0;">⚠ 目安の日程が自動入力されています。<br>あなたの大学のシラバス・履修要項の日程に合わせて変更し、確認済みにしてください。<br><button style="margin-top:6px;padding:4px 12px;background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.4);border-radius:7px;font-size:10px;font-weight:700;color:#d97706;cursor:pointer;font-family:inherit;" onclick="confirmTermDates()">✓ 確認済みにする</button></div>';
-  return `<div class="tdp-title">📅 ${label} 開講期間・補講日${badge}</div>${rows}${hint}`;
+  return `<div class="tdp-title">📅 ${label} 開講期間・補講日・全学休講${badge}</div>${rows}${hint}`;
 }
 
 function confirmTermDates(){
@@ -3270,7 +3383,7 @@ function updateTdpToggleBadge(){
   const unconf=!appData.settings.termDatesConfirmed;
   document.querySelectorAll('.tdp-toggle').forEach(b=>{
     b.dataset.unconfirmed=unconf?'true':'false';
-    b.title=unconf?'⚠ 開講期間が未確認です。タップして確認・設定してください。':'開講期間・補講日の設定';
+    b.title=unconf?'⚠ 開講期間が未確認です。タップして確認・設定してください。':'開講期間・補講日・全学休講の設定';
   });
 }
 
@@ -3290,6 +3403,36 @@ function addTermMakeup(term){
   }
   inp.value='';
   _refreshTdpPanel();
+}
+
+function addTermHoliday(term){
+  const inp=document.getElementById('holidayInp_'+term);
+  if(!inp||!inp.value) return;
+  const date=inp.value;
+  if(!appData.settings.termDates) appData.settings.termDates={};
+  const t=appData.settings.termDates[term]||(appData.settings.termDates[term]={start:'',end:'',makeup:[],holidays:[]});
+  if(!t.holidays) t.holidays=[];
+  if(!t.holidays.includes(date)){
+    t.holidays.push(date);
+    t.holidays.sort();
+    appData.settings.termDatesConfirmed=true;
+    saveData();
+    showToast('全学休講日を追加しました ✓');
+  }
+  inp.value='';
+  _refreshTdpPanel();
+  renderAll();
+}
+
+function removeTermHoliday(term,date){
+  const t=appData.settings.termDates?.[term];
+  if(!t?.holidays) return;
+  t.holidays=t.holidays.filter(d=>d!==date);
+  appData.settings.termDatesConfirmed=true;
+  saveData();
+  showToast('全学休講日を削除しました');
+  _refreshTdpPanel();
+  renderAll();
 }
 
 function removeTermMakeup(term,date){
@@ -4925,7 +5068,7 @@ function saveSettings(){
     const ev=document.getElementById('td_'+t+'_e');
     const newStart=sv?sv.value:'', newEnd=ev?ev.value:'';
     if(newStart!==(prevTd[t]||{}).start||newEnd!==(prevTd[t]||{}).end) modalChanged=true;
-    s.termDates[t]={start:newStart,end:newEnd,makeup:(prevTd[t]||{}).makeup||[]};
+    s.termDates[t]={start:newStart,end:newEnd,makeup:(prevTd[t]||{}).makeup||[],holidays:(prevTd[t]||{}).holidays||[]};
   });
   if(modalChanged) s.termDatesConfirmed=true;
   else s.termDatesConfirmed=prevConfirmed;
@@ -4982,6 +5125,17 @@ function importData(input){
 //  GUIDE
 // ═══════════════════════════════
 function openGuide(){ document.getElementById('guideModal').classList.add('active'); }
+
+function openTermSetupFromModal(){
+  closeModal('termSetupModal');
+  setTimeout(()=>{
+    openSettings();
+    setTimeout(()=>{
+      const el=document.querySelector('.term-date-grp');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    },320);
+  },200);
+}
 
 // ═══════════════════════════════
 //  HELPERS
@@ -5572,7 +5726,7 @@ function buildShareText(term){
     c.slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push({c,period:s.period}); });
   });
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
-  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.4.2）\n\n`;
+  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.4.3）\n\n`;
   let hasAny=false;
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
@@ -5716,7 +5870,7 @@ function exportTimetablePDF(){
 </div>
 <div class="ppl-body">
   <div class="ppl-h1">${title}</div>
-  <div class="ppl-sub">楽単チェッカー ver 2.4.2</div>
+  <div class="ppl-sub">楽単チェッカー ver 2.4.3</div>
   ${sectionsHtml}
   <div class="ppl-footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
 </div>`;
@@ -6134,7 +6288,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   const GUIDE_KEY='hasSeenGuide_v3';
-  if(!localStorage.getItem(GUIDE_KEY)){ openGuide(); localStorage.setItem(GUIDE_KEY,'true'); }
+  const isFirstRun=!localStorage.getItem(GUIDE_KEY);
+  if(isFirstRun){ openGuide(); localStorage.setItem(GUIDE_KEY,'true'); }
+
+  // v2.4.3: 開講期間未確認なら起動時に設定促進モーダルを表示（初回はガイドモーダルと重ならないよう除外）
+  if(!isFirstRun && !appData.settings.termDatesConfirmed){
+    setTimeout(()=>{ document.getElementById('termSetupModal').classList.add('active'); },600);
+  }
 
   // FAB scroll-hide: use touch events only — no DOM writes during momentum scroll
   (function(){
