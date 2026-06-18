@@ -1367,7 +1367,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <div class="mg"><label>デフォルト遅刻換算（何回遅刻で1欠席）</label><input type="number" id="sLatePen" value="3" min="1"></div>
 
     <div class="m-sec">📅 開講期間設定</div>
-    <div style="font-size:10px;color:var(--faint);margin-bottom:10px;">各クォーター・学期の開始日と最終日を入力してください</div>
+    <div style="font-size:10px;color:var(--faint);margin-bottom:10px;line-height:1.6;padding:7px 9px;background:rgba(99,102,241,.07);border-left:3px solid var(--ac);border-radius:0 6px 6px 0;">💡 一般的な大学の日程をもとにした<strong>おおよその目安期間</strong>が入力されています。あなたの大学のシラバスや履修要項に合わせて正確な日程に調整してください。</div>
     <div class="term-date-grp">
       <div class="tdg-title">📐 クォーター制</div>
       <div class="tdr"><span class="tdr-name">1Q</span><input type="date" id="td_1Q_s"><span class="tdr-sep">〜</span><input type="date" id="td_1Q_e"></div>
@@ -1586,7 +1586,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 2.3.0 — フィルター強化（授業関連・その他）・全て欄から完了済み除外</div>
+  <div class="ver">ver 2.3.5 — 期間プリセット初期値追加・時刻プリセット選択解除対応</div>
 </div>
 </div>
 
@@ -1923,6 +1923,22 @@ const OLD_KEY = 'rakutan_checker_data_v2';
 const DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
 const DAY_JA = {mon:'月',tue:'火',wed:'水',thu:'木',fri:'金',sat:'土',sun:'日'};
 
+// 日本の一般的な大学カレンダーに基づくおおよそのデフォルト期間
+// ユーザーは自分の大学に合わせて変更することを想定
+function getDefaultTermDates(yr){
+  yr=yr||new Date().getFullYear();
+  const y=parseInt(yr);
+  return {
+    '1Q': {start:`${y}-04-07`,end:`${y}-06-06`},
+    '2Q': {start:`${y}-06-10`,end:`${y}-08-08`},
+    '3Q': {start:`${y}-09-28`,end:`${y}-11-28`},
+    '4Q': {start:`${y}-12-01`,end:`${y+1}-02-14`},
+    '前期':{start:`${y}-04-07`,end:`${y}-08-08`},
+    '後期':{start:`${y}-09-28`,end:`${y+1}-02-14`},
+    '通年':{start:`${y}-04-07`,end:`${y+1}-02-14`},
+  };
+}
+
 function defSettings(){
   return {
     userName:'',currentYear:new Date().getFullYear().toString(),
@@ -1936,12 +1952,7 @@ function defSettings(){
     reminderDays:[1],absenceWarningThreshold:2,
     uiTheme:'classic',
     creditCategories:[],
-    termDates:{
-      '1Q':{start:'',end:''},'2Q':{start:'',end:''},
-      '3Q':{start:'',end:''},'4Q':{start:'',end:''},
-      '前期':{start:'',end:''},'後期':{start:'',end:''},
-      '通年':{start:'',end:''}
-    }
+    termDates:getDefaultTermDates()
   };
 }
 function defYear(){ return {classes:[],todos:[],exams:[]}; }
@@ -1953,6 +1964,12 @@ function initData(){
     appData = JSON.parse(saved);
     const ds = defSettings();
     for(const k in ds){ if(appData.settings[k]===undefined) appData.settings[k]=ds[k]; }
+    // 既存ユーザーで全termDatesが未設定のままならデフォルト期間を適用
+    const td=appData.settings.termDates;
+    if(!td||Object.values(td).every(v=>!v.start&&!v.end)){
+      const yr=parseInt(appData.settings.currentYear)||new Date().getFullYear();
+      appData.settings.termDates=getDefaultTermDates(yr);
+    }
     const cy = appData.settings.currentYear;
     if(!appData.years[cy]) appData.years[cy]=defYear();
   } else {
@@ -2787,7 +2804,7 @@ function buildTermDatePanel(){
     </div>`;
   }).join('');
   const label={quarter:'クォーター',semester:'前期／後期',annual:'通年'}[curTermType];
-  return `<div class="tdp-title">📅 ${label} 開講期間</div>${rows}`;
+  return `<div class="tdp-title">📅 ${label} 開講期間</div>${rows}<div style="font-size:10px;color:var(--faint);margin-top:9px;line-height:1.5;">※ 目安期間が初期設定されています。ご自身の大学の日程に合わせて変更してください。</div>`;
 }
 
 function saveTermDateField(term,field,value){
@@ -4688,7 +4705,7 @@ function buildShareText(term){
     c.slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push({c,period:s.period}); });
   });
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
-  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.3.0）\n\n`;
+  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.3.5）\n\n`;
   let hasAny=false;
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
@@ -4832,7 +4849,7 @@ function exportTimetablePDF(){
 </div>
 <div class="ppl-body">
   <div class="ppl-h1">${title}</div>
-  <div class="ppl-sub">楽単チェッカー ver 2.3.0</div>
+  <div class="ppl-sub">楽単チェッカー ver 2.3.5</div>
   ${sectionsHtml}
   <div class="ppl-footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
 </div>`;
