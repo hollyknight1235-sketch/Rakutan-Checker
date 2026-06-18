@@ -974,6 +974,60 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
 .cal-ev-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .cal-ev-label{font-weight:700;flex:1;}
 .cal-ev-sub{font-size:11px;color:var(--sub);}
+
+/* ── v2.4.1: サブタスク ── */
+.subtask-progress{display:flex;align-items:center;gap:6px;margin-top:5px;}
+.subtask-prog-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.subtask-prog-fill{height:100%;background:linear-gradient(90deg,var(--gs),var(--ge));border-radius:2px;transition:width .3s;}
+.subtask-count{font-size:10px;font-weight:700;color:var(--sub);white-space:nowrap;}
+.subtask-toggle{background:none;border:none;color:var(--faint);font-size:11px;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;font-weight:700;}
+.subtask-list{margin-top:6px;padding-left:28px;display:flex;flex-direction:column;gap:5px;}
+.subtask-item{display:flex;align-items:center;gap:7px;font-size:12px;}
+.subtask-chk{flex-shrink:0;accent-color:var(--ac);width:16px;height:16px;cursor:pointer;}
+.subtask-name{flex:1;color:var(--text);}
+.subtask-name.done{text-decoration:line-through;color:var(--faint);}
+.subtask-dl{font-size:10px;color:var(--faint);white-space:nowrap;}
+.subtask-form-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.subtask-form-row input[type=text]{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--inp);color:var(--text);font-family:inherit;outline:none;}
+.subtask-form-row input[type=text]:focus{border-color:var(--ac);}
+.subtask-form-row input[type=date]{padding:6px 8px;border:1.5px solid var(--border);border-radius:10px;font-size:11px;background:var(--inp);color:var(--text);font-family:inherit;outline:none;width:130px;}
+.subtask-del-btn{background:var(--inp);border:1.5px solid var(--border);color:var(--faint);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.subtask-del-btn:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
+.subtask-add-btn{border:1.5px dashed var(--ac);background:transparent;color:var(--ac);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;width:100%;}
+.subtask-add-btn:hover{background:rgba(99,102,241,.07);}
+
+/* ── v2.4.1: 施設・ポートフォリオ ── */
+.portfolio-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+.portfolio-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--inp);color:var(--text);font-family:inherit;outline:none;}
+.portfolio-row input:focus{border-color:var(--ac);}
+.portfolio-del{background:var(--inp);border:1.5px solid var(--border);color:var(--faint);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.portfolio-del:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
+.portfolio-add-btn{border:1.5px dashed var(--ac);background:transparent;color:var(--ac);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;width:100%;margin-top:2px;}
+.portfolio-add-btn:hover{background:rgba(99,102,241,.07);}
+.facility-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.25);border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;color:#0284c7;margin-right:6px;margin-bottom:6px;}
+body.dark .facility-badge{color:#38bdf8;background:rgba(14,165,233,.13);border-color:rgba(14,165,233,.2);}
+.portfolio-link-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:10px;padding:4px 11px;font-size:12px;font-weight:700;color:var(--ac);text-decoration:none;margin-right:6px;margin-bottom:6px;transition:.15s;}
+.portfolio-link-btn:hover{background:rgba(99,102,241,.2);}
+.syllabus-auto-link{display:inline-flex;align-items:center;gap:5px;background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.25);border-radius:10px;padding:4px 11px;font-size:12px;font-weight:700;color:#059669;text-decoration:none;margin-right:6px;margin-bottom:6px;transition:.15s;}
+.syllabus-auto-link:hover{background:rgba(5,150,105,.2);}
+body.dark .syllabus-auto-link{color:#34d399;background:rgba(5,150,105,.12);border-color:rgba(5,150,105,.2);}
+
+/* ── v2.4.1: クラウド同期 ── */
+.cloud-card{background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(139,92,246,.05));border:1.5px solid rgba(99,102,241,.2);border-radius:14px;padding:14px 16px;margin-bottom:12px;}
+.cloud-status-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cloud-avatar{width:36px;height:36px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+.cloud-user-info{flex:1;min-width:0;}
+.cloud-user-name{font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cloud-user-email{font-size:11px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cloud-sync-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;}
+.css-ok{background:#dcfce7;color:#16a34a;}
+.css-error{background:#fee2e2;color:#dc2626;}
+body.dark .css-ok{background:#052e16;color:#86efac;}
+body.dark .css-error{background:#450a0a;color:#fca5a5;}
+.cloud-btn{border:none;border-radius:12px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;width:100%;margin-top:6px;}
+.cloud-btn-primary{background:linear-gradient(135deg,var(--gs),var(--ge));color:#fff;}
+.cloud-btn-secondary{background:var(--inp);border:1.5px solid var(--border);color:var(--sub);}
+.cloud-btn-secondary:hover{border-color:var(--ac);color:var(--ac);}
 </style>
 </head>
 <body>
@@ -1085,6 +1139,12 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
       <div class="fr">
         <label class="fl">詳細メモ</label>
         <textarea class="fi ft" id="todoDetails" placeholder="内容・注意事項など..."></textarea>
+      </div>
+      <div class="fr">
+        <label class="fl">🔖 マイルストーン（サブタスク）</label>
+        <div id="subtaskFormList" style="margin-bottom:6px;"></div>
+        <button type="button" class="subtask-add-btn" onclick="addSubtaskRow()">＋ サブタスクを追加</button>
+        <div style="font-size:10px;color:var(--faint);margin-top:4px;">例: モデリング完了・テクスチャ作成・レンダリング開始</div>
       </div>
       <div class="fr">
         <label class="fl">画像添付</label>
@@ -1338,6 +1398,22 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
   <div class="info-box">
     <p style="font-size:14px;line-height:1.7;" id="dSummary">--</p>
     <div id="dImgWrap" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- 施設・機材 -->
+  <div id="dFacilityArea" style="display:none;margin-bottom:14px;">
+    <div class="sec-title" style="margin-top:0;">🏛️ 使用施設・機材</div>
+    <div class="info-box" style="padding:11px 14px;">
+      <span class="facility-badge">🖥️ <span id="dFacilityText"></span></span>
+    </div>
+  </div>
+
+  <!-- ポートフォリオリンク -->
+  <div id="dPortfolioArea" style="display:none;margin-bottom:14px;">
+    <div class="sec-title" style="margin-top:0;">📁 ポートフォリオ</div>
+    <div class="info-box" style="padding:11px 14px;">
+      <div id="dPortfolioLinks" style="display:flex;flex-wrap:wrap;"></div>
+    </div>
   </div>
 
   <!-- 最終成績 -->
@@ -1691,6 +1767,49 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
 
   <!-- ── その他 tab ── -->
   <div class="stab-pane" id="stabOther">
+    <div class="m-sec">☁️ クラウド同期（Firebase）</div>
+    <div id="cloudSyncPanel">
+      <div class="cloud-card" id="cloudNotLoggedIn">
+        <div style="font-size:13px;color:var(--text);font-weight:700;margin-bottom:6px;">📱 複数端末で同期する</div>
+        <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:10px;">
+          Googleアカウントでログインすると、スマホとPCで同じデータをシームレスに使えます。<br>
+          データはGoogleのFirestoreに暗号化保存されます。
+        </div>
+        <div class="mg" style="margin-bottom:8px;">
+          <label>Firebase Project設定（<a href="https://console.firebase.google.com" target="_blank" style="color:var(--ac);font-size:10px;">コンソール</a>からコピー）</label>
+          <input type="text" id="fbApiKey" placeholder="apiKey" style="font-size:12px;margin-bottom:4px;">
+          <input type="text" id="fbProjectId" placeholder="projectId" style="font-size:12px;margin-bottom:4px;">
+          <input type="text" id="fbAppId" placeholder="appId" style="font-size:12px;">
+        </div>
+        <button class="cloud-btn cloud-btn-primary" onclick="initFirebaseAndLogin()">🔑 Googleでログイン</button>
+        <div id="cloudLoginStatus" style="font-size:11px;color:var(--faint);margin-top:6px;text-align:center;min-height:16px;"></div>
+      </div>
+      <div class="cloud-card" id="cloudLoggedIn" style="display:none;">
+        <div class="cloud-status-row">
+          <div class="cloud-avatar" id="cloudAvatar">👤</div>
+          <div class="cloud-user-info">
+            <div class="cloud-user-name" id="cloudUserName">未ログイン</div>
+            <div class="cloud-user-email" id="cloudUserEmail"></div>
+          </div>
+          <span class="cloud-sync-status css-ok" id="cloudSyncBadge">同期済み</span>
+        </div>
+        <button class="cloud-btn cloud-btn-primary" onclick="syncToCloud()">🔄 今すぐ同期</button>
+        <button class="cloud-btn cloud-btn-secondary" style="margin-top:4px;" onclick="pullFromCloud()">⬇ クラウドから読み込み</button>
+        <button class="cloud-btn cloud-btn-secondary" style="margin-top:4px;color:var(--danger);" onclick="logoutCloud()">🚪 ログアウト</button>
+      </div>
+    </div>
+
+    <div class="m-sec">🎓 シラバスURL自動リンク</div>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:8px;">
+      授業コードを含むURLテンプレートを設定すると、授業ごとにシラバスへのワンタップリンクが自動生成されます。<br>
+      <code style="background:var(--inp);border-radius:4px;padding:1px 4px;font-size:11px;">{code}</code> の部分に授業コードが入ります。
+    </div>
+    <div class="mg">
+      <label>シラバスURLテンプレート</label>
+      <input type="url" id="sSyllabusTemplate" placeholder="https://syllabus.univ.ac.jp/subject/{code}">
+    </div>
+    <div style="font-size:10px;color:var(--faint);margin-bottom:14px;">設定後、授業編集画面で「授業コード」を入力するとシラバスリンクが自動生成されます</div>
+
     <div class="m-sec">🗂 データ管理</div>
     <button class="bd-btn" onclick="resetData()">⚠️ 全データを初期化</button>
 
@@ -1738,7 +1857,7 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 2.4.0 — UIフルリデザイン</div>
+  <div class="ver">ver 2.4.1 — サブタスク・施設メモ・シラバスリンク・クラウド同期</div>
 </div>
 </div>
 
@@ -1818,9 +1937,13 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
   <div class="mg"><label>担当教員</label><input type="text" id="cTeacher" placeholder="例: 山田 太郎"></div>
 
   <div class="m-sec">リンク・連絡先</div>
+  <div class="mg"><label>授業コード（シラバス自動リンク用）</label><input type="text" id="cClassCode" placeholder="例: ECON2101"></div>
   <div class="mg"><label>関連URL（シラバス・ポータル等）</label><input type="url" id="cUrl" placeholder="https://..."></div>
   <div class="mg"><label>LINEグループURL</label><input type="url" id="cLine" placeholder="https://line.me/R/ti/g/..."></div>
   <div class="mg"><label>教員メールアドレス</label><input type="email" id="cEmail" placeholder="teacher@univ.ac.jp"></div>
+
+  <div class="m-sec">施設・機材</div>
+  <div class="mg"><label>使用施設・機材メモ</label><input type="text" id="cFacility" placeholder="例: B棟201 Mac Studio・3DプリンタA・デジカメ"></div>
 
   <div class="m-sec">見た目・詳細</div>
   <div class="mg"><label>カード色</label><input type="color" id="cColor" style="width:100%;"></div>
@@ -1831,6 +1954,11 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
     </div>
   </div>
   <div class="mg"><label>授業概要・メモ</label><textarea id="cSummary" placeholder="授業の特徴・注意点など..."></textarea></div>
+
+  <div class="m-sec">📁 ポートフォリオリンク</div>
+  <div style="font-size:11px;color:var(--faint);margin-bottom:8px;">過去の課題の成果物リンク（GoogleドライブURL等）をここに保存できます</div>
+  <div id="portfolioLinkList" style="margin-bottom:6px;"></div>
+  <button type="button" class="portfolio-add-btn" onclick="addPortfolioLinkRow()">＋ リンクを追加</button>
 
   <div class="m-sec">評価基準</div>
   <div id="critList"></div>
@@ -2055,6 +2183,47 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
   </div>
 
   <div class="guide-sec">
+    <h3>🔖 マイルストーン（サブタスク）— v2.4.1新機能</h3>
+    <ul>
+      <li>タスク追加画面の「マイルストーン」欄で、大きな課題を細かく分割できます</li>
+      <li>例: モデリング完了 → テクスチャ作成 → レンダリング開始</li>
+      <li>タスク一覧でプログレスバーと「詳細」ボタンから各サブタスクをチェックできます</li>
+      <li>全サブタスク完了でタスク本体も自動完了になります</li>
+    </ul>
+  </div>
+  <div class="guide-sec">
+    <h3>🏛️ 施設・機材メモ — v2.4.1新機能</h3>
+    <ul>
+      <li>授業編集画面「施設・機材」欄に使用設備を記録できます（例: B棟201 Mac Studio）</li>
+      <li>授業詳細画面で青いバッジとして表示されます</li>
+    </ul>
+  </div>
+  <div class="guide-sec">
+    <h3>📁 ポートフォリオリンク — v2.4.1新機能</h3>
+    <ul>
+      <li>授業編集画面「ポートフォリオリンク」欄に成果物のURLを保存できます</li>
+      <li>GoogleドライブやFigma等のリンクを授業ごとにアーカイブできます</li>
+      <li>授業詳細画面からワンタップでアクセスできます</li>
+    </ul>
+  </div>
+  <div class="guide-sec">
+    <h3>📋 シラバス自動リンク — v2.4.1新機能</h3>
+    <ul>
+      <li>設定→「シラバスURLテンプレート」にURLパターンを設定します</li>
+      <li>例: <code>https://syllabus.univ.ac.jp/subject/{code}</code></li>
+      <li>授業の「授業コード」を入力するとシラバスへのリンクが自動生成されます</li>
+    </ul>
+  </div>
+  <div class="guide-sec">
+    <h3>☁️ クラウド同期（Firebase） — v2.4.1新機能</h3>
+    <ul>
+      <li>設定→「クラウド同期」でFirebaseプロジェクトを設定します</li>
+      <li><a href="https://console.firebase.google.com" target="_blank" style="color:var(--ac);">Firebase Console</a>でプロジェクトを作成し、設定値（apiKey, projectId, appId）をコピーしてください</li>
+      <li>Googleアカウントでログイン後、「今すぐ同期」でスマホ・PC間でデータ共有できます</li>
+      <li>⚠️ ウィジェット（ホーム画面表示）はWebアプリの制限上、ネイティブアプリ（TWA/React Native）が必要なため本バージョンでは非対応です</li>
+    </ul>
+  </div>
+  <div class="guide-sec">
     <h3>⚠️ 更新時の注意</h3>
     <ul>
       <li>初回はシークレットモードで開き「ホーム画面に追加」してください</li>
@@ -2117,7 +2286,12 @@ function defSettings(){
     termDatesConfirmed:false,
     uiTheme:'classic',
     creditCategories:[],
-    termDates:getDefaultTermDates()
+    termDates:getDefaultTermDates(),
+    // v2.4.1 new fields
+    syllabusUrlTemplate:'',
+    cloudSync:false,
+    cloudEmail:'',
+    firebaseConfig:{apiKey:'',projectId:'',appId:''}
   };
 }
 function defYear(){ return {classes:[],todos:[],exams:[]}; }
@@ -3270,6 +3444,29 @@ function showDetail(idx){
   if(c.email) links.innerHTML+=`<a class="lbtn" href="mailto:${c.email}">✉️ メール</a>`;
   if(c.relatedUrl) links.innerHTML+=`<a class="lbtn" href="${c.relatedUrl}" target="_blank">🔗 シラバス</a>`;
   if(c.lineUrl) links.innerHTML+=`<a class="lbtn" href="${c.lineUrl}" target="_blank">💬 LINE</a>`;
+  // シラバス自動リンク（授業コード + テンプレート）
+  const sylTmpl=appData.settings.syllabusUrlTemplate||'';
+  if(c.classCode&&sylTmpl){
+    const sylUrl=sylTmpl.replace('{code}',encodeURIComponent(c.classCode));
+    links.innerHTML+=`<a class="lbtn" href="${sylUrl}" target="_blank">📋 シラバス(${c.classCode})</a>`;
+  }
+  // 施設・機材バッジ（詳細エリア下部に）
+  const facilityArea=document.getElementById('dFacilityArea');
+  if(facilityArea){
+    if(c.facility){
+      facilityArea.style.display='block';
+      document.getElementById('dFacilityText').textContent=c.facility;
+    } else { facilityArea.style.display='none'; }
+  }
+  // ポートフォリオリンク
+  const portArea=document.getElementById('dPortfolioArea');
+  if(portArea){
+    const links2=c.portfolioLinks||[];
+    if(links2.length){
+      portArea.style.display='block';
+      document.getElementById('dPortfolioLinks').innerHTML=links2.map(pl=>`<a class="portfolio-link-btn" href="${pl.url}" target="_blank">📁 ${pl.label||pl.url}</a>`).join('');
+    } else { portArea.style.display='none'; }
+  }
 
   // Absence stats
   document.getElementById('dAbs').textContent=`${s.abs}回`;
@@ -3744,6 +3941,9 @@ function openAddClass(){
   document.getElementById('cUrl').value='';
   document.getElementById('cLine').value='';
   document.getElementById('cEmail').value='';
+  document.getElementById('cClassCode').value='';
+  document.getElementById('cFacility').value='';
+  document.getElementById('portfolioLinkList').innerHTML='';
   _classClearImg=false;
   document.getElementById('cImage').value='';
   document.getElementById('cImgPre').style.display='none';
@@ -3781,6 +3981,11 @@ function openEditClass(){
   document.getElementById('cUrl').value=c.relatedUrl||'';
   document.getElementById('cLine').value=c.lineUrl||'';
   document.getElementById('cEmail').value=c.email||'';
+  document.getElementById('cClassCode').value=c.classCode||'';
+  document.getElementById('cFacility').value=c.facility||'';
+  const plList=document.getElementById('portfolioLinkList');
+  plList.innerHTML='';
+  (c.portfolioLinks||[]).forEach(pl=>addPortfolioLinkRow(pl.label,pl.url));
   _classClearImg=false;
   document.getElementById('cImage').value='';
   const pre=document.getElementById('cImgPre');
@@ -3864,6 +4069,9 @@ async function saveClass(){
     email:document.getElementById('cEmail').value,
     relatedUrl:document.getElementById('cUrl').value,
     lineUrl:document.getElementById('cLine').value,
+    classCode:document.getElementById('cClassCode').value.trim(),
+    facility:document.getElementById('cFacility').value.trim(),
+    portfolioLinks:getPortfolioLinksFromForm(),
     color:document.getElementById('cColor').value,
     image:img,evaluation,
     absences:editingClassIdx>-1?curClasses()[editingClassIdx].absences:[],
@@ -3882,6 +4090,214 @@ async function saveClass(){
   else curClasses().push(obj);
   saveData(); closeModal('classModal'); renderSchedule();
   if(document.getElementById('todoSection').classList.contains('active')) populateTodoClassSelect();
+}
+
+// ═══════════════════════════════
+//  v2.4.1: サブタスク管理
+// ═══════════════════════════════
+function addSubtaskRow(title='', deadline=''){
+  const container=document.getElementById('subtaskFormList');
+  const row=document.createElement('div');
+  row.className='subtask-form-row';
+  row.innerHTML=`<input type="text" placeholder="サブタスク名（例: モデリング完了）" value="${title.replace(/"/g,'&quot;')}">
+    <input type="date" value="${deadline}" title="完了期限（任意）">
+    <button type="button" class="subtask-del-btn" onclick="this.closest('.subtask-form-row').remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function getSubtasksFromForm(){
+  const rows=document.querySelectorAll('#subtaskFormList .subtask-form-row');
+  const result=[];
+  rows.forEach(r=>{
+    const title=r.querySelector('input[type=text]').value.trim();
+    const deadline=r.querySelector('input[type=date]').value;
+    if(title) result.push({id:Date.now()+Math.random(),title,completed:false,deadline:deadline||null});
+  });
+  return result;
+}
+
+function toggleSubtaskList(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.style.display=el.style.display==='none'?'flex':'none';
+}
+
+function toggleSubtask(todoIdx,subIdx,chk){
+  const t=curTodos()[todoIdx];
+  if(!t||!t.subtasks||!t.subtasks[subIdx]) return;
+  t.subtasks[subIdx].completed=chk.checked;
+  // 全サブタスク完了でTodo自体も完了にするか確認
+  const allDone=t.subtasks.every(s=>s.completed);
+  if(allDone&&!t.completed){
+    t.completed=true;
+    showToast('全サブタスク完了！タスクを完了にしました ✓');
+  }
+  saveData(); renderTodos();
+}
+
+// ═══════════════════════════════
+//  v2.4.1: ポートフォリオリンク
+// ═══════════════════════════════
+function addPortfolioLinkRow(label='', url=''){
+  const container=document.getElementById('portfolioLinkList');
+  const row=document.createElement('div');
+  row.className='portfolio-row';
+  row.innerHTML=`<input type="text" placeholder="ラベル（例: 3Dモデリング課題）" value="${label.replace(/"/g,'&quot;')}" style="flex:0 0 140px;">
+    <input type="url" placeholder="URL（Googleドライブ等）" value="${url.replace(/"/g,'&quot;')}">
+    <button type="button" class="portfolio-del" onclick="this.closest('.portfolio-row').remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function getPortfolioLinksFromForm(){
+  const rows=document.querySelectorAll('#portfolioLinkList .portfolio-row');
+  const result=[];
+  rows.forEach(r=>{
+    const inputs=r.querySelectorAll('input');
+    const label=inputs[0].value.trim();
+    const url=inputs[1].value.trim();
+    if(url) result.push({label:label||url,url});
+  });
+  return result;
+}
+
+// ═══════════════════════════════
+//  v2.4.1: クラウド同期（Firebase）
+// ═══════════════════════════════
+let _fbApp=null,_fbAuth=null,_fbDb=null,_fbUser=null;
+
+function _loadFirebaseSDK(callback){
+  if(typeof firebase!=='undefined'){ callback(); return; }
+  const scriptVersion='10.12.0';
+  const scripts=[
+    `https://www.gstatic.com/firebasejs/${scriptVersion}/firebase-app-compat.js`,
+    `https://www.gstatic.com/firebasejs/${scriptVersion}/firebase-auth-compat.js`,
+    `https://www.gstatic.com/firebasejs/${scriptVersion}/firebase-firestore-compat.js`
+  ];
+  let loaded=0;
+  scripts.forEach(src=>{
+    const s=document.createElement('script');
+    s.src=src;
+    s.onload=()=>{ loaded++; if(loaded===scripts.length) callback(); };
+    s.onerror=()=>{ document.getElementById('cloudLoginStatus').textContent='SDKの読み込みに失敗しました'; };
+    document.head.appendChild(s);
+  });
+}
+
+function initFirebaseAndLogin(){
+  const apiKey=document.getElementById('fbApiKey').value.trim();
+  const projectId=document.getElementById('fbProjectId').value.trim();
+  const appId=document.getElementById('fbAppId').value.trim();
+  if(!apiKey||!projectId||!appId){
+    document.getElementById('cloudLoginStatus').textContent='Firebase設定を全て入力してください';
+    return;
+  }
+  appData.settings.firebaseConfig={apiKey,projectId,appId};
+  saveData();
+  document.getElementById('cloudLoginStatus').textContent='Firebase SDKを読み込み中...';
+  _loadFirebaseSDK(()=>{
+    try{
+      if(!firebase.apps.length){
+        _fbApp=firebase.initializeApp({apiKey,authDomain:`${projectId}.firebaseapp.com`,projectId,appId});
+      } else {
+        _fbApp=firebase.apps[0];
+      }
+      _fbAuth=firebase.auth();
+      _fbDb=firebase.firestore();
+      const provider=new firebase.auth.GoogleAuthProvider();
+      _fbAuth.signInWithPopup(provider).then(result=>{
+        _fbUser=result.user;
+        onCloudLogin(_fbUser);
+      }).catch(e=>{
+        document.getElementById('cloudLoginStatus').textContent='ログイン失敗: '+e.message;
+      });
+    } catch(e){
+      document.getElementById('cloudLoginStatus').textContent='エラー: '+e.message;
+    }
+  });
+}
+
+function onCloudLogin(user){
+  _fbUser=user;
+  appData.settings.cloudEmail=user.email||'';
+  appData.settings.cloudSync=true;
+  saveData();
+  document.getElementById('cloudNotLoggedIn').style.display='none';
+  document.getElementById('cloudLoggedIn').style.display='block';
+  document.getElementById('cloudUserName').textContent=user.displayName||user.email;
+  document.getElementById('cloudUserEmail').textContent=user.email;
+  const av=document.getElementById('cloudAvatar');
+  if(user.photoURL){ av.innerHTML=`<img src="${user.photoURL}" style="width:36px;height:36px;border-radius:50;">`; }
+  else { av.textContent=(user.displayName||user.email||'?')[0].toUpperCase(); }
+  syncToCloud();
+}
+
+async function syncToCloud(){
+  if(!_fbDb||!_fbUser){ showToast('ログインしてください'); return; }
+  try{
+    document.getElementById('cloudSyncBadge').textContent='同期中...';
+    document.getElementById('cloudSyncBadge').className='cloud-sync-status';
+    await _fbDb.collection('users').doc(_fbUser.uid).set({
+      data:JSON.stringify(appData),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('cloudSyncBadge').textContent='同期済み ✓';
+    document.getElementById('cloudSyncBadge').className='cloud-sync-status css-ok';
+    showToast('クラウドに保存しました ✓');
+  } catch(e){
+    document.getElementById('cloudSyncBadge').textContent='同期失敗';
+    document.getElementById('cloudSyncBadge').className='cloud-sync-status css-error';
+    showToast('同期失敗: '+e.message);
+  }
+}
+
+async function pullFromCloud(){
+  if(!_fbDb||!_fbUser){ showToast('ログインしてください'); return; }
+  if(!confirm('クラウドからデータを読み込みます。現在のデータは上書きされます。続けますか？')) return;
+  try{
+    const doc=await _fbDb.collection('users').doc(_fbUser.uid).get();
+    if(!doc.exists){ showToast('クラウドにデータがありません'); return; }
+    appData=JSON.parse(doc.data().data);
+    saveData(); renderAll();
+    showToast('クラウドからデータを読み込みました ✓');
+  } catch(e){
+    showToast('読み込み失敗: '+e.message);
+  }
+}
+
+function logoutCloud(){
+  if(!confirm('ログアウトしますか？')) return;
+  if(_fbAuth) _fbAuth.signOut();
+  _fbUser=null;
+  appData.settings.cloudSync=false;
+  appData.settings.cloudEmail='';
+  saveData();
+  document.getElementById('cloudNotLoggedIn').style.display='block';
+  document.getElementById('cloudLoggedIn').style.display='none';
+  showToast('ログアウトしました');
+}
+
+function updateCloudSyncPanel(){
+  const cfg=appData.settings.firebaseConfig||{};
+  if(document.getElementById('fbApiKey')) document.getElementById('fbApiKey').value=cfg.apiKey||'';
+  if(document.getElementById('fbProjectId')) document.getElementById('fbProjectId').value=cfg.projectId||'';
+  if(document.getElementById('fbAppId')) document.getElementById('fbAppId').value=cfg.appId||'';
+  // 前回ログイン済みなら自動再接続試行
+  if(appData.settings.cloudSync&&cfg.apiKey&&cfg.projectId&&cfg.appId){
+    document.getElementById('cloudLoginStatus').textContent='前回のセッションを復元中...';
+    _loadFirebaseSDK(()=>{
+      try{
+        if(!firebase.apps.length){
+          _fbApp=firebase.initializeApp({apiKey:cfg.apiKey,authDomain:`${cfg.projectId}.firebaseapp.com`,projectId:cfg.projectId,appId:cfg.appId});
+        } else { _fbApp=firebase.apps[0]; }
+        _fbAuth=firebase.auth();
+        _fbDb=firebase.firestore();
+        _fbAuth.onAuthStateChanged(user=>{
+          if(user){ onCloudLogin(user); }
+          else { document.getElementById('cloudLoginStatus').textContent=''; }
+        });
+      } catch(e){ document.getElementById('cloudLoginStatus').textContent=''; }
+    });
+  }
 }
 
 let _pendingDeleteIdx=-1;
@@ -4065,6 +4481,26 @@ function renderTodos(){
     const cName=t.linkedClass>=0&&curClasses()[t.linkedClass]?curClasses()[t.linkedClass].name:'';
     const cTag=cName?`<span class="t-class-tag">📚 ${cName}</span><br>`:'';
     const img=t.image?`<img class="t-img" src="${t.image}" alt="添付">`:'';
+    // サブタスク進捗
+    const subs=t.subtasks||[];
+    const subDone=subs.filter(s=>s.completed).length;
+    let subHtml='';
+    if(subs.length>0){
+      const pct=Math.round(subDone/subs.length*100);
+      const listId=`stl_${i}`;
+      subHtml=`<div class="subtask-progress">
+        <div class="subtask-prog-bar"><div class="subtask-prog-fill" style="width:${pct}%"></div></div>
+        <span class="subtask-count">${subDone}/${subs.length} ✓</span>
+        <button class="subtask-toggle" onclick="toggleSubtaskList('${listId}')">詳細</button>
+      </div>
+      <div class="subtask-list" id="${listId}" style="display:none;">
+        ${subs.map((s,si)=>`<div class="subtask-item">
+          <input type="checkbox" class="subtask-chk" ${s.completed?'checked':''} onchange="toggleSubtask(${i},${si},this)">
+          <span class="subtask-name ${s.completed?'done':''}">${s.title}</span>
+          ${s.deadline?`<span class="subtask-dl">${s.deadline}</span>`:''}
+        </div>`).join('')}
+      </div>`;
+    }
     return `<li class="${cls}" style="animation-delay:${i*0.04}s">
       <div class="t-head">
         <input type="checkbox" class="t-chk" ${t.completed?'checked':''} onchange="toggleTodo(${i},this)">
@@ -4076,6 +4512,7 @@ function renderTodos(){
         ${cTag}
         <div class="t-dl">${dlTxt}${cdHtml}</div>
         ${t.details?`<div class="t-detail">${t.details}</div>`:''}
+        ${subHtml}
         ${img}
       </div>
     </li>`;
@@ -4108,6 +4545,10 @@ function openEditTodo(i){
     document.getElementById('todoImgPre').src='';
     document.getElementById('todoImgWrap').style.display='none';
   }
+  // サブタスク読み込み
+  const stList=document.getElementById('subtaskFormList');
+  stList.innerHTML='';
+  (t.subtasks||[]).forEach(s=>addSubtaskRow(s.title,s.deadline));
   document.getElementById('todoAddBtn').textContent='更新する';
   switchTodoTab('add');
 }
@@ -4123,15 +4564,17 @@ async function addTodo(){
   const fi=document.getElementById('todoImage');
   let img=null;
   if(fi.files&&fi.files[0]) try{ img=await readFile(fi.files[0]); } catch(e){}
+  // サブタスク収集
+  const subtasks=getSubtasksFromForm();
   if(editingTodoIdx>=0){
     const existing=curTodos()[editingTodoIdx];
     let finalImg = _todoClearImg ? null : (img || existing.image);
-    curTodos()[editingTodoIdx]={...existing,title,deadline,details,linkedClass:lc,reminderDays:rdDays,image:finalImg};
+    curTodos()[editingTodoIdx]={...existing,title,deadline,details,linkedClass:lc,reminderDays:rdDays,image:finalImg,subtasks};
     editingTodoIdx=-1;
     document.getElementById('todoAddBtn').textContent='＋ タスクを追加';
   } else {
     curTodos().push({title,deadline,details,completed:false,image:img,
-      addedAt:new Date().toISOString(),linkedClass:lc,reminderDays:rdDays,lastNotified:null});
+      addedAt:new Date().toISOString(),linkedClass:lc,reminderDays:rdDays,lastNotified:null,subtasks});
   }
   _todoClearImg=false;
   document.getElementById('todoTitle').value='';
@@ -4142,6 +4585,7 @@ async function addTodo(){
   document.getElementById('todoDeadline').value='';
   document.getElementById('noDeadline').checked=false;
   clearTimePresets('todoTimeBtns');
+  document.getElementById('subtaskFormList').innerHTML='';
   // reset chips to default (前日 on)
   document.querySelectorAll('#reminderChips .chip').forEach(c=>{ c.classList.toggle('on',c.dataset.days==='1'); });
   sfx('add');
@@ -4297,6 +4741,11 @@ function openSettings(){
   updateColorPreview();
   markActivePreset();
   renderCreditCatList();
+  // v2.4.1: シラバスURLテンプレート
+  const syllInput=document.getElementById('sSyllabusTemplate');
+  if(syllInput) syllInput.value=s.syllabusUrlTemplate||'';
+  // v2.4.1: クラウド同期パネル
+  updateCloudSyncPanel();
   document.getElementById('settingsModal').classList.add('active');
 }
 function toggleROpt(el){ el.classList.toggle('on'); }
@@ -4368,6 +4817,9 @@ function saveSettings(){
   });
   if(modalChanged) s.termDatesConfirmed=true;
   else s.termDatesConfirmed=prevConfirmed;
+  // v2.4.1: シラバスURLテンプレート
+  const syllInput=document.getElementById('sSyllabusTemplate');
+  if(syllInput) s.syllabusUrlTemplate=syllInput.value.trim();
   applyAnim();
   scheduleMorningNotify();
   saveData(); applyTheme(); sfx('save'); closeModal('settingsModal');
@@ -5008,7 +5460,7 @@ function buildShareText(term){
     c.slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push({c,period:s.period}); });
   });
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
-  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.4.0）\n\n`;
+  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.4.1）\n\n`;
   let hasAny=false;
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
@@ -5152,7 +5604,7 @@ function exportTimetablePDF(){
 </div>
 <div class="ppl-body">
   <div class="ppl-h1">${title}</div>
-  <div class="ppl-sub">楽単チェッカー ver 2.4.0</div>
+  <div class="ppl-sub">楽単チェッカー ver 2.4.1</div>
   ${sectionsHtml}
   <div class="ppl-footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
 </div>`;
