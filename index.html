@@ -1069,6 +1069,49 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
 .cloud-btn-primary{background:linear-gradient(135deg,var(--gs),var(--ge));color:#fff;}
 .cloud-btn-secondary{background:var(--inp);border:1.5px solid var(--border);color:var(--sub);}
 .cloud-btn-secondary:hover{border-color:var(--ac);color:var(--ac);}
+
+/* ── カスタム日付ピッカー ── */
+#dpBackdrop{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .22s;}
+#dpBackdrop.open{opacity:1;pointer-events:auto;}
+#dpSheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);width:100%;max-width:440px;background:var(--card);border-radius:22px 22px 0 0;padding:0 0 env(safe-area-inset-bottom);box-shadow:0 -8px 40px rgba(0,0,0,.35);z-index:901;transition:transform .28s cubic-bezier(.32,1.12,.64,1);}
+#dpSheet.open{transform:translateX(-50%) translateY(0);}
+.dp-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
+.dp-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 4px;}
+.dp-title{font-size:13px;font-weight:800;color:var(--sub);}
+.dp-close{background:none;border:none;color:var(--sub);font-size:20px;cursor:pointer;padding:4px 6px;line-height:1;border-radius:8px;}
+.dp-close:hover{background:var(--inp);}
+.dp-quick{display:flex;gap:5px;padding:4px 16px 8px;flex-wrap:wrap;}
+.dp-qbtn{border:1.5px solid var(--border);background:var(--inp);color:var(--sub);border-radius:12px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.dp-qbtn:hover,.dp-qbtn:active{border-color:var(--ac);color:var(--ac);background:rgba(99,102,241,.07);}
+.dp-month-nav{display:flex;align-items:center;gap:4px;background:var(--inp);border-radius:12px;padding:4px;margin:0 16px 8px;}
+.dp-nav-btn{background:none;border:none;font-size:22px;color:var(--ac);cursor:pointer;padding:3px 10px;font-family:inherit;border-radius:8px;transition:.15s;}
+.dp-nav-btn:hover{background:var(--card);}
+.dp-month-label{flex:1;text-align:center;font-size:16px;font-weight:900;color:var(--text);letter-spacing:-.3px;}
+.dp-wh{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:10px;font-weight:800;color:var(--sub);padding:0 14px;margin-bottom:3px;}
+.dp-wh>:first-child{color:#ef4444;}
+.dp-wh>:last-child{color:#3b82f6;}
+.dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 14px 8px;}
+.dp-day{min-height:42px;padding:3px 1px;border-radius:9px;cursor:pointer;transition:.13s;text-align:center;position:relative;}
+.dp-day:hover{background:var(--hover);}
+.dp-day.dp-other{opacity:.25;pointer-events:none;}
+.dp-day.dp-today{background:rgba(99,102,241,.1);box-shadow:0 0 0 1.5px rgba(99,102,241,.28);}
+.dp-day.dp-sel{background:var(--ac)!important;box-shadow:0 4px 14px rgba(79,70,229,.4);}
+.dp-day.dp-in-term{background:rgba(99,102,241,.06);}
+.dp-day-num{font-size:12px;font-weight:800;line-height:1.5;color:var(--text);}
+.dp-day.dp-today .dp-day-num{color:var(--ac);}
+.dp-day.dp-sel .dp-day-num{color:#fff!important;}
+.dp-dots{display:flex;gap:2px;justify-content:center;padding-top:1px;}
+.dp-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.dp-grid>:nth-child(7n+1):not(.dp-sel) .dp-day-num{color:#ef4444;}
+.dp-grid>:nth-child(7n):not(.dp-sel) .dp-day-num{color:#3b82f6;}
+.dp-time-sec{padding:10px 16px 4px;border-top:1.5px solid var(--border);margin-top:2px;}
+.dp-time-lbl{font-size:10px;font-weight:700;color:var(--sub);margin-bottom:6px;}
+.dp-time-row{display:flex;gap:5px;flex-wrap:wrap;}
+.dp-tbtn{border:1.5px solid var(--border);background:var(--inp);color:var(--sub);border-radius:12px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.dp-tbtn.on{border-color:var(--ac);background:rgba(99,102,241,.1);color:var(--ac);}
+.dp-disp{text-align:center;padding:8px 16px 4px;font-size:16px;font-weight:900;color:var(--ac);min-height:28px;}
+.dp-ok{width:calc(100% - 32px);display:block;margin:8px 16px 14px;background:linear-gradient(135deg,var(--gs),var(--ge));color:#fff;border:none;border-radius:16px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+.dp-ok:hover{opacity:.88;}
 </style>
 </head>
 <body>
@@ -2348,7 +2391,7 @@ function weekdaysFrom(y,m,d,n){
   const cur=new Date(y,m,d),dates=[];
   while(cur.getDay()===0||cur.getDay()===6) cur.setDate(cur.getDate()+1);
   while(dates.length<n){
-    dates.push(cur.toISOString().slice(0,10));
+    dates.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`);
     cur.setDate(cur.getDate()+1);
     while(cur.getDay()===0||cur.getDay()===6) cur.setDate(cur.getDate()+1);
   }
@@ -2447,7 +2490,8 @@ function initData(){
 }
 
 function sampleData(){
-  const in3d = new Date(Date.now()+3*864e5).toISOString().slice(0,16);
+  const _s3=new Date(Date.now()+3*864e5);
+  const in3d=`${_s3.getFullYear()}-${String(_s3.getMonth()+1).padStart(2,'0')}-${String(_s3.getDate()).padStart(2,'0')}T23:59`;
   return {
     classes:[
       {name:'マクロ経済学',isOnDemand:false,term:'1Q',period:1,credits:2,room:'A301',
@@ -2945,7 +2989,7 @@ function renderCalendar(){
   const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   const daysInPrev=new Date(calYear,calMonth,0).getDate();
   const today=new Date(); today.setHours(0,0,0,0);
-  const todayStr=today.toISOString().slice(0,10);
+  const todayStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   const monthPfx=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
   const monthStart=new Date(calYear,calMonth,1);
   const monthEnd=new Date(calYear,calMonth+1,0);
@@ -3197,7 +3241,8 @@ function renderTodayCard(){
   todayClasses.sort((a,b)=>(a.slots.find(s=>s.day===todayDay)?.period||0)-(b.slots.find(s=>s.day===todayDay)?.period||0));
   const el=document.getElementById('todayClassList');
   if(!todayClasses.length){ el.innerHTML='<div class="tc-empty">今日は授業なし🎉</div>'; return; }
-  const todayStr=new Date().toISOString().slice(0,10);
+  const _tn=new Date();
+  const todayStr=`${_tn.getFullYear()}-${String(_tn.getMonth()+1).padStart(2,'0')}-${String(_tn.getDate()).padStart(2,'0')}`;
   el.innerHTML=todayClasses.map(c=>{
     const s=calcAbs(c);
     const isCanceled=(c.canceledDates||[]).includes(todayStr);
@@ -3772,7 +3817,7 @@ function getValidClassDates(c){
   const cur=new Date(start);
   while(cur<=end){
     if(slotDays.includes(cur.getDay())){
-      const ds=cur.toISOString().slice(0,10);
+      const ds=`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
       if(!canceledSet.has(ds)) dates.push(ds);
     }
     cur.setDate(cur.getDate()+1);
@@ -3807,7 +3852,8 @@ function populateAttDates(c){
   fb.style.display='none';
 
   // 今日以前で最新の日付をデフォルト選択
-  const todayStr=new Date().toISOString().slice(0,10);
+  const _td=new Date();
+  const todayStr=`${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
   const defaultDate=[...dates].reverse().find(d=>d<=todayStr)||dates[dates.length-1];
 
   // 記録済みセット
@@ -3882,8 +3928,8 @@ function addAtt(){
 
 function removeAtt(date,type){
   const c=curClasses()[curClassIdx];
-  if(type==='absent') c.absences=c.absences.filter(a=>a.date!==date);
-  else if(type==='late') c.tardiness=c.tardiness.filter(a=>a.date!==date);
+  if(type==='absent') c.absences=(c.absences||[]).filter(a=>a.date!==date);
+  else if(type==='late') c.tardiness=(c.tardiness||[]).filter(a=>a.date!==date);
   else if(type==='canceled'){
     c.canceledDates=(c.canceledDates||[]).filter(d=>d!==date);
     if(c.canceledMakeupMap) delete c.canceledMakeupMap[date];
@@ -4588,7 +4634,8 @@ function setDeadlineTime(inputId,btnGroupId,time){
     }
   }
   // 日付部分を保持して時刻だけ上書き
-  const date=(inp.value?inp.value.split('T')[0]:null)||new Date().toISOString().slice(0,10);
+  const _n=new Date();
+  const date=(inp.value?inp.value.split('T')[0]:null)||`${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,'0')}-${String(_n.getDate()).padStart(2,'0')}`;
   inp.value=date+'T'+time;
   if(inputId==='todoDeadline'){
     document.getElementById('noDeadline').checked=false;
@@ -5223,7 +5270,7 @@ function setQaDL(days){
     const d = new Date();
     d.setDate(d.getDate() + days);
     d.setHours(23, 59, 0, 0);
-    inp.value = d.toISOString().slice(0,16);
+    inp.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}T23:59`;
     inp.style.opacity = '1';
   }
 }
@@ -5629,7 +5676,8 @@ function addSessionNote(){
   sfx('add');
   const c=curClasses()[curClassIdx];
   if(!c.sessionNotes)c.sessionNotes=[];
-  c.sessionNotes.unshift({date:date||new Date().toISOString().slice(0,10),text});
+  const _sn=new Date();
+  c.sessionNotes.unshift({date:date||`${_sn.getFullYear()}-${String(_sn.getMonth()+1).padStart(2,'0')}-${String(_sn.getDate()).padStart(2,'0')}`,text});
   document.getElementById('snoteText').value='';
   saveData();renderSessionNotes();
 }
@@ -5893,7 +5941,8 @@ function closePdfLayer(){
 // ═══════════════════════════════
 function buildMorningBody(){
   const todayDay=DAYS[new Date().getDay()];
-  const todayStr=new Date().toISOString().slice(0,10);
+  const _mb=new Date();
+  const todayStr=`${_mb.getFullYear()}-${String(_mb.getMonth()+1).padStart(2,'0')}-${String(_mb.getDate()).padStart(2,'0')}`;
   const todays=[];
   curClasses()
     .filter(c=>!c.isOnDemand&&c.slots&&c.slots.some(s=>s.day===todayDay))
@@ -6237,6 +6286,130 @@ if('serviceWorker' in navigator){
 }
 
 // ═══════════════════════════════
+//  カスタム日付ピッカー
+// ═══════════════════════════════
+(function(){
+  const MO=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const DW=['日','月','火','水','木','金','土'];
+  let _inp=null,_y=0,_m=0,_d='',_t='',_dt=false;
+
+  function _open(inp){
+    _inp=inp; _dt=inp.type==='datetime-local';
+    const v=inp.value||'';
+    _d=v?v.slice(0,10):''; _t=_dt?(v.slice(11,16)||'23:59'):'';
+    const ref=_d?new Date(_d+'T00:00:00'):new Date();
+    _y=ref.getFullYear(); _m=ref.getMonth();
+    document.getElementById('dpTitle').textContent=_dt?'日時を選択':'日付を選択';
+    document.getElementById('dpTimeSec').style.display=_dt?'block':'none';
+    _syncT(); _grid(); _disp();
+    document.getElementById('dpBackdrop').classList.add('open');
+    document.getElementById('dpSheet').classList.add('open');
+  }
+
+  function _close(){
+    document.getElementById('dpBackdrop').classList.remove('open');
+    document.getElementById('dpSheet').classList.remove('open');
+    _inp=null;
+  }
+
+  function _grid(){
+    document.getElementById('dpML').textContent=`${_y}年 ${MO[_m]}`;
+    const fd=new Date(_y,_m,1).getDay();
+    const dim=new Date(_y,_m+1,0).getDate();
+    const prev=new Date(_y,_m,0).getDate();
+    const _dp=new Date();
+    const todayStr=`${_dp.getFullYear()}-${String(_dp.getMonth()+1).padStart(2,'0')}-${String(_dp.getDate()).padStart(2,'0')}`;
+    const pfx=`${_y}-${String(_m+1).padStart(2,'0')}`;
+
+    // 学期期間ハイライト
+    const td=(typeof appData!=='undefined'&&appData.settings&&appData.settings.termDates)||{};
+    const inTerm=new Set();
+    Object.values(td).forEach(t=>{
+      if(!t.start||!t.end) return;
+      const s=new Date(t.start+'T00:00:00'),e=new Date(t.end+'T00:00:00');
+      for(let i=1;i<=dim;i++){ const dt=new Date(_y,_m,i); if(dt>=s&&dt<=e) inTerm.add(i); }
+    });
+
+    // イベントドット
+    const dots={};
+    function dot(ds,c){const d=parseInt(ds.slice(-2));if(!dots[d])dots[d]=[];dots[d].push(c);}
+    if(typeof curTodos==='function') curTodos().filter(t=>t.deadline&&t.deadline.startsWith(pfx)).forEach(t=>dot(t.deadline.slice(0,10),`#f59e0b`));
+    if(typeof curExams==='function') curExams().filter(e=>!e.done&&e.date&&e.date.startsWith(pfx)).forEach(e=>dot(e.date,'#dc2626'));
+    if(typeof curClasses==='function') curClasses().filter(c=>c.examDate&&c.examDate.startsWith(pfx)).forEach(c=>dot(c.examDate,'#dc2626'));
+
+    let h='';
+    for(let i=fd-1;i>=0;i--) h+=`<div class="dp-day dp-other"><div class="dp-day-num">${prev-i}</div></div>`;
+    for(let i=1;i<=dim;i++){
+      const ds=`${pfx}-${String(i).padStart(2,'0')}`;
+      const isTod=ds===todayStr, isSel=ds===_d, it=inTerm.has(i);
+      const dd=(dots[i]||[]).slice(0,3).map(c=>`<div class="dp-dot" style="background:${c}"></div>`).join('');
+      const cls='dp-day'+(isTod?' dp-today':'')+(isSel?' dp-sel':it?' dp-in-term':'');
+      h+=`<div class="${cls}" onclick="_dpSel('${ds}')"><div class="dp-day-num">${i}</div><div class="dp-dots">${dd}</div></div>`;
+    }
+    const tot=Math.ceil((fd+dim)/7)*7;
+    for(let i=1;i<=tot-fd-dim;i++) h+=`<div class="dp-day dp-other"><div class="dp-day-num">${i}</div></div>`;
+    document.getElementById('dpGrid').innerHTML=h;
+  }
+
+  function _disp(){
+    const el=document.getElementById('dpDisp');
+    if(!_d){el.textContent='';return;}
+    const dt=new Date(_d+'T00:00:00');
+    el.textContent=`${dt.getMonth()+1}月${dt.getDate()}日（${DW[dt.getDay()]}）`+(_dt&&_t?' '+_t:'');
+  }
+
+  function _syncT(){
+    document.querySelectorAll('.dp-tbtn').forEach(b=>b.classList.toggle('on',b.dataset.t===_t));
+  }
+
+  function _isDP(el){
+    return el&&el.tagName==='INPUT'&&(el.type==='date'||el.type==='datetime-local')&&!el.dataset.dpSkip;
+  }
+
+  // ネイティブピッカーをインターセプト
+  ['mousedown','touchstart'].forEach(ev=>{
+    document.addEventListener(ev,function(e){
+      if(!_isDP(e.target)) return;
+      e.preventDefault(); e.stopPropagation();
+      if(ev==='touchstart') _open(e.target);
+    },{capture:true,passive:false});
+  });
+  document.addEventListener('click',function(e){
+    if(!_isDP(e.target)) return;
+    e.preventDefault(); _open(e.target);
+  },{capture:true});
+
+  // 公開
+  window.openDatePicker=_open;
+  window.closeDatePicker=_close;
+  window._dpSel=function(ds){_d=ds;_grid();_disp();};
+  window.dpShift=function(n){_m+=n;if(_m>11){_m=0;_y++;}else if(_m<0){_m=11;_y--;}_grid();};
+  window.dpTime=function(t){_t=t;_syncT();_disp();};
+  function _localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+  window.dpQuick=function(n){
+    const d=new Date(); d.setDate(d.getDate()+n);
+    _d=_localDate(d); _y=d.getFullYear(); _m=d.getMonth(); _grid(); _disp();
+  };
+  window.dpQuickWeekend=function(){
+    const d=new Date(); const dow=d.getDay();
+    d.setDate(d.getDate()+(dow===0?6:(6-dow)));
+    _d=_localDate(d); _y=d.getFullYear(); _m=d.getMonth(); _grid(); _disp();
+  };
+  window.dpQuickMonday=function(){
+    const d=new Date(); const dow=d.getDay();
+    d.setDate(d.getDate()+((1-dow+7)%7||7));
+    _d=_localDate(d); _y=d.getFullYear(); _m=d.getMonth(); _grid(); _disp();
+  };
+  window.dpOK=function(){
+    if(!_d||!_inp) return;
+    _inp.value=_dt?`${_d}T${_t||'23:59'}`:_d;
+    _inp.dispatchEvent(new Event('input',{bubbles:true}));
+    _inp.dispatchEvent(new Event('change',{bubbles:true}));
+    _close();
+  };
+})();
+
+// ═══════════════════════════════
 //  PWA インストール案内テロップ
 // ═══════════════════════════════
 function initPwaTicker(){
@@ -6329,5 +6502,40 @@ document.addEventListener('DOMContentLoaded',()=>{
   initPwaTicker();
 });
 </script>
+
+<!-- ── カスタム日付ピッカー ── -->
+<div id="dpBackdrop" onclick="closeDatePicker()"></div>
+<div id="dpSheet">
+  <div class="dp-handle"></div>
+  <div class="dp-header">
+    <span class="dp-title" id="dpTitle">日付を選択</span>
+    <button class="dp-close" onclick="closeDatePicker()">✕</button>
+  </div>
+  <div class="dp-quick">
+    <button class="dp-qbtn" onclick="dpQuick(0)">今日</button>
+    <button class="dp-qbtn" onclick="dpQuick(1)">明日</button>
+    <button class="dp-qbtn" onclick="dpQuickWeekend()">今週末</button>
+    <button class="dp-qbtn" onclick="dpQuickMonday()">来週月曜</button>
+  </div>
+  <div class="dp-month-nav">
+    <button class="dp-nav-btn" onclick="dpShift(-1)">‹</button>
+    <span class="dp-month-label" id="dpML"></span>
+    <button class="dp-nav-btn" onclick="dpShift(1)">›</button>
+  </div>
+  <div class="dp-wh"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+  <div class="dp-grid" id="dpGrid"></div>
+  <div class="dp-time-sec" id="dpTimeSec" style="display:none;">
+    <div class="dp-time-lbl">⏰ 時刻</div>
+    <div class="dp-time-row">
+      <button class="dp-tbtn" data-t="09:00" onclick="dpTime('09:00')">9:00</button>
+      <button class="dp-tbtn" data-t="12:00" onclick="dpTime('12:00')">正午</button>
+      <button class="dp-tbtn" data-t="18:00" onclick="dpTime('18:00')">18:00</button>
+      <button class="dp-tbtn" data-t="21:00" onclick="dpTime('21:00')">21:00</button>
+      <button class="dp-tbtn" data-t="23:59" onclick="dpTime('23:59')">深夜</button>
+    </div>
+  </div>
+  <div class="dp-disp" id="dpDisp"></div>
+  <button class="dp-ok" onclick="dpOK()">確定</button>
+</div>
 </body>
 </html>
