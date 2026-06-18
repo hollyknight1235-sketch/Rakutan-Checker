@@ -57,6 +57,64 @@ body{font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;background:var
 #notifyBtn.on{background:rgba(255,255,255,.92);color:var(--ac);border-color:transparent;}
 #notifyBtn.denied{opacity:.4;cursor:not-allowed;}
 
+/* ── 試験管理 ── */
+.exam-next-card{background:linear-gradient(135deg,#7f1d1d,#dc2626);border-radius:14px;padding:14px 16px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:12px;}
+.enc-icon{font-size:32px;line-height:1;}
+.enc-label{font-size:10px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.6px;}
+.enc-name{font-size:15px;font-weight:900;margin:1px 0;}
+.enc-cd{font-size:22px;font-weight:900;}
+.enc-sub{font-size:11px;opacity:.8;}
+.exam-item{background:var(--card);border-radius:12px;padding:12px 13px;margin-bottom:8px;border-left:4px solid var(--ac);position:relative;}
+.exam-item.done{opacity:.5;border-left-color:var(--faint);}
+.exam-item-row{display:flex;align-items:flex-start;gap:8px;}
+.exam-type-chip{font-size:10px;font-weight:800;border-radius:10px;padding:2px 8px;color:#fff;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+.exam-item-body{flex:1;min-width:0;}
+.exam-item-name{font-size:14px;font-weight:800;color:var(--text);}
+.exam-item-class{font-size:11px;color:var(--sub);margin-top:1px;}
+.exam-item-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.exam-meta-tag{font-size:11px;color:var(--sub);display:flex;align-items:center;gap:3px;}
+.exam-cd-badge{font-size:12px;font-weight:800;padding:3px 9px;border-radius:20px;margin-top:6px;display:inline-block;}
+.exam-cd-today{background:#fef2f2;color:#dc2626;}
+.exam-cd-soon{background:#fff7ed;color:#ea580c;}
+.exam-cd-near{background:#fefce8;color:#d97706;}
+.exam-cd-future{background:#f0fdf4;color:#16a34a;}
+.exam-cd-past{background:var(--inp);color:var(--faint);}
+body.dark .exam-cd-today{background:#450a0a;color:#fca5a5;}
+body.dark .exam-cd-soon{background:#431407;color:#fdba74;}
+body.dark .exam-cd-near{background:#422006;color:#fcd34d;}
+body.dark .exam-cd-future{background:#052e16;color:#86efac;}
+.exam-item-actions{display:flex;gap:6px;margin-top:8px;}
+.exam-act-btn{border:1.5px solid var(--border);background:var(--card);color:var(--sub);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.exam-act-btn:hover{border-color:var(--ac);color:var(--ac);}
+.exam-done-btn{border-color:var(--border);}
+.exam-done-btn.checked{background:#dcfce7;border-color:#16a34a;color:#16a34a;}
+body.dark .exam-done-btn.checked{background:#052e16;}
+.exam-empty{text-align:center;padding:30px 0;color:var(--faint);font-size:13px;}
+/* カレンダー強化 */
+.cal-term-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.cal-term-chip{font-size:10px;font-weight:800;border-radius:10px;padding:3px 9px;display:flex;align-items:center;gap:3px;}
+.ctc-active{background:rgba(99,102,241,.12);color:var(--ac);border:1.5px solid rgba(99,102,241,.25);}
+.ctc-starting{background:#dcfce7;color:#15803d;border:1.5px solid #86efac;}
+.ctc-ending{background:#fef2f2;color:#dc2626;border:1.5px solid #fca5a5;}
+body.dark .ctc-active{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.4);}
+body.dark .ctc-starting{background:#052e16;color:#86efac;border-color:#166534;}
+body.dark .ctc-ending{background:#450a0a;color:#fca5a5;border-color:#7f1d1d;}
+.cal-day.term-start{border-top:2.5px solid #16a34a;}
+.cal-day.term-end{border-bottom:2.5px solid #dc2626;}
+.cal-day.term-start.term-end{border-top:2.5px solid #16a34a;border-bottom:2.5px solid #dc2626;}
+.cal-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;padding:8px 10px;background:var(--inp);border-radius:10px;}
+.cal-leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--sub);}
+.cal-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.cal-month-stat{display:flex;gap:10px;padding:8px 12px;background:var(--inp);border-radius:10px;margin-bottom:10px;font-size:11px;}
+.cal-stat-item{display:flex;align-items:center;gap:5px;}
+.cal-stat-num{font-weight:800;font-size:14px;}
+.cal-ev-status{font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:auto;flex-shrink:0;}
+.ev-absent{background:#fef2f2;color:#dc2626;}
+.ev-late{background:#fff7ed;color:#ea580c;}
+.ev-attend{background:#f0fdf4;color:#16a34a;}
+body.dark .ev-absent{background:#450a0a;color:#fca5a5;}
+body.dark .ev-late{background:#431407;color:#fdba74;}
+body.dark .ev-attend{background:#052e16;color:#86efac;}
 /* ── BOTTOM NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;
   background:var(--card);border-top:1.5px solid var(--border);display:flex;z-index:200;
@@ -1012,6 +1070,16 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <div class="cal-month-label" id="calMonthLabel"></div>
     <button class="cal-nav" onclick="shiftCalMonth(1)">›</button>
   </div>
+  <div class="cal-term-chips" id="calTermChips"></div>
+  <div class="cal-month-stat" id="calMonthStat"></div>
+  <div class="cal-legend">
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--ac)"></div>授業</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#ef4444"></div>欠席</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#f97316"></div>遅刻</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#dc2626"></div>試験</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#f59e0b"></div>課題締切</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#059669"></div>補講</div>
+  </div>
   <div class="cal-grid-header">
     <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
   </div>
@@ -1019,6 +1087,22 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   <div class="cal-events" id="calEvents">
     <div style="text-align:center;padding:20px;color:var(--faint);font-size:13px;">日付をタップして予定を確認</div>
   </div>
+</div>
+
+<!-- ── EXAM ── -->
+<div class="section" id="examSection">
+  <div id="examNextCard"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div class="sec-title" style="margin:0;">📝 試験一覧</div>
+    <button class="add-btn g" onclick="openAddExam()" style="margin:0;padding:8px 14px;font-size:13px;">＋ 追加</button>
+  </div>
+  <div id="examList"></div>
+  <details id="examDoneDetails" style="margin-top:12px;">
+    <summary style="font-size:12px;font-weight:700;color:var(--faint);cursor:pointer;padding:6px 0;list-style:none;display:flex;align-items:center;gap:4px;">
+      ▶ 終了した試験 <span id="examDoneCount"></span>
+    </summary>
+    <div id="examDoneList" style="margin-top:8px;"></div>
+  </details>
 </div>
 
 <!-- ── DETAIL ── -->
@@ -1057,7 +1141,10 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     </div>
     <div style="margin-top:13px;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:5px;">📝 出欠を記録</div>
     <div class="rec-row">
-      <input type="date" class="ri ri-flex" id="attDate">
+      <!-- 曜日固定授業：有効日付のみ選択できるselect -->
+      <select class="ri ri-flex" id="attDateSel" style="font-size:12px;"></select>
+      <!-- オンデマンド等・スロットなし授業用フォールバック -->
+      <input type="date" class="ri ri-flex" id="attDateFb" style="display:none;">
       <select class="ri" id="attType">
         <option value="absent">欠席</option>
         <option value="late">遅刻</option>
@@ -1074,7 +1161,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <div class="att-list" id="attList"></div>
   </div>
 
-  <div id="examSection" style="display:none;margin-bottom:12px;">
+  <div id="classExamBox" style="display:none;margin-bottom:12px;">
     <div class="sec-title" style="margin-top:0;">📅 試験</div>
     <div class="exam-box">
       <div class="exam-icon">📝</div>
@@ -1175,6 +1262,10 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
   <button class="bnav-btn" id="tabBtnCal" onclick="showTab('calendar')">
     <span class="bnav-icon">🗓️</span>
     <span class="bnav-lbl">カレンダー</span>
+  </button>
+  <button class="bnav-btn" onclick="showTab('exam')">
+    <span class="bnav-icon">🎓</span>
+    <span class="bnav-lbl">試験</span>
   </button>
 </nav>
 
@@ -1495,7 +1586,7 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 2.2.0 — フィルター強化（授業関連・その他）・全て欄から完了済み除外</div>
+  <div class="ver">ver 2.3.0 — フィルター強化（授業関連・その他）・全て欄から完了済み除外</div>
 </div>
 </div>
 
@@ -1656,6 +1747,54 @@ body.classic .fab:hover{box-shadow:0 7px 26px rgba(102,126,234,.6);}
 </div>
 </div>
 
+<!-- Exam Modal -->
+<div class="modal" id="examModal">
+<div class="modal-sheet">
+  <div class="m-handle"></div>
+  <div class="m-title" id="examModalTitle">🎓 試験を追加</div>
+  <div class="fr">
+    <label class="fl">種別</label>
+    <div class="dl-time-row" id="examTypeBtns">
+      <button class="dl-time-btn on" data-v="期末試験" onclick="selExamType(this)">期末試験</button>
+      <button class="dl-time-btn" data-v="中間試験" onclick="selExamType(this)">中間試験</button>
+      <button class="dl-time-btn" data-v="小テスト" onclick="selExamType(this)">小テスト</button>
+      <button class="dl-time-btn" data-v="レポート試験" onclick="selExamType(this)">レポート試験</button>
+      <button class="dl-time-btn" data-v="その他" onclick="selExamType(this)">その他</button>
+    </div>
+  </div>
+  <div class="fr">
+    <label class="fl">科目</label>
+    <select class="fi" id="examClass">
+      <option value="-1">（科目を選ばない）</option>
+    </select>
+  </div>
+  <div class="fr">
+    <label class="fl">試験名（省略可）</label>
+    <input class="fi" type="text" id="examTitle" placeholder="例: 期末試験・中間レポート">
+  </div>
+  <div class="fr">
+    <label class="fl">日付 *</label>
+    <input class="fi" type="date" id="examDate">
+  </div>
+  <div class="fr">
+    <label class="fl">時刻</label>
+    <input class="fi" type="time" id="examTime">
+  </div>
+  <div class="fr">
+    <label class="fl">教室</label>
+    <input class="fi" type="text" id="examRoom" placeholder="例: A301">
+  </div>
+  <div class="fr">
+    <label class="fl">メモ</label>
+    <textarea class="fi ft" id="examNotes" placeholder="試験範囲・持ち物など" style="min-height:60px;"></textarea>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:4px;">
+    <button class="add-btn g" style="flex:1;" onclick="saveExam()">保存</button>
+    <button class="add-btn" style="flex:0 0 auto;background:var(--inp);color:var(--sub);border:1.5px solid var(--border);" onclick="closeModal('examModal')">キャンセル</button>
+  </div>
+</div>
+</div>
+
 <!-- Guide Modal -->
 <div class="modal" id="guideModal">
 <div class="modal-sheet">
@@ -1805,7 +1944,7 @@ function defSettings(){
     }
   };
 }
-function defYear(){ return {classes:[],todos:[]}; }
+function defYear(){ return {classes:[],todos:[],exams:[]}; }
 
 let appData;
 function initData(){
@@ -2117,15 +2256,16 @@ function showTab(tab){
   activeTab=tab;
   window.scrollTo(0,0);
   document.querySelectorAll('.bnav-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['todo','schedule','stats','calendar'][i]===tab);
+    b.classList.toggle('active',['todo','schedule','stats','calendar','exam'][i]===tab);
   });
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  const map={todo:'todoSection',schedule:'scheduleSection',stats:'statsSection',detail:'detailSection',calendar:'calendarSection'};
+  const map={todo:'todoSection',schedule:'scheduleSection',stats:'statsSection',detail:'detailSection',calendar:'calendarSection',exam:'examSection'};
   if(map[tab]) document.getElementById(map[tab]).classList.add('active');
   if(tab==='todo'){ renderTodos(); renderTodayCard(); renderDangerBanner('todo'); }
   if(tab==='schedule'){ renderSchedule(); renderDangerBanner('sched'); }
   if(tab==='stats') renderStats();
   if(tab==='calendar'){ calYear=new Date().getFullYear(); calMonth=new Date().getMonth(); renderCalendar(); }
+  if(tab==='exam') renderExams();
   const sf=document.getElementById('shareFab');
   if(sf) sf.style.display=tab==='schedule'?'flex':'none';
   const qf=document.querySelector('.fab');
@@ -2139,12 +2279,196 @@ function showTab(tab){
 }
 
 // ═══════════════════════════════
+//  試験管理
+// ═══════════════════════════════
+function curExams(){ return (appData[currentYear]||(appData[currentYear]=defYear())).exams||(appData[currentYear].exams=[]); }
+
+const EXAM_TYPE_COLOR={'期末試験':'#dc2626','中間試験':'#ea580c','小テスト':'#d97706','レポート試験':'#7c3aed','その他':'#6b7280'};
+
+function examCountdown(dateStr){
+  if(!dateStr) return {txt:'',cls:'exam-cd-past',days:null};
+  const today=new Date(); today.setHours(0,0,0,0);
+  const d=new Date(dateStr); d.setHours(0,0,0,0);
+  const diff=Math.round((d-today)/(1000*60*60*24));
+  if(diff<0)  return {txt:`${Math.abs(diff)}日前に終了`,cls:'exam-cd-past',days:diff};
+  if(diff===0)return {txt:'本日！',cls:'exam-cd-today',days:0};
+  if(diff<=3) return {txt:`あと ${diff} 日`,cls:'exam-cd-today',days:diff};
+  if(diff<=7) return {txt:`あと ${diff} 日`,cls:'exam-cd-soon',days:diff};
+  if(diff<=14)return {txt:`あと ${diff} 日`,cls:'exam-cd-near',days:diff};
+  return      {txt:`あと ${diff} 日`,cls:'exam-cd-future',days:diff};
+}
+
+function renderExams(){
+  const exams=curExams();
+  const cls=curClasses();
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  // 次の試験カード
+  const upcoming=exams.filter(e=>!e.done&&e.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const nextEl=document.getElementById('examNextCard');
+  if(nextEl){
+    if(upcoming.length){
+      const nx=upcoming[0];
+      const cd=examCountdown(nx.date);
+      const className=nx.classIdx>=0&&cls[nx.classIdx]?cls[nx.classIdx].name:'';
+      nextEl.innerHTML=`<div class="exam-next-card">
+        <div class="enc-icon">🎓</div>
+        <div style="flex:1;min-width:0;">
+          <div class="enc-label">次の試験まで</div>
+          <div class="enc-name">${className?className+'　':''}${nx.title||nx.type}</div>
+          <div class="enc-cd">${cd.txt}</div>
+          <div class="enc-sub">${nx.date}${nx.time?' '+nx.time:''}${nx.room?' 📍'+nx.room:''}</div>
+        </div>
+      </div>`;
+    } else {
+      nextEl.innerHTML='';
+    }
+  }
+
+  // 試験リスト
+  function buildExamItem(e,i,done){
+    const cd=examCountdown(e.date);
+    const className=e.classIdx>=0&&cls[e.classIdx]?cls[e.classIdx].name:'';
+    const color=EXAM_TYPE_COLOR[e.type]||'#6b7280';
+    return `<div class="exam-item${done?' done':''}">
+      <div class="exam-item-row">
+        <span class="exam-type-chip" style="background:${color};">${e.type}</span>
+        <div class="exam-item-body">
+          <div class="exam-item-name">${e.title||e.type}</div>
+          ${className?`<div class="exam-item-class">📚 ${className}</div>`:''}
+          <div class="exam-item-meta">
+            ${e.date?`<span class="exam-meta-tag">📅 ${e.date}${e.time?' '+e.time:''}</span>`:''}
+            ${e.room?`<span class="exam-meta-tag">📍 ${e.room}</span>`:''}
+          </div>
+          ${e.notes?`<div style="font-size:11px;color:var(--sub);margin-top:5px;">${e.notes}</div>`:''}
+          ${!done&&e.date?`<span class="exam-cd-badge ${cd.cls}">${cd.txt}</span>`:''}
+        </div>
+      </div>
+      <div class="exam-item-actions">
+        ${!done?`<button class="exam-act-btn exam-done-btn" onclick="toggleExamDone(${i})">✓ 完了</button>`
+               :`<button class="exam-act-btn" onclick="toggleExamDone(${i})">↩ 未完了に戻す</button>`}
+        <button class="exam-act-btn" onclick="openEditExam(${i})">✏️ 編集</button>
+        <button class="exam-act-btn" style="color:#e53935;border-color:#e53935;" onclick="deleteExam(${i})">🗑️</button>
+      </div>
+    </div>`;
+  }
+
+  const active=exams.map((e,i)=>({e,i})).filter(({e})=>!e.done).sort((a,b)=>new Date(a.e.date||'9999')-new Date(b.e.date||'9999'));
+  const done=exams.map((e,i)=>({e,i})).filter(({e})=>e.done);
+
+  const listEl=document.getElementById('examList');
+  if(listEl) listEl.innerHTML=active.length
+    ? active.map(({e,i})=>buildExamItem(e,i,false)).join('')
+    : '<div class="exam-empty">試験が登録されていません<br><span style="font-size:11px;">＋ 追加ボタンで登録できます</span></div>';
+
+  const doneEl=document.getElementById('examDoneList');
+  if(doneEl) doneEl.innerHTML=done.map(({e,i})=>buildExamItem(e,i,true)).join('');
+
+  const doneCount=document.getElementById('examDoneCount');
+  if(doneCount) doneCount.textContent=done.length?`(${done.length}件)`:'';
+}
+
+let _editingExamIdx=-1;
+function openAddExam(){
+  _editingExamIdx=-1;
+  document.getElementById('examModalTitle').textContent='🎓 試験を追加';
+  document.getElementById('examTitle').value='';
+  document.getElementById('examDate').value='';
+  document.getElementById('examTime').value='';
+  document.getElementById('examRoom').value='';
+  document.getElementById('examNotes').value='';
+  // type: 期末試験 default
+  document.querySelectorAll('#examTypeBtns .dl-time-btn').forEach(b=>b.classList.toggle('on',b.dataset.v==='期末試験'));
+  // populate class select
+  _populateExamClassSel(-1);
+  sfx('modal');
+  document.getElementById('examModal').classList.add('active');
+}
+
+function openEditExam(i){
+  _editingExamIdx=i;
+  const e=curExams()[i];
+  if(!e) return;
+  document.getElementById('examModalTitle').textContent='✏️ 試験を編集';
+  document.getElementById('examTitle').value=e.title||'';
+  document.getElementById('examDate').value=e.date||'';
+  document.getElementById('examTime').value=e.time||'';
+  document.getElementById('examRoom').value=e.room||'';
+  document.getElementById('examNotes').value=e.notes||'';
+  document.querySelectorAll('#examTypeBtns .dl-time-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===e.type));
+  _populateExamClassSel(e.classIdx??-1);
+  sfx('modal');
+  document.getElementById('examModal').classList.add('active');
+}
+
+function _populateExamClassSel(selected){
+  const sel=document.getElementById('examClass');
+  if(!sel) return;
+  const cls=curClasses();
+  sel.innerHTML='<option value="-1">（科目を選ばない）</option>'+
+    cls.map((c,i)=>`<option value="${i}"${i===selected?' selected':''}>${c.name}</option>`).join('');
+}
+
+function selExamType(btn){
+  document.querySelectorAll('#examTypeBtns .dl-time-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function saveExam(){
+  const dateVal=document.getElementById('examDate').value;
+  if(!dateVal){ showToast('日付を入力してください'); return; }
+  const typeBtn=document.querySelector('#examTypeBtns .dl-time-btn.on');
+  const exam={
+    id:_editingExamIdx>=0?curExams()[_editingExamIdx].id:Date.now(),
+    type:typeBtn?typeBtn.dataset.v:'その他',
+    title:document.getElementById('examTitle').value.trim(),
+    classIdx:parseInt(document.getElementById('examClass').value),
+    date:dateVal,
+    time:document.getElementById('examTime').value,
+    room:document.getElementById('examRoom').value.trim(),
+    notes:document.getElementById('examNotes').value.trim(),
+    done:_editingExamIdx>=0?(curExams()[_editingExamIdx].done||false):false
+  };
+  if(_editingExamIdx>=0) curExams()[_editingExamIdx]=exam;
+  else curExams().push(exam);
+  saveData();
+  closeModal('examModal');
+  renderExams();
+  showToast(_editingExamIdx>=0?'試験を更新しました':'試験を追加しました ✓');
+  _editingExamIdx=-1;
+}
+
+function toggleExamDone(i){
+  const e=curExams()[i];
+  if(!e) return;
+  e.done=!e.done;
+  saveData(); renderExams();
+}
+
+function deleteExam(i){
+  if(!confirm('この試験を削除しますか？')) return;
+  curExams().splice(i,1);
+  saveData(); renderExams();
+}
+
+// ═══════════════════════════════
 //  カレンダービュー (Feature 9)
 // ═══════════════════════════════
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth(), calSelected=null;
 const CAL_DAY_IDX={sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
+const ALL_TERMS=['1Q','2Q','3Q','4Q','前期','後期','通年'];
 
 function shiftCalMonth(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+
+// 設定済みの学期期間内かどうかを判定。未設定の場合は常にtrue（従来通り表示）
+function isDateInTerm(dateStr,term){
+  const td=((appData.settings||{}).termDates||{})[term];
+  if(!td||(!td.start&&!td.end)) return true;
+  const d=new Date(dateStr+'T00:00:00');
+  if(td.start&&d<new Date(td.start+'T00:00:00')) return false;
+  if(td.end  &&d>new Date(td.end  +'T00:00:00')) return false;
+  return true;
+}
 
 function renderCalendar(){
   const MONTH_JA=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
@@ -2152,11 +2476,50 @@ function renderCalendar(){
   const firstDay=new Date(calYear,calMonth,1).getDay();
   const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   const daysInPrev=new Date(calYear,calMonth,0).getDate();
-  const today=new Date();
+  const today=new Date(); today.setHours(0,0,0,0);
   const todayStr=today.toISOString().slice(0,10);
+  const monthPfx=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
+  const monthStart=new Date(calYear,calMonth,1);
+  const monthEnd=new Date(calYear,calMonth+1,0);
 
+  // ── 学期境界日を収集 ──
+  const termDates=(appData.settings||{}).termDates||{};
+  const boundaryStart=new Set(); // 開始日
+  const boundaryEnd  =new Set(); // 終了日
+
+  // ── この月に重なる学期チップを収集 ──
+  const termChips=[];
+  ALL_TERMS.forEach(term=>{
+    const td=termDates[term];
+    if(!td||(!td.start&&!td.end)) return;
+    const ts=td.start?new Date(td.start+'T00:00:00'):null;
+    const te=td.end  ?new Date(td.end  +'T00:00:00'):null;
+    // 月との重なり判定
+    const overlapStart=ts?ts<=monthEnd :true;
+    const overlapEnd  =te?te>=monthStart:true;
+    if(!overlapStart||!overlapEnd) return;
+    // 開始・終了がこの月内か
+    const startsThisMonth=ts&&ts>=monthStart&&ts<=monthEnd;
+    const endsThisMonth  =te&&te>=monthStart&&te<=monthEnd;
+    if(startsThisMonth) boundaryStart.add(td.start);
+    if(endsThisMonth)   boundaryEnd.add(td.end);
+    // チップの種類
+    const cls=startsThisMonth?'ctc-starting':endsThisMonth?'ctc-ending':'ctc-active';
+    const suffix=startsThisMonth?` ▶ ${td.start.slice(5).replace('-','/')}〜`
+                :endsThisMonth  ?` 〜${td.end.slice(5).replace('-','/')} ◀`
+                :(td.start&&td.end?` ${td.start.slice(5).replace('-','/')}〜${td.end.slice(5).replace('-','/')}`:' 開講中');
+    termChips.push(`<span class="cal-term-chip ${cls}">${term}${suffix}</span>`);
+  });
+  const chipsEl=document.getElementById('calTermChips');
+  if(chipsEl) chipsEl.innerHTML=termChips.length
+    ? termChips.join('')
+    : '<span style="font-size:10px;color:var(--faint);">⚙️ 設定から各学期の開始・終了日を設定するとここに表示されます</span>';
+
+  // ── イベントマップ構築 ──
   const evMap={};
   function addEv(dateStr,ev){if(!evMap[dateStr])evMap[dateStr]=[];evMap[dateStr].push(ev);}
+
+  let monthClassCount=0,monthAbsCount=0,monthLateCount=0,monthExamCount=0;
 
   const DAY_NAMES=['sun','mon','tue','wed','thu','fri','sat'];
   curClasses().filter(c=>!c.isOnDemand&&c.slots&&c.slots.length).forEach(c=>{
@@ -2166,32 +2529,66 @@ function renderCalendar(){
       const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       if(c.slots.some(s=>s.day===dayName)){
         if(!(c.canceledDates||[]).includes(dateStr)){
-          addEv(dateStr,{type:'class',label:c.name,color:c.color||'var(--ac)',period:c.slots.find(s=>s.day===dayName)?.period});
+          // ★ 学期期間フィルタ：設定されていればその範囲内のみ表示
+          if(isDateInTerm(dateStr,c.term)){
+            addEv(dateStr,{type:'class',label:c.name,color:c.color||'var(--ac)',
+              period:c.slots.find(s=>s.day===dayName)?.period,classRef:c});
+            monthClassCount++;
+          }
         }
       }
     }
-    const monthPfx=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
     (c.canceledDates||[]).forEach(d=>{if(d.startsWith(monthPfx))addEv(d,{type:'canceled',label:`休講:${c.name}`,color:'#9ca3af'});});
     (c.makeupDates||[]).forEach(d=>{if(d.startsWith(monthPfx))addEv(d,{type:'makeup',label:`補講:${c.name}`,color:'#059669'});});
     if(c.examDate&&c.examDate.startsWith(monthPfx))addEv(c.examDate,{type:'exam',label:`試験:${c.name}`,color:'#dc2626'});
+    (c.absences||[]).forEach(a=>{
+      if(a.date&&a.date.startsWith(monthPfx)){
+        addEv(a.date,{type:'absent',label:`欠席:${c.name}`,color:'#ef4444',reason:a.reason,classRef:c});
+        monthAbsCount++;
+      }
+    });
+    (c.tardiness||[]).forEach(a=>{
+      if(a.date&&a.date.startsWith(monthPfx)){
+        addEv(a.date,{type:'late',label:`遅刻:${c.name}`,color:'#f97316',reason:a.reason,classRef:c});
+        monthLateCount++;
+      }
+    });
+  });
+  curExams().filter(e=>!e.done&&e.date&&e.date.startsWith(monthPfx)).forEach(e=>{
+    const cls=e.classIdx>=0?curClasses()[e.classIdx]:null;
+    addEv(e.date,{type:'exam',label:`🎓 ${e.title||e.type}${cls?' ('+cls.name+')':''}`,color:'#dc2626'});
+    monthExamCount++;
   });
   curTodos().filter(t=>t.deadline).forEach(t=>{
     const d=t.deadline.slice(0,10);
-    const monthPfx=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
     if(d.startsWith(monthPfx))addEv(d,{type:'todo',label:t.title,color:'#f59e0b'});
   });
 
+  // 月次統計バー
+  const statEl=document.getElementById('calMonthStat');
+  if(statEl) statEl.innerHTML=`
+    <div class="cal-stat-item"><span style="font-size:14px;">📚</span><span class="cal-stat-num" style="color:var(--ac);">${monthClassCount}</span><span style="color:var(--sub);">コマ</span></div>
+    <div class="cal-stat-item"><span style="font-size:14px;">❌</span><span class="cal-stat-num" style="color:#ef4444;">${monthAbsCount}</span><span style="color:var(--sub);">欠席</span></div>
+    <div class="cal-stat-item"><span style="font-size:14px;">⏰</span><span class="cal-stat-num" style="color:#f97316;">${monthLateCount}</span><span style="color:var(--sub);">遅刻</span></div>
+    <div class="cal-stat-item"><span style="font-size:14px;">🎓</span><span class="cal-stat-num" style="color:#dc2626;">${monthExamCount}</span><span style="color:var(--sub);">試験</span></div>`;
+
+  // ── カレンダーグリッド生成 ──
+  const dotOrder={exam:0,absent:1,late:2,class:3,canceled:4,makeup:5,todo:6};
   let html='';
   for(let d=firstDay-1;d>=0;d--){
     html+=`<div class="cal-day cal-other"><div class="cal-day-num">${daysInPrev-d}</div></div>`;
   }
   for(let d=1;d<=daysInMonth;d++){
     const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday=dateStr===todayStr;
-    const isSel=dateStr===calSelected;
-    const evs=evMap[dateStr]||[];
-    const dots=evs.slice(0,5).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('');
-    html+=`<div class="cal-day${isToday?' cal-today':''}${isSel?' cal-selected':''}" onclick="selectCalDay('${dateStr}')"><div class="cal-day-num">${d}</div><div class="cal-dots">${dots}</div></div>`;
+    const isToday =dateStr===todayStr;
+    const isSel   =dateStr===calSelected;
+    const isStart =boundaryStart.has(dateStr);
+    const isEnd   =boundaryEnd.has(dateStr);
+    const evs     =evMap[dateStr]||[];
+    const sorted  =[...evs].sort((a,b)=>(dotOrder[a.type]??9)-(dotOrder[b.type]??9));
+    const dots    =sorted.slice(0,5).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('');
+    const extraCls=(isToday?' cal-today':'')+(isSel?' cal-selected':'')+(isStart?' term-start':'')+(isEnd?' term-end':'');
+    html+=`<div class="cal-day${extraCls}" onclick="selectCalDay('${dateStr}')"><div class="cal-day-num">${d}</div><div class="cal-dots">${dots}</div></div>`;
   }
   const total=Math.ceil((firstDay+daysInMonth)/7)*7;
   for(let d=1;d<=total-firstDay-daysInMonth;d++){
@@ -2209,8 +2606,28 @@ function selectCalDay(dateStr){
 function renderCalEvents(dateStr,evs){
   const el=document.getElementById('calEvents');
   if(!evs.length){el.innerHTML=`<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">${dateStr} の予定はありません</div>`;return;}
-  const typeLabel={class:'授業',canceled:'休講',makeup:'補講',exam:'試験',todo:'課題'};
-  el.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:8px;">${dateStr}</div>`+evs.map(ev=>`<div class="cal-ev-item"><div class="cal-ev-dot" style="background:${ev.color}"></div><div><div class="cal-ev-label">${ev.label}</div><div class="cal-ev-sub">${typeLabel[ev.type]||ev.type}${ev.period?` ${ev.period}限`:''}</div></div></div>`).join('');
+  const typeLabel={class:'授業',canceled:'休講',makeup:'補講',exam:'試験',todo:'課題締切',absent:'欠席',late:'遅刻'};
+  // 表示順: 試験 > 欠席 > 遅刻 > 授業 > 補講 > 休講 > 課題
+  const order={exam:0,absent:1,late:2,class:3,makeup:4,canceled:5,todo:6};
+  const sorted=[...evs].sort((a,b)=>(order[a.type]??9)-(order[b.type]??9));
+  const fmt=(ev)=>{
+    let statusTag='';
+    if(ev.type==='class'){
+      // クラスに対してその日の欠席・遅刻があるかチェック
+      if(ev.classRef){
+        const hasAbs=(ev.classRef.absences||[]).some(a=>a.date===dateStr);
+        const hasLate=(ev.classRef.tardiness||[]).some(a=>a.date===dateStr);
+        if(hasAbs) statusTag='<span class="cal-ev-status ev-absent">欠席</span>';
+        else if(hasLate) statusTag='<span class="cal-ev-status ev-late">遅刻</span>';
+        else statusTag='<span class="cal-ev-status ev-attend">出席</span>';
+      }
+    }
+    const sub=typeLabel[ev.type]||ev.type;
+    const period=ev.period?` ${ev.period}限`:'';
+    const reason=ev.reason?` (${ev.reason})`:'';
+    return `<div class="cal-ev-item"><div class="cal-ev-dot" style="background:${ev.color}"></div><div style="flex:1;min-width:0;"><div class="cal-ev-label">${ev.label}</div><div class="cal-ev-sub">${sub}${period}${reason}</div></div>${statusTag}</div>`;
+  };
+  el.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:8px;">${dateStr}</div>`+sorted.map(fmt).join('');
 }
 
 // ═══════════════════════════════
@@ -2605,11 +3022,11 @@ function showDetail(idx){
 
   // Exam
   if(c.examDate){
-    document.getElementById('examSection').style.display='block';
+    document.getElementById('classExamBox').style.display='block';
     document.getElementById('examDateTxt').textContent=`📅 試験日: ${c.examDate}`;
     const du=daysUntil(c.examDate);
     document.getElementById('examCdTxt').textContent=du>0?`あと ${du} 日`:du===0?'本日！':Math.abs(du)+'日前に終了';
-  } else document.getElementById('examSection').style.display='none';
+  } else document.getElementById('classExamBox').style.display='none';
 
   // Evaluation
   const eb=document.getElementById('evalBox');
@@ -2623,7 +3040,7 @@ function showDetail(idx){
   const imgW=document.getElementById('dImgWrap');
   imgW.innerHTML=c.image?`<img src="${c.image}" style="max-width:100%;border-radius:8px;" alt="授業画像">`:'';
 
-  document.getElementById('attDate').valueAsDate=new Date();
+  populateAttDates(c);
   document.getElementById('cancelDate').valueAsDate=new Date();
   document.getElementById('makeupDate').valueAsDate=new Date();
   document.getElementById('snoteDate').valueAsDate=new Date();
@@ -2659,8 +3076,93 @@ function setReason(r){
   document.getElementById('attReason').value=r;
 }
 
+// ── 有効な授業日を生成・select に反映 ──
+function getValidClassDates(c){
+  const DAY_IDX={sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
+  const slots=c.slots||[];
+  const slotDays=[...new Set(slots.map(s=>DAY_IDX[s.day]).filter(d=>d!=null))];
+  if(!slotDays.length) return [];
+
+  const td=((appData.settings||{}).termDates||{})[c.term]||{};
+  const yr=parseInt(currentYear)||new Date().getFullYear();
+  // 期間設定があればその範囲、なければ学年度全体（4月〜翌3月）
+  const start=td.start?new Date(td.start+'T00:00:00'):new Date(yr,3,1);
+  const end  =td.end  ?new Date(td.end  +'T00:00:00'):new Date(yr+1,2,31);
+
+  const canceledSet=new Set(c.canceledDates||[]);
+  const dates=[];
+  const cur=new Date(start);
+  while(cur<=end){
+    if(slotDays.includes(cur.getDay())){
+      const ds=cur.toISOString().slice(0,10);
+      if(!canceledSet.has(ds)) dates.push(ds);
+    }
+    cur.setDate(cur.getDate()+1);
+  }
+  // 補講日（曜日外）も追加
+  (c.makeupDates||[]).forEach(d=>{ if(!dates.includes(d)) dates.push(d); });
+  return dates.sort();
+}
+
+function populateAttDates(c){
+  const sel=document.getElementById('attDateSel');
+  const fb =document.getElementById('attDateFb');
+  if(!sel||!fb) return;
+
+  // オンデマンドまたはスロットなし → フリーの日付入力を表示
+  if(c.isOnDemand||!c.slots||!c.slots.length){
+    sel.style.display='none';
+    fb.style.display='';
+    fb.valueAsDate=new Date();
+    return;
+  }
+
+  const dates=getValidClassDates(c);
+  if(!dates.length){
+    sel.style.display='none';
+    fb.style.display='';
+    fb.valueAsDate=new Date();
+    return;
+  }
+
+  sel.style.display='';
+  fb.style.display='none';
+
+  // 今日以前で最新の日付をデフォルト選択
+  const todayStr=new Date().toISOString().slice(0,10);
+  const defaultDate=[...dates].reverse().find(d=>d<=todayStr)||dates[dates.length-1];
+
+  // 記録済みセット
+  const absSet =new Set((c.absences||[]).map(a=>a.date));
+  const lateSet=new Set((c.tardiness||[]).map(a=>a.date));
+
+  const WEEK_JA=['日','月','火','水','木','金','土'];
+  // 月ごとにグループ化（新しい月を上に）
+  const byMonth={};
+  dates.forEach(d=>{
+    const m=d.slice(0,7);
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(d);
+  });
+  const months=Object.keys(byMonth).sort().reverse();
+
+  sel.innerHTML=months.map(m=>{
+    const [y,mo]=m.split('-');
+    const optLabel=`${y}年${parseInt(mo)}月`;
+    const opts=[...byMonth[m]].reverse().map(d=>{
+      const dt=new Date(d+'T00:00:00');
+      const lbl=`${parseInt(d.slice(5,7))}/${parseInt(d.slice(8,10))}（${WEEK_JA[dt.getDay()]}）`;
+      const mark=absSet.has(d)?' ✗欠席':lateSet.has(d)?' △遅刻':'';
+      return `<option value="${d}"${d===defaultDate?' selected':''}>${lbl}${mark}</option>`;
+    }).join('');
+    return `<optgroup label="${optLabel}">${opts}</optgroup>`;
+  }).join('');
+}
+
 function addAtt(){
-  const date=document.getElementById('attDate').value;
+  const sel=document.getElementById('attDateSel');
+  const fb =document.getElementById('attDateFb');
+  const date=sel&&sel.style.display!=='none'?sel.value:(fb?fb.value:'');
   const type=document.getElementById('attType').value;
   const reason=document.getElementById('attReason').value.trim()||pendingReason;
   if(!date){ alert('日付を選択してください'); return; }
@@ -3594,6 +4096,7 @@ function renderAll(){
   renderSchedule();
   renderTodos();
   updateHdrSub();
+  if(activeTab==='exam') renderExams();
 }
 
 // ═══════════════════════════════
@@ -4164,7 +4667,7 @@ function buildShareText(term){
     c.slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push({c,period:s.period}); });
   });
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
-  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.2.0）\n\n`;
+  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.3.0）\n\n`;
   let hasAny=false;
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
@@ -4308,7 +4811,7 @@ function exportTimetablePDF(){
 </div>
 <div class="ppl-body">
   <div class="ppl-h1">${title}</div>
-  <div class="ppl-sub">楽単チェッカー ver 2.2.0</div>
+  <div class="ppl-sub">楽単チェッカー ver 2.3.0</div>
   ${sectionsHtml}
   <div class="ppl-footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
 </div>`;
@@ -4750,7 +5253,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   })();
 
   renderAll();
-  document.getElementById('attDate').valueAsDate=new Date();
 
   if(Notification.permission==='granted'){
     navigator.serviceWorker.ready.then(()=>{
