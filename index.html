@@ -3649,9 +3649,19 @@ function toggleDL(){
 }
 
 // 時刻プリセット：指定の datetime-local input に時刻を反映
+// 既に選択中のボタンを再度押した場合はハイライトを外す（入力値はそのまま）
 function setDeadlineTime(inputId,btnGroupId,time){
   const inp=document.getElementById(inputId);
   if(!inp||inp.disabled) return;
+  // トグル解除：同じボタンが on 状態なら選択解除のみ行い入力は変更しない
+  if(btnGroupId){
+    const clicked=document.querySelector('#'+btnGroupId+' .dl-time-btn[data-t="'+time+'"]');
+    if(clicked&&clicked.classList.contains('on')){
+      document.querySelectorAll('#'+btnGroupId+' .dl-time-btn').forEach(b=>b.classList.remove('on'));
+      return;
+    }
+  }
+  // 日付部分を保持して時刻だけ上書き
   const date=(inp.value?inp.value.split('T')[0]:null)||new Date().toISOString().slice(0,10);
   inp.value=date+'T'+time;
   if(inputId==='todoDeadline'){
@@ -3665,15 +3675,22 @@ function setDeadlineTime(inputId,btnGroupId,time){
   }
 }
 
-// datetime-local を手入力した場合にプリセットボタンの選択状態を同期
+// datetime-local 手入力時にプリセットボタンの選択状態を同期
+// HH:mm:ss など秒が付く場合も正規化して比較する
 function syncTimePreset(scope){
   if(scope==='todo'){
     const inp=document.getElementById('todoDeadline');
-    const t=inp.value?inp.value.split('T')[1]:'';
+    const raw=inp.value?inp.value.split('T')[1]||'':'';
+    const t=raw.slice(0,5); // 常に HH:mm に正規化
     document.querySelectorAll('#todoTimeBtns .dl-time-btn').forEach(b=>{
-      b.classList.toggle('on',b.dataset.t===t);
+      b.classList.toggle('on',t!==''&&b.dataset.t===t);
     });
   }
+}
+
+// プリセットボタンを全解除するユーティリティ
+function clearTimePresets(btnGroupId){
+  document.querySelectorAll('#'+btnGroupId+' .dl-time-btn').forEach(b=>b.classList.remove('on'));
 }
 function toggleChip(el){
   sfx('toggle');
@@ -3762,6 +3779,9 @@ function openEditTodo(i){
   document.getElementById('noDeadline').checked=noD;
   document.getElementById('todoDeadline').value=noD?'':t.deadline||'';
   document.getElementById('todoDeadline').disabled=noD;
+  // 編集時に既存の時刻をプリセットボタンに反映
+  if(noD) clearTimePresets('todoTimeBtns');
+  else syncTimePreset('todo');
   document.getElementById('todoDetails').value=t.details||'';
   populateTodoClassSelect();
   const sel=document.getElementById('todoClass');
@@ -3809,6 +3829,7 @@ async function addTodo(){
   document.getElementById('todoImgWrap').style.display='none';
   document.getElementById('todoDeadline').value='';
   document.getElementById('noDeadline').checked=false;
+  clearTimePresets('todoTimeBtns');
   // reset chips to default (前日 on)
   document.querySelectorAll('#reminderChips .chip').forEach(c=>{ c.classList.toggle('on',c.dataset.days==='1'); });
   sfx('add');
