@@ -953,27 +953,37 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
 .snote-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--faint);font-size:15px;cursor:pointer;padding:2px 6px;}
 
 /* ── Feature 9: Calendar view ── */
-.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.cal-nav{background:none;border:none;font-size:22px;color:var(--ac);cursor:pointer;padding:4px 12px;font-family:inherit;}
-.cal-month-label{font-size:17px;font-weight:800;color:var(--text);}
-.cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;color:var(--sub);margin-bottom:4px;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
-.cal-day{min-height:46px;padding:2px;border-radius:8px;cursor:pointer;transition:.15s;position:relative;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;background:var(--inp);border-radius:14px;padding:6px 4px;}
+.cal-nav{background:none;border:none;font-size:24px;color:var(--ac);cursor:pointer;padding:6px 14px;font-family:inherit;transition:.15s;}
+.cal-nav:hover{color:var(--ge);}
+.cal-month-label{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.3px;}
+.cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:800;color:var(--sub);margin-bottom:5px;padding:0 1px;}
+.cal-grid-header>div:first-child{color:#ef4444;}
+.cal-grid-header>div:last-child{color:#3b82f6;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-day{min-height:54px;padding:3px 2px;border-radius:10px;cursor:pointer;transition:.15s;position:relative;}
 .cal-day:hover{background:var(--inp);}
-.cal-day.cal-other{opacity:.35;}
-.cal-day.cal-today{background:rgba(102,126,234,.12);}
-.cal-day.cal-selected{background:var(--ac)!important;color:#fff;}
-.cal-day-num{font-size:12px;font-weight:700;text-align:center;padding:2px 0;}
-.cal-day.cal-today .cal-day-num{color:var(--ac);}
+.cal-day.cal-other{opacity:.3;}
+.cal-day.cal-today{background:rgba(102,126,234,.13);box-shadow:0 0 0 1.5px rgba(99,102,241,.3);}
+.cal-day.cal-selected{background:var(--ac)!important;color:#fff;box-shadow:0 4px 14px rgba(79,70,229,.38);}
+.cal-day.has-absent{background:rgba(239,68,68,.08);}
+.cal-day.has-late{background:rgba(249,115,22,.07);}
+.cal-day-num{font-size:12px;font-weight:800;text-align:center;padding:2px 0;line-height:1.4;}
+.cal-day:first-child .cal-day-num,.cal-grid-header>div:first-child~.cal-day:nth-child(7n+1) .cal-day-num{color:#ef4444;}
+.cal-day.cal-today .cal-day-num{color:var(--ac);font-size:13px;}
 .cal-day.cal-selected .cal-day-num{color:#fff;}
-.cal-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;padding:1px;}
-.cal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.cal-events{margin-top:14px;background:var(--inp);border-radius:14px;padding:14px;min-height:60px;}
-.cal-ev-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
-.cal-ev-item:last-child{border-bottom:none;}
-.cal-ev-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.cal-ev-label{font-weight:700;flex:1;}
-.cal-ev-sub{font-size:11px;color:var(--sub);}
+.cal-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;padding:2px 1px;}
+.cal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cal-events{margin-top:14px;background:var(--inp);border-radius:16px;padding:12px;min-height:60px;}
+.cal-ev-date-header{font-size:12px;font-weight:800;color:var(--sub);margin-bottom:10px;padding-bottom:8px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:6px;}
+.cal-ev-date-header::before{content:'';display:inline-block;width:3px;height:14px;background:linear-gradient(135deg,var(--gs),var(--ge));border-radius:2px;}
+.cal-ev-item{display:flex;align-items:flex-start;gap:0;padding:7px 10px;border-radius:10px;background:var(--card);margin-bottom:6px;border:1px solid var(--border);border-left:4px solid var(--ev-clr,var(--ac));font-size:13px;transition:.15s;}
+.cal-ev-item:last-child{margin-bottom:0;}
+.cal-ev-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.cal-ev-body{flex:1;min-width:0;}
+.cal-ev-label{font-weight:800;font-size:13px;margin-bottom:1px;}
+.cal-ev-sub{font-size:11px;color:var(--sub);margin-top:1px;}
+.cal-ev-dot{display:none;}
 
 /* ── v2.4.1: サブタスク ── */
 .subtask-progress{display:flex;align-items:center;gap:6px;margin-top:5px;}
@@ -995,6 +1005,25 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
 .subtask-del-btn:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
 .subtask-add-btn{border:1.5px dashed var(--ac);background:transparent;color:var(--ac);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;width:100%;}
 .subtask-add-btn:hover{background:rgba(99,102,241,.07);}
+
+/* ── v2.4.2: クラス別タスクグループ ── */
+.class-task-groups{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.class-task-group{border-radius:16px;border:1px solid var(--border);border-left:5px solid var(--ctg-color,var(--ac));overflow:hidden;background:var(--card);box-shadow:var(--card-shadow);}
+.ctg-header{display:flex;align-items:center;gap:9px;padding:13px 14px;cursor:pointer;user-select:none;transition:background .15s;}
+.ctg-header:hover{background:var(--hover);}
+.ctg-name{flex:1;font-weight:900;font-size:14px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ctg-count{background:var(--ctg-color,var(--ac));color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:800;flex-shrink:0;min-width:24px;text-align:center;}
+.ctg-arrow{font-size:11px;color:var(--faint);flex-shrink:0;transition:transform .2s;}
+.ctg-arrow.open{transform:rotate(180deg);}
+.ctg-badge{border-radius:10px;padding:2px 8px;font-size:10px;font-weight:800;flex-shrink:0;}
+.ctg-badge.danger{background:#fef2f2;color:#dc2626;}
+.ctg-badge.urgent{background:#fff7ed;color:#ea580c;}
+body.dark .ctg-badge.danger{background:#450a0a;color:#fca5a5;}
+body.dark .ctg-badge.urgent{background:#431407;color:#fdba74;}
+.ctg-body{padding:8px 10px 10px;display:flex;flex-direction:column;gap:0;border-top:1px solid var(--border);}
+.ctg-body .todo-list{gap:7px;}
+.ctg-body .todo-item{background:var(--inp);}
+.ctg-other-title{font-size:11px;font-weight:800;color:var(--faint);margin:8px 0 6px;text-transform:uppercase;letter-spacing:.6px;padding-left:2px;}
 
 /* ── v2.4.1: 施設・ポートフォリオ ── */
 .portfolio-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
@@ -1098,7 +1127,7 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
       <div class="tc-label">📅 今日の授業</div>
       <div id="todayClassList"><div class="tc-empty">登録済みの授業はありません</div></div>
     </div>
-    <ul class="todo-list" id="todoList"></ul>
+    <div id="todoList"></div>
   </div>
 
   <!-- 追加ペイン -->
@@ -1285,12 +1314,12 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
   <div class="cal-term-chips" id="calTermChips"></div>
   <div class="cal-month-stat" id="calMonthStat"></div>
   <div class="cal-legend">
-    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--ac)"></div>授業</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#ef4444"></div>欠席</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#f97316"></div>遅刻</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#dc2626"></div>試験</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#f59e0b"></div>課題締切</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#059669"></div>補講</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--ac)"></div>授業</div>
   </div>
   <div class="cal-grid-header">
     <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
@@ -1857,7 +1886,7 @@ body.dark .css-error{background:#450a0a;color:#fca5a5;}
     <button class="btn bs" onclick="closeModal('settingsModal')">キャンセル</button>
     <button class="btn bp" onclick="saveSettings()">保存</button>
   </div>
-  <div class="ver">ver 2.4.1 — サブタスク・施設メモ・シラバスリンク・クラウド同期</div>
+  <div class="ver">ver 2.4.2 — カレンダーUI改善・授業別タスクグループ</div>
 </div>
 </div>
 
@@ -2949,7 +2978,7 @@ function renderCalendar(){
     <div class="cal-stat-item"><span style="font-size:14px;">🎓</span><span class="cal-stat-num" style="color:#dc2626;">${monthExamCount}</span><span style="color:var(--sub);">試験</span></div>`;
 
   // ── カレンダーグリッド生成 ──
-  const dotOrder={exam:0,absent:1,late:2,class:3,term_makeup:4,canceled:5,makeup:5,todo:6};
+  const dotOrder={exam:0,absent:1,late:2,todo:3,class:4,term_makeup:5,canceled:6,makeup:6};
   let html='';
   for(let d=firstDay-1;d>=0;d--){
     html+=`<div class="cal-day cal-other"><div class="cal-day-num">${daysInPrev-d}</div></div>`;
@@ -2963,7 +2992,13 @@ function renderCalendar(){
     const evs     =evMap[dateStr]||[];
     const sorted  =[...evs].sort((a,b)=>(dotOrder[a.type]??9)-(dotOrder[b.type]??9));
     const dots    =sorted.slice(0,5).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('');
-    const extraCls=(isToday?' cal-today':'')+(isSel?' cal-selected':'')+(isStart?' term-start':'')+(isEnd?' term-end':'');
+    const hasAbsent=evs.some(e=>e.type==='absent');
+    const hasLate  =evs.some(e=>e.type==='late');
+    let extraCls=(isToday?' cal-today':'')+(isSel?' cal-selected':'')+(isStart?' term-start':'')+(isEnd?' term-end':'');
+    if(!isSel){
+      if(hasAbsent) extraCls+=' has-absent';
+      else if(hasLate) extraCls+=' has-late';
+    }
     html+=`<div class="cal-day${extraCls}" onclick="selectCalDay('${dateStr}')"><div class="cal-day-num">${d}</div><div class="cal-dots">${dots}</div></div>`;
   }
   const total=Math.ceil((firstDay+daysInMonth)/7)*7;
@@ -2981,29 +3016,49 @@ function selectCalDay(dateStr){
 
 function renderCalEvents(dateStr,evs){
   const el=document.getElementById('calEvents');
-  if(!evs.length){el.innerHTML=`<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">${dateStr} の予定はありません</div>`;return;}
+  const [y,m,d]=dateStr.split('-');
+  const dateJa=`${parseInt(m)}月${parseInt(d)}日`;
+  if(!evs.length){
+    el.innerHTML=`<div class="cal-ev-date-header">${dateJa}</div><div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">この日の予定はありません</div>`;
+    return;
+  }
   const typeLabel={class:'授業',canceled:'休講',makeup:'補講（授業）',term_makeup:'学期補講日',exam:'試験',todo:'課題締切',absent:'欠席',late:'遅刻'};
   // 表示順: 試験 > 欠席 > 遅刻 > 授業 > 補講日 > 補講 > 休講 > 課題
   const order={exam:0,absent:1,late:2,class:3,term_makeup:4,makeup:5,canceled:6,todo:7};
   const sorted=[...evs].sort((a,b)=>(order[a.type]??9)-(order[b.type]??9));
+
+  // 欠席・遅刻イベントがある授業名のセットを収集（重複表示防止）
+  const absentClasses=new Set(evs.filter(e=>e.type==='absent'&&e.classRef).map(e=>e.classRef.name));
+  const lateClasses  =new Set(evs.filter(e=>e.type==='late'  &&e.classRef).map(e=>e.classRef.name));
+
   const fmt=(ev)=>{
+    // 欠席・遅刻イベントが既にある授業の「授業」イベントはスキップ（重複防止）
+    if(ev.type==='class'&&ev.classRef){
+      const n=ev.classRef.name;
+      if(absentClasses.has(n)||lateClasses.has(n)) return '';
+    }
+    // 出席バッジは一切表示しない（欠席・遅刻のバッジのみ）
     let statusTag='';
-    if(ev.type==='class'){
-      // クラスに対してその日の欠席・遅刻があるかチェック
-      if(ev.classRef){
-        const hasAbs=(ev.classRef.absences||[]).some(a=>a.date===dateStr);
-        const hasLate=(ev.classRef.tardiness||[]).some(a=>a.date===dateStr);
-        if(hasAbs) statusTag='<span class="cal-ev-status ev-absent">欠席</span>';
-        else if(hasLate) statusTag='<span class="cal-ev-status ev-late">遅刻</span>';
-        else statusTag='<span class="cal-ev-status ev-attend">出席</span>';
-      }
+    if(ev.type==='class'&&ev.classRef){
+      const hasAbs=(ev.classRef.absences||[]).some(a=>a.date===dateStr);
+      const hasLate=(ev.classRef.tardiness||[]).some(a=>a.date===dateStr);
+      if(hasAbs) statusTag='<span class="cal-ev-status ev-absent">欠席</span>';
+      else if(hasLate) statusTag='<span class="cal-ev-status ev-late">遅刻</span>';
     }
     const sub=typeLabel[ev.type]||ev.type;
-    const period=ev.period?` ${ev.period}限`:'';
+    const period=ev.period?` · ${ev.period}限`:'';
     const reason=ev.reason?` (${ev.reason})`:'';
-    return `<div class="cal-ev-item"><div class="cal-ev-dot" style="background:${ev.color}"></div><div style="flex:1;min-width:0;"><div class="cal-ev-label">${ev.label}</div><div class="cal-ev-sub">${sub}${period}${reason}</div></div>${statusTag}</div>`;
+    const icon={class:'📚',canceled:'🚫',makeup:'🔄',term_makeup:'📅',exam:'🎓',todo:'📝',absent:'❌',late:'⏰'}[ev.type]||'•';
+    return `<div class="cal-ev-item" style="--ev-clr:${ev.color}">
+      <div class="cal-ev-body">
+        <div class="cal-ev-label">${icon} ${ev.label}</div>
+        <div class="cal-ev-sub">${sub}${period}${reason}</div>
+      </div>
+      ${statusTag}
+    </div>`;
   };
-  el.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:8px;">${dateStr}</div>`+sorted.map(fmt).join('');
+  const items=sorted.map(fmt).filter(s=>s!=='').join('');
+  el.innerHTML=`<div class="cal-ev-date-header">${dateJa}</div>`+(items||`<div style="text-align:center;padding:14px;color:var(--faint);font-size:13px;">この日の予定はありません</div>`);
 }
 
 // ═══════════════════════════════
@@ -4441,6 +4496,57 @@ function setTodoFilter(f){
   renderTodos();
 }
 
+function buildTodoItemHtml(t){
+  const i=t._origIdx;
+  let cls='todo-item'; if(t.completed) cls+=' done';
+  let dlTxt='<span style="color:var(--faint);">期限なし</span>';
+  let cdHtml='';
+  if(t.deadline){
+    const diff=(new Date(t.deadline)-Date.now())/36e5;
+    dlTxt=`期限: ${t.deadline.replace('T',' ')}`;
+    if(!t.completed){
+      if(diff<0){ cls+=' overdue'; cdHtml='<span class="countdown cd-danger">期限切れ</span>'; }
+      else if(diff<24){ cls+=' overdue'; cdHtml=`<span class="countdown cd-danger">あと${Math.ceil(diff)}時間</span>`; }
+      else if(diff<72){ cls+=' urgent'; cdHtml=`<span class="countdown cd-warn">あと${Math.ceil(diff/24)}日</span>`; }
+      else { cdHtml=`<span class="countdown cd-ok">あと${Math.ceil(diff/24)}日</span>`; }
+    }
+  }
+  const img=t.image?`<img class="t-img" src="${t.image}" alt="添付">`:'';
+  const subs=t.subtasks||[];
+  const subDone=subs.filter(s=>s.completed).length;
+  let subHtml='';
+  if(subs.length>0){
+    const pct=Math.round(subDone/subs.length*100);
+    const listId=`stl_${i}`;
+    subHtml=`<div class="subtask-progress">
+      <div class="subtask-prog-bar"><div class="subtask-prog-fill" style="width:${pct}%"></div></div>
+      <span class="subtask-count">${subDone}/${subs.length} ✓</span>
+      <button class="subtask-toggle" onclick="toggleSubtaskList('${listId}')">詳細</button>
+    </div>
+    <div class="subtask-list" id="${listId}" style="display:none;">
+      ${subs.map((s,si)=>`<div class="subtask-item">
+        <input type="checkbox" class="subtask-chk" ${s.completed?'checked':''} onchange="toggleSubtask(${i},${si},this)">
+        <span class="subtask-name ${s.completed?'done':''}">${s.title}</span>
+        ${s.deadline?`<span class="subtask-dl">${s.deadline}</span>`:''}
+      </div>`).join('')}
+    </div>`;
+  }
+  return `<li class="${cls}" style="animation-delay:${i*0.04}s">
+    <div class="t-head">
+      <input type="checkbox" class="t-chk" ${t.completed?'checked':''} onchange="toggleTodo(${i},this)">
+      <div class="ttl">${t.title}</div>
+      <button class="t-del" style="font-size:13px;margin-right:2px;" onclick="openEditTodo(${i})">✏️</button>
+      <button class="t-del" onclick="deleteTodo(${i})">×</button>
+    </div>
+    <div class="t-meta">
+      <div class="t-dl">${dlTxt}${cdHtml}</div>
+      ${t.details?`<div class="t-detail">${t.details}</div>`:''}
+      ${subHtml}
+      ${img}
+    </div>
+  </li>`;
+}
+
 function renderTodos(){
   populateTodoClassSelect();
   const list=document.getElementById('todoList');
@@ -4463,60 +4569,66 @@ function renderTodos(){
     todos.sort((a,b)=>{ const ca=a.linkedClass>=0?a.linkedClass:9999; const cb=b.linkedClass>=0?b.linkedClass:9999; if(ca!==cb) return ca-cb; if(!a.deadline) return 1; if(!b.deadline) return -1; return new Date(a.deadline)-new Date(b.deadline); });
   }
   if(!todos.length){ list.innerHTML='<div style="text-align:center;padding:20px;color:var(--faint);">タスクなし</div>'; return; }
-  list.innerHTML=todos.map((t)=>{
-    const i=t._origIdx;
-    let cls='todo-item'; if(t.completed) cls+=' done';
-    let dlTxt='<span style="color:var(--faint);">期限なし</span>';
-    let cdHtml='';
-    if(t.deadline){
-      const diff=(new Date(t.deadline)-Date.now())/36e5;
-      dlTxt=`期限: ${t.deadline.replace('T',' ')}`;
-      if(!t.completed){
-        if(diff<0){ cls+=' overdue'; cdHtml='<span class="countdown cd-danger">期限切れ</span>'; }
-        else if(diff<24){ cls+=' overdue'; cdHtml=`<span class="countdown cd-danger">あと${Math.ceil(diff)}時間</span>`; }
-        else if(diff<72){ cls+=' urgent'; cdHtml=`<span class="countdown cd-warn">あと${Math.ceil(diff/24)}日</span>`; }
-        else { cdHtml=`<span class="countdown cd-ok">あと${Math.ceil(diff/24)}日</span>`; }
-      }
-    }
-    const cName=t.linkedClass>=0&&curClasses()[t.linkedClass]?curClasses()[t.linkedClass].name:'';
-    const cTag=cName?`<span class="t-class-tag">📚 ${cName}</span><br>`:'';
-    const img=t.image?`<img class="t-img" src="${t.image}" alt="添付">`:'';
-    // サブタスク進捗
-    const subs=t.subtasks||[];
-    const subDone=subs.filter(s=>s.completed).length;
-    let subHtml='';
-    if(subs.length>0){
-      const pct=Math.round(subDone/subs.length*100);
-      const listId=`stl_${i}`;
-      subHtml=`<div class="subtask-progress">
-        <div class="subtask-prog-bar"><div class="subtask-prog-fill" style="width:${pct}%"></div></div>
-        <span class="subtask-count">${subDone}/${subs.length} ✓</span>
-        <button class="subtask-toggle" onclick="toggleSubtaskList('${listId}')">詳細</button>
-      </div>
-      <div class="subtask-list" id="${listId}" style="display:none;">
-        ${subs.map((s,si)=>`<div class="subtask-item">
-          <input type="checkbox" class="subtask-chk" ${s.completed?'checked':''} onchange="toggleSubtask(${i},${si},this)">
-          <span class="subtask-name ${s.completed?'done':''}">${s.title}</span>
-          ${s.deadline?`<span class="subtask-dl">${s.deadline}</span>`:''}
-        </div>`).join('')}
+
+  // 完了済み・その他フィルター時はグループ化しない（フラットリスト）
+  const useGrouped=(todoFilter!=='done'&&todoFilter!=='other');
+  const classTodos=useGrouped?todos.filter(t=>t.linkedClass>=0&&curClasses()[t.linkedClass]):[];
+  const otherTodos=useGrouped?todos.filter(t=>!(t.linkedClass>=0&&curClasses()[t.linkedClass])):todos;
+
+  let html='';
+
+  if(classTodos.length>0){
+    // 授業ごとにグループ化
+    const groups={};
+    classTodos.forEach(t=>{
+      const key=t.linkedClass;
+      if(!groups[key]) groups[key]=[];
+      groups[key].push(t);
+    });
+    const sortedKeys=Object.keys(groups).sort((a,b)=>parseInt(a)-parseInt(b));
+    html+='<div class="class-task-groups">';
+    sortedKeys.forEach(key=>{
+      const cls=curClasses()[parseInt(key)];
+      if(!cls) return;
+      const gTodos=groups[key];
+      const pendingCount=gTodos.filter(t=>!t.completed).length;
+      const overdueCount=gTodos.filter(t=>!t.completed&&t.deadline&&new Date(t.deadline)<new Date()).length;
+      const urgentCount=gTodos.filter(t=>!t.completed&&t.deadline&&(new Date(t.deadline)-Date.now())/36e5<72&&(new Date(t.deadline)-Date.now())/36e5>=0).length;
+      const color=cls.color||'var(--ac)';
+      const gid=`ctg_${key}`;
+      let badge='';
+      if(overdueCount>0) badge=`<span class="ctg-badge danger">⚠ ${overdueCount}件 期限切れ</span>`;
+      else if(urgentCount>0) badge=`<span class="ctg-badge urgent">⏰ ${urgentCount}件 急ぎ</span>`;
+      html+=`<div class="class-task-group" style="--ctg-color:${color}">
+        <div class="ctg-header" onclick="toggleClassTaskGroup('${gid}')">
+          <div class="ctg-name">📚 ${cls.name}</div>
+          ${badge}
+          <span class="ctg-count">${pendingCount}</span>
+          <span class="ctg-arrow open" id="${gid}_arr">▼</span>
+        </div>
+        <div class="ctg-body" id="${gid}">
+          <ul class="todo-list">${gTodos.map(buildTodoItemHtml).join('')}</ul>
+        </div>
       </div>`;
-    }
-    return `<li class="${cls}" style="animation-delay:${i*0.04}s">
-      <div class="t-head">
-        <input type="checkbox" class="t-chk" ${t.completed?'checked':''} onchange="toggleTodo(${i},this)">
-        <div class="ttl">${t.title}</div>
-        <button class="t-del" style="font-size:13px;margin-right:2px;" onclick="openEditTodo(${i})">✏️</button>
-        <button class="t-del" onclick="deleteTodo(${i})">×</button>
-      </div>
-      <div class="t-meta">
-        ${cTag}
-        <div class="t-dl">${dlTxt}${cdHtml}</div>
-        ${t.details?`<div class="t-detail">${t.details}</div>`:''}
-        ${subHtml}
-        ${img}
-      </div>
-    </li>`;
-  }).join('');
+    });
+    html+='</div>';
+  }
+
+  if(otherTodos.length>0){
+    if(classTodos.length>0) html+='<div class="ctg-other-title">📌 その他のタスク</div>';
+    html+=`<ul class="todo-list">${otherTodos.map(buildTodoItemHtml).join('')}</ul>`;
+  }
+
+  list.innerHTML=html;
+}
+
+function toggleClassTaskGroup(gid){
+  const body=document.getElementById(gid);
+  const arr=document.getElementById(gid+'_arr');
+  if(!body) return;
+  const isOpen=body.style.display!=='none'&&body.style.display!=='';
+  body.style.display=isOpen?'none':'block';
+  if(arr){ arr.textContent=isOpen?'▶':'▼'; arr.classList.toggle('open',!isOpen); }
 }
 
 function openEditTodo(i){
@@ -5460,7 +5572,7 @@ function buildShareText(term){
     c.slots.forEach(s=>{ if(byDay[s.day]) byDay[s.day].push({c,period:s.period}); });
   });
   DAY_ORDER.forEach(d=>byDay[d].sort((a,b)=>a.period-b.period));
-  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.4.1）\n\n`;
+  let text=`【${year}年度 ${termLabel} 時間割】\n（楽単チェッカー ver 2.4.2）\n\n`;
   let hasAny=false;
   DAY_ORDER.forEach(d=>{
     if(!byDay[d].length) return;
@@ -5604,7 +5716,7 @@ function exportTimetablePDF(){
 </div>
 <div class="ppl-body">
   <div class="ppl-h1">${title}</div>
-  <div class="ppl-sub">楽単チェッカー ver 2.4.1</div>
+  <div class="ppl-sub">楽単チェッカー ver 2.4.2</div>
   ${sectionsHtml}
   <div class="ppl-footer">出力日: ${new Date().toLocaleDateString('ja-JP')}</div>
 </div>`;
