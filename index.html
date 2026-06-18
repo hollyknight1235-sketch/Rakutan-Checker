@@ -447,6 +447,12 @@ body.dark .class-card.c-warn{background:linear-gradient(145deg,#1f1000,#18181b 6
 .att-entry{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;gap:7px;}
 .att-entry:last-child{border-bottom:none;}
 .att-badge{border-radius:10px;padding:1px 8px;font-size:10px;font-weight:700;flex-shrink:0;}
+.att-makeup-row{display:none;align-items:center;gap:7px;margin-top:6px;padding:7px 10px;background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);border-radius:9px;}
+.att-makeup-label{font-size:11px;font-weight:700;color:#059669;white-space:nowrap;flex-shrink:0;}
+body.dark .att-makeup-row{background:rgba(5,150,105,.1);border-color:rgba(5,150,105,.2);}
+body.dark .att-makeup-label{color:#34d399;}
+.att-makeup-info{font-size:10px;font-weight:700;color:#059669;white-space:nowrap;}
+body.dark .att-makeup-info{color:#34d399;}
 .ab-absent{background:#ffebee;color:#b71c1c;}
 .ab-late{background:#fff3e0;color:#e65100;}
 body.dark .ab-absent{background:#3a0000;color:#ef9a9a;}
@@ -1291,19 +1297,26 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
       <select class="ri ri-flex" id="attDateSel" style="font-size:12px;"></select>
       <!-- オンデマンド等・スロットなし授業用フォールバック -->
       <input type="date" class="ri ri-flex" id="attDateFb" style="display:none;">
-      <select class="ri" id="attType">
+      <select class="ri" id="attType" onchange="onAttTypeChange()">
         <option value="absent">欠席</option>
         <option value="late">遅刻</option>
+        <option value="canceled">休講</option>
       </select>
       <button class="rec-btn" onclick="addAtt()">記録</button>
     </div>
-    <div class="qr-row">
-      <button class="qr-btn" onclick="setReason('寝坊')">😴 寝坊</button>
-      <button class="qr-btn" onclick="setReason('体調不良')">🤒 体調不良</button>
-      <button class="qr-btn" onclick="setReason('用事')">🏃 用事</button>
-      <button class="qr-btn" onclick="setReason('サボり')">☕ サボり</button>
+    <div class="att-makeup-row" id="attMakeupRow">
+      <span class="att-makeup-label">補講日（任意）</span>
+      <input type="date" class="ri ri-flex" id="attMakeupDate">
     </div>
-    <input class="fi" type="text" id="attReason" placeholder="理由（任意）" style="margin-top:7px;font-size:13px;">
+    <div id="attReasonRow">
+      <div class="qr-row">
+        <button class="qr-btn" onclick="setReason('寝坊')">😴 寝坊</button>
+        <button class="qr-btn" onclick="setReason('体調不良')">🤒 体調不良</button>
+        <button class="qr-btn" onclick="setReason('用事')">🏃 用事</button>
+        <button class="qr-btn" onclick="setReason('サボり')">☕ サボり</button>
+      </div>
+      <input class="fi" type="text" id="attReason" placeholder="理由（任意）" style="margin-top:7px;font-size:13px;">
+    </div>
     <div class="att-list" id="attList"></div>
   </div>
 
@@ -1354,16 +1367,7 @@ body.standard .mg input:focus,body.standard .mg select:focus,body.standard .mg t
     </div>
   </div>
 
-  <!-- 休講記録 -->
-  <div class="sec-title">🏫 休講記録</div>
-  <div class="info-box">
-    <div style="font-size:12px;color:var(--sub);margin-bottom:8px;">授業が休講だった日（出欠回数には影響しません）</div>
-    <div class="rec-row">
-      <input type="date" class="ri ri-flex" id="cancelDate">
-      <button class="rec-btn" onclick="recordCanceled()" style="background:#9e9e9e;">記録</button>
-    </div>
-    <div id="canceledList" style="margin-top:8px;"></div>
-  </div>
+  <!-- 休講記録は出欠リストに統合 -->
 
   <!-- 補講記録 -->
   <div class="sec-title">📚 補講記録</div>
@@ -2089,20 +2093,13 @@ function getDefaultTermDates(yr){
   yr=yr||new Date().getFullYear();
   const y=parseInt(yr);
   return {
-    '1Q': {start:`${y}-04-07`,end:`${y}-06-06`,
-      makeup:weekdaysFrom(y,5,9,5)},      // 6/9(月)〜5日間
-    '2Q': {start:`${y}-06-10`,end:`${y}-08-08`,
-      makeup:weekdaysFrom(y,7,11,5)},     // 8/11(月)〜5日間
-    '3Q': {start:`${y}-09-28`,end:`${y}-11-28`,
-      makeup:weekdaysFrom(y,11,1,5)},     // 12/1(月)〜5日間
-    '4Q': {start:`${y}-12-01`,end:`${y+1}-02-14`,
-      makeup:weekdaysFrom(y+1,1,17,5)},   // 翌2/17(月)〜5日間
-    '前期':{start:`${y}-04-07`,end:`${y}-08-08`,
-      makeup:weekdaysFrom(y,7,11,5)},     // 8/11(月)〜5日間
-    '後期':{start:`${y}-09-28`,end:`${y+1}-02-14`,
-      makeup:weekdaysFrom(y+1,1,17,5)},   // 翌2/17(月)〜5日間
-    '通年':{start:`${y}-04-07`,end:`${y+1}-02-14`,
-      makeup:weekdaysFrom(y+1,1,17,5)},   // 翌2/17(月)〜5日間
+    '1Q': {start:`${y}-04-07`,end:`${y}-06-06`,makeup:[]},
+    '2Q': {start:`${y}-06-10`,end:`${y}-08-08`,makeup:[]},
+    '3Q': {start:`${y}-09-28`,end:`${y}-11-28`,makeup:[]},
+    '4Q': {start:`${y}-12-01`,end:`${y+1}-02-14`,makeup:[]},
+    '前期':{start:`${y}-04-07`,end:`${y}-08-08`,makeup:[]},
+    '後期':{start:`${y}-09-28`,end:`${y+1}-02-14`,makeup:[]},
+    '通年':{start:`${y}-04-07`,end:`${y+1}-02-14`,makeup:[]},
   };
 }
 
@@ -2138,11 +2135,10 @@ function initData(){
     if(!td||Object.values(td).every(v=>!v.start&&!v.end)){
       appData.settings.termDates=getDefaultTermDates(tdYr);
     } else {
-      // makeup未設定のterm項目にだけデフォルト補講日を補完
-      const defTd=getDefaultTermDates(tdYr);
+      // makeup フィールドが未定義なら空配列で初期化（自動入力はしない）
       Object.keys(appData.settings.termDates).forEach(term=>{
         if(!appData.settings.termDates[term].makeup)
-          appData.settings.termDates[term].makeup=(defTd[term]||{}).makeup||[];
+          appData.settings.termDates[term].makeup=[];
       });
     }
     const cy = appData.settings.currentYear;
@@ -2737,6 +2733,7 @@ function renderCalendar(){
     }
     (c.canceledDates||[]).forEach(d=>{if(d.startsWith(monthPfx))addEv(d,{type:'canceled',label:`休講:${c.name}`,color:'#9ca3af'});});
     (c.makeupDates||[]).forEach(d=>{if(d.startsWith(monthPfx))addEv(d,{type:'makeup',label:`補講:${c.name}`,color:'#059669'});});
+    Object.entries(c.canceledMakeupMap||{}).forEach(([,mkp])=>{if(mkp&&mkp.startsWith(monthPfx))addEv(mkp,{type:'makeup',label:`補講:${c.name}`,color:'#059669'});});
     if(c.examDate&&c.examDate.startsWith(monthPfx))addEv(c.examDate,{type:'exam',label:`試験:${c.name}`,color:'#dc2626'});
     (c.absences||[]).forEach(a=>{
       if(a.date&&a.date.startsWith(monthPfx)){
@@ -3319,7 +3316,6 @@ function showDetail(idx){
   imgW.innerHTML=c.image?`<img src="${c.image}" style="max-width:100%;border-radius:8px;" alt="授業画像">`:'';
 
   populateAttDates(c);
-  document.getElementById('cancelDate').valueAsDate=new Date();
   document.getElementById('makeupDate').valueAsDate=new Date();
   document.getElementById('snoteDate').valueAsDate=new Date();
   renderAttList();
@@ -3337,16 +3333,25 @@ function renderAttList(){
   const c=curClasses()[curClassIdx];
   const merged=[
     ...(c.absences||[]).map(a=>({...a,type:'absent'})),
-    ...(c.tardiness||[]).map(a=>({...a,type:'late'}))
+    ...(c.tardiness||[]).map(a=>({...a,type:'late'})),
+    ...(c.canceledDates||[]).map(d=>({date:d,type:'canceled',makeup:(c.canceledMakeupMap||{})[d]||''}))
   ].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  document.getElementById('attList').innerHTML=merged.map(item=>`
-    <div class="att-entry">
+  document.getElementById('attList').innerHTML=merged.map(item=>{
+    if(item.type==='canceled'){
+      const mkp=item.makeup?`<span class="att-makeup-info">→ 補講: ${item.makeup}</span>`:'';
+      return `<div class="att-entry">
+        <span class="att-badge" style="background:#9e9e9e;color:#fff;">休講</span>
+        <span class="att-date">${item.date}</span>${mkp}
+        <button class="att-del" onclick="removeAtt('${item.date}','canceled')">×</button>
+      </div>`;
+    }
+    return `<div class="att-entry">
       <span class="att-badge ${item.type==='absent'?'ab-absent':'ab-late'}">${item.type==='absent'?'欠席':'遅刻'}</span>
       <span class="att-date">${item.date}</span>
       <span class="att-reason">${item.reason||''}</span>
       <button class="att-del" onclick="removeAtt('${item.date}','${item.type}')">×</button>
-    </div>
-  `).join('')||'<div style="text-align:center;padding:12px;color:var(--faint);font-size:13px;">記録なし</div>';
+    </div>`;
+  }).join('')||'<div style="text-align:center;padding:12px;color:var(--faint);font-size:13px;">記録なし</div>';
 }
 
 function setReason(r){
@@ -3437,14 +3442,39 @@ function populateAttDates(c){
   }).join('');
 }
 
+function onAttTypeChange(){
+  const type=document.getElementById('attType').value;
+  const mr=document.getElementById('attMakeupRow');
+  const rr=document.getElementById('attReasonRow');
+  if(mr) mr.style.display=type==='canceled'?'flex':'none';
+  if(rr) rr.style.display=type==='canceled'?'none':'block';
+}
+
 function addAtt(){
   const sel=document.getElementById('attDateSel');
   const fb =document.getElementById('attDateFb');
   const date=sel&&sel.style.display!=='none'?sel.value:(fb?fb.value:'');
   const type=document.getElementById('attType').value;
-  const reason=document.getElementById('attReason').value.trim()||pendingReason;
   if(!date){ alert('日付を選択してください'); return; }
   const c=curClasses()[curClassIdx];
+
+  if(type==='canceled'){
+    if(!c.canceledDates) c.canceledDates=[];
+    if(c.canceledDates.includes(date)){ showToast('その日はすでに休講として記録されています'); return; }
+    c.canceledDates.push(date);
+    c.canceledDates.sort((a,b)=>new Date(b)-new Date(a));
+    const makeupVal=document.getElementById('attMakeupDate')?.value;
+    if(makeupVal){
+      if(!c.canceledMakeupMap) c.canceledMakeupMap={};
+      c.canceledMakeupMap[date]=makeupVal;
+    }
+    document.getElementById('attMakeupDate').value='';
+    saveData(); showDetail(curClassIdx);
+    showToast(`${date} を休講として記録しました`);
+    return;
+  }
+
+  const reason=document.getElementById('attReason').value.trim()||pendingReason;
   if(!c.absences) c.absences=[];
   if(!c.tardiness) c.tardiness=[];
   if(type==='absent') c.absences.push({date,reason});
@@ -3458,7 +3488,11 @@ function addAtt(){
 function removeAtt(date,type){
   const c=curClasses()[curClassIdx];
   if(type==='absent') c.absences=c.absences.filter(a=>a.date!==date);
-  else c.tardiness=c.tardiness.filter(a=>a.date!==date);
+  else if(type==='late') c.tardiness=c.tardiness.filter(a=>a.date!==date);
+  else if(type==='canceled'){
+    c.canceledDates=(c.canceledDates||[]).filter(d=>d!==date);
+    if(c.canceledMakeupMap) delete c.canceledMakeupMap[date];
+  }
   saveData(); showDetail(curClassIdx);
 }
 
